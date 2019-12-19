@@ -1,0 +1,44 @@
+{
+    "name": "Apify",
+    "description": "<p>Apify is a small and powerful open source library that delivers new levels of developer productivity by simplifying the creation of RESTful architectures. It helps development teams deliver quality web services and applications in reduced amounts of time. &nbsp;Web services are a great way to extend your application, however, adding a web API to an existing web application can be a tedious and time-consuming task. Apify takes certain common patterns found in most web services and abstract them so that you can quickly write web APIs without having to write too much code.<\/p>",
+    "image": "http:\/\/kinlane-productions.s3.amazonaws.com\/api-evangelist-site\/serviceproviders\/apify-logo.png",
+    "tags": [
+        "api service provider",
+        "have api",
+        "management"
+    ],
+    "created": "2019-12-19",
+    "modified": "2019-12-19",
+    "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/apify\/master\/apis.json",
+    "specificationVersion": "0.14",
+    "apis": [
+        {
+            "name": "Apify",
+            "description": null,
+            "image": "http:\/\/kinlane-productions.s3.amazonaws.com\/api-evangelist-site\/serviceproviders\/apify-logo.png",
+            "humanURL": "http:\/\/www.apifydoc.com\/",
+            "baseURL": "",
+            "tags": [],
+            "properties": []
+        }
+    ],
+    "include": [],
+    "x-common": [
+        {
+            "type": "Blog RSS",
+            "url": "http:\/\/www.apifydoc.com\/posts\/recent.rss"
+        },
+        {
+            "type": "Github",
+            "url": "https:\/\/github.com\/apify"
+        },
+        {
+            "type": "Twitter",
+            "url": "https:\/\/twitter.com\/api_fy"
+        },
+        {
+            "type": "Website",
+            "url": "http:\/\/www.apifydoc.com\/"
+        }
+    ]
+}
