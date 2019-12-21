@@ -7,8 +7,8 @@
         "have api",
         "management"
     ],
-    "created": "2019-12-19",
-    "modified": "2019-12-19",
+    "created": "2019-12-20",
+    "modified": "2019-12-20",
     "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/apify\/master\/apis.json",
     "specificationVersion": "0.14",
     "apis": [
@@ -19,11 +19,20 @@
             "humanURL": "http:\/\/www.apifydoc.com\/",
             "baseURL": "",
             "tags": [],
-            "properties": []
+            "properties": [
+                {
+                    "type": "x-openapi",
+                    "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/apify\/master\/apify-openapi.json"
+                }
+            ]
         }
     ],
     "include": [],
     "x-common": [
+        {
+            "type": "APIs.json",
+            "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/1forge\/master\/apis.json"
+        },
         {
             "type": "Blog RSS",
             "url": "http:\/\/www.apifydoc.com\/posts\/recent.rss"
