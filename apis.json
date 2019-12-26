@@ -5,10 +5,12 @@
     "tags": [
         "api service provider",
         "have api",
-        "management"
+        "have openapi",
+        "management",
+        "new"
     ],
-    "created": "2019-12-20",
-    "modified": "2019-12-20",
+    "created": "2019-12-25",
+    "modified": "2019-12-25",
     "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/apify\/master\/apis.json",
     "specificationVersion": "0.14",
     "apis": [
@@ -16,13 +18,17 @@
             "name": "Apify",
             "description": null,
             "image": "http:\/\/kinlane-productions.s3.amazonaws.com\/api-evangelist-site\/serviceproviders\/apify-logo.png",
-            "humanURL": "http:\/\/www.apifydoc.com\/",
+            "humanURL": "http:\/\/apify.com",
             "baseURL": "",
             "tags": [],
             "properties": [
                 {
                     "type": "x-openapi",
-                    "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/apify\/master\/apify-openapi.json"
+                    "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/apify\/master\/apify-api-version-2-reference-openapi.json"
+                },
+                {
+                    "type": "x-postman-collecction",
+                    "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/apify\/master\/apify-api-version-2-reference-postman-collection.json"
                 }
             ]
         }
@@ -34,12 +40,68 @@
             "url": "https:\/\/raw.githubusercontent.com\/api-evangelist\/1forge\/master\/apis.json"
         },
         {
+            "type": "Developer",
+            "url": "https:\/\/docs.apify.com\/api\/v2"
+        },
+        {
+            "type": "Documentation",
+            "url": "https:\/\/docs.apify.com\/api\/v2"
+        },
+        {
+            "type": "About",
+            "url": "https:\/\/apify.com\/about"
+        },
+        {
+            "type": "Blog",
+            "url": "https:\/\/blog.apify.com\/"
+        },
+        {
             "type": "Blog RSS",
             "url": "http:\/\/www.apifydoc.com\/posts\/recent.rss"
         },
         {
+            "type": "Change Log",
+            "url": "https:\/\/apify.com\/change-log"
+        },
+        {
+            "type": "Code",
+            "url": "https:\/\/sdk.apify.com\/"
+        },
+        {
+            "type": "Contact Form",
+            "url": "https:\/\/apify.com\/contact"
+        },
+        {
+            "type": "Documentation",
+            "url": "https:\/\/docs.apify.com\/"
+        },
+        {
             "type": "Github",
             "url": "https:\/\/github.com\/apify"
+        },
+        {
+            "type": "Integrations",
+            "url": "https:\/\/apify.com\/integrations"
+        },
+        {
+            "type": "Login",
+            "url": "https:\/\/my.apify.com\/sign-in"
+        },
+        {
+            "type": "Pricing",
+            "url": "https:\/\/apify.com\/pricing"
+        },
+        {
+            "type": "Self-Service Registration",
+            "url": "https:\/\/my.apify.com\/sign-up"
+        },
+        {
+            "type": "Service Level AGreements",
+            "url": "https:\/\/my.apify.com\/sign-up"
+        },
+        {
+            "type": "Status",
+            "url": "https:\/\/status.apify.com\/"
         },
         {
             "type": "Twitter",
@@ -47,7 +109,7 @@
         },
         {
             "type": "Website",
-            "url": "http:\/\/www.apifydoc.com\/"
+            "url": "http:\/\/apify.com"
         }
     ]
 }
