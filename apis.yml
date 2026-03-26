@@ -1,0 +1,71 @@
+aid: apify
+name: Apify
+description: >-
+  Apify is a full-stack web scraping and browser automation platform that
+  enables developers to build, run, and scale web scrapers, crawlers, and
+  data extraction tools using a cloud-based infrastructure with built-in
+  proxy management, scheduling, and storage.
+type: Index
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+  - Web Scraping
+  - Data Extraction
+  - Browser Automation
+  - Crawling
+  - Data Aggregation
+url: >-
+  https://raw.githubusercontent.com/api-evangelist/apify/refs/heads/main/apis.yml
+created: '2026-03-26'
+modified: '2026-03-26'
+specificationVersion: '0.19'
+apis:
+  - aid: apify:apify-api
+    name: Apify API
+    description: >-
+      The Apify REST API (v2) provides programmatic access to the Apify
+      platform, allowing you to manage actors, run scraping tasks, access
+      datasets, key-value stores, and request queues. All requests and
+      responses are encoded in JSON with UTF-8 encoding. Client libraries
+      are available for Node.js (apify-client) and Python (apify-client).
+    humanURL: https://apify.com
+    baseURL: https://api.apify.com/v2
+    tags:
+      - Web Scraping
+      - Data Extraction
+      - Actors
+      - Datasets
+      - Automation
+      - Crawling
+    properties:
+      - type: Documentation
+        url: https://docs.apify.com/api/v2
+      - type: OpenAPI
+        url: https://docs.apify.com/api/v2/openapi
+      - type: GettingStarted
+        url: https://docs.apify.com/api/v2/getting-started
+common:
+  - type: Website
+    url: https://apify.com
+  - type: Documentation
+    url: https://docs.apify.com
+  - type: Pricing
+    url: https://apify.com/pricing
+  - type: Blog
+    url: https://blog.apify.com
+  - type: Sign Up
+    url: https://console.apify.com/sign-up
+  - type: Login
+    url: https://console.apify.com/sign-in
+  - type: SDK
+    url: https://docs.apify.com/sdk
+  - type: Academy
+    url: https://docs.apify.com/academy
+  - type: Platform Documentation
+    url: https://docs.apify.com/platform
+  - type: GitHub Organization
+    url: https://github.com/apify
+  - type: Support
+    url: https://help.apify.com
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com
