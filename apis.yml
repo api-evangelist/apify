@@ -8,11 +8,11 @@ description: >-
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 tags:
-  - Web Scraping
-  - Data Extraction
   - Browser Automation
   - Crawling
   - Data Aggregation
+  - Data Extraction
+  - Web Scraping
 url: >-
   https://raw.githubusercontent.com/api-evangelist/apify/refs/heads/main/apis.yml
 created: '2026-03-26'
@@ -30,12 +30,12 @@ apis:
     humanURL: https://apify.com
     baseURL: https://api.apify.com/v2
     tags:
-      - Web Scraping
-      - Data Extraction
       - Actors
-      - Datasets
       - Automation
       - Crawling
+      - Data Extraction
+      - Datasets
+      - Web Scraping
     properties:
       - type: Documentation
         url: https://docs.apify.com/api/v2
