@@ -1,0 +1,108 @@
+naftiko: "1.0.0-alpha1"
+
+info:
+  label: "Apify Web Scraping and Automation"
+  description: "Unified workflow for running web scraping actors, monitoring execution, and retrieving structured data from the Apify platform."
+  tags:
+    - Apify
+    - Web Scraping
+    - Automation
+    - Data Extraction
+  created: "2026-04-19"
+  modified: "2026-04-19"
+
+binds:
+  - namespace: env
+    keys:
+      APIFY_TOKEN: APIFY_TOKEN
+
+capability:
+  consumes:
+    - import: apify
+      location: ./shared/apify.yaml
+
+  exposes:
+    - type: rest
+      port: 8080
+      namespace: apify-scraping-api
+      description: "Unified REST API for Apify web scraping and automation."
+      resources:
+        - path: /v1/actors
+          name: actors
+          description: "Browse and run Actors."
+          operations:
+            - method: GET
+              name: list-actors
+              description: "List Actors."
+              call: "apify.list-actors"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/runs/{runId}
+          name: runs
+          description: "Monitor Actor runs."
+          operations:
+            - method: GET
+              name: get-run
+              description: "Get run status."
+              call: "apify.get-run"
+              with:
+                runId: "rest.runId"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+        - path: /v1/datasets/{datasetId}/items
+          name: dataset-items
+          description: "Retrieve scraped data."
+          operations:
+            - method: GET
+              name: get-dataset-items
+              description: "Get dataset items."
+              call: "apify.get-dataset-items"
+              with:
+                datasetId: "rest.datasetId"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+
+    - type: mcp
+      port: 9090
+      namespace: apify-scraping-mcp
+      transport: http
+      description: "MCP server for AI-assisted web scraping and data extraction."
+      tools:
+        - name: list-actors
+          description: "List all available Apify Actors for web scraping and automation."
+          hints: {readOnly: true, destructive: false, idempotent: true}
+          call: "apify.list-actors"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: run-actor
+          description: "Run an Apify Actor with custom input to scrape a website or automate a task."
+          hints: {readOnly: false, destructive: false, idempotent: false}
+          call: "apify.run-actor"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: get-run-status
+          description: "Check the status of an Apify Actor run."
+          hints: {readOnly: true, destructive: false, idempotent: true}
+          call: "apify.get-run"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: get-scraped-data
+          description: "Retrieve structured scraped data from an Apify dataset."
+          hints: {readOnly: true, destructive: false, idempotent: true}
+          call: "apify.get-dataset-items"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: abort-actor-run
+          description: "Abort a running Apify Actor."
+          hints: {readOnly: false, destructive: true, idempotent: true}
+          call: "apify.abort-run"
+          outputParameters:
+            - type: object
+              mapping: "$."

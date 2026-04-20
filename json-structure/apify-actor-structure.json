@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/apify/refs/heads/main/json-structure/apify-actor-structure.json",
+  "description": "An Apify Actor for web scraping and automation.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Actor ID.",
+      "example": "mTD6bTz2HCjSQHeBn"
+    },
+    "name": {
+      "type": "string",
+      "description": "Actor name.",
+      "example": "web-scraper"
+    },
+    "username": {
+      "type": "string",
+      "description": "Owner username.",
+      "example": "apify"
+    },
+    "title": {
+      "type": "string",
+      "description": "Display title.",
+      "example": "Web Scraper"
+    },
+    "description": {
+      "type": "string",
+      "description": "Actor description."
+    }
+  },
+  "name": "Actor"
+}

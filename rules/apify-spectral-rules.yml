@@ -1,0 +1,106 @@
+extends: spectral:oas
+rules:
+  info-title-prefix:
+    description: API title must start with 'Apify'.
+    severity: warn
+    given: '$.info'
+    then:
+      field: title
+      function: pattern
+      functionOptions:
+        match: '^Apify'
+
+  info-description-required:
+    description: API must have a description.
+    severity: error
+    given: '$.info'
+    then:
+      field: description
+      function: truthy
+
+  servers-https:
+    description: All server URLs must use HTTPS.
+    severity: error
+    given: '$.servers[*]'
+    then:
+      field: url
+      function: pattern
+      functionOptions:
+        match: '^https://'
+
+  operation-summary-prefix:
+    description: Operation summaries must start with 'Apify'.
+    severity: warn
+    given: '$.paths[*][get,post,put,patch,delete]'
+    then:
+      field: summary
+      function: pattern
+      functionOptions:
+        match: '^Apify'
+
+  operation-id-required:
+    description: Every operation must have an operationId.
+    severity: error
+    given: '$.paths[*][get,post,put,patch,delete]'
+    then:
+      field: operationId
+      function: truthy
+
+  operation-id-camelcase:
+    description: OperationId must use camelCase.
+    severity: warn
+    given: '$.paths[*][get,post,put,patch,delete]'
+    then:
+      field: operationId
+      function: pattern
+      functionOptions:
+        match: '^[a-z][a-zA-Z0-9]*$'
+
+  operation-tags-required:
+    description: Every operation must have at least one tag.
+    severity: warn
+    given: '$.paths[*][get,post,put,patch,delete]'
+    then:
+      field: tags
+      function: truthy
+
+  paths-v2-version:
+    description: Paths must include API version /v2/ prefix.
+    severity: info
+    given: '$.paths'
+    then:
+      field: '@key'
+      function: pattern
+      functionOptions:
+        notMatch: '^/v[0-9]+'
+
+  response-success-required:
+    description: Every operation must have a 2xx response.
+    severity: error
+    given: '$.paths[*][get,post,put,patch,delete].responses'
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          anyOf:
+            - required: ['200']
+            - required: ['201']
+            - required: ['204']
+
+  parameter-description-required:
+    description: All parameters must have a description.
+    severity: warn
+    given: '$.paths[*][get,post,put,patch,delete].parameters[*]'
+    then:
+      field: description
+      function: truthy
+
+  pagination-limit-offset:
+    description: Collection endpoints should use limit/offset pagination.
+    severity: info
+    given: '$.paths[*].get.parameters[*]'
+    then:
+      field: name
+      function: enumeration
+      functionOptions:
+        values: [limit, offset, exclusiveStartKey]

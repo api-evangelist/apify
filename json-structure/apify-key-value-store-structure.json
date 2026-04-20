@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/apify/refs/heads/main/json-structure/apify-key-value-store-structure.json",
+  "description": "An Apify key-value store for persistent data.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Store ID.",
+      "example": "WkzbQMuFYuamGv3YQ"
+    },
+    "name": {
+      "type": "string",
+      "description": "Store name.",
+      "example": "my-store"
+    }
+  },
+  "name": "KeyValueStore"
+}

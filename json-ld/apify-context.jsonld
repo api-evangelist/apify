@@ -1,0 +1,40 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "apify": "https://apify.com/schema/",
+    "schema": "https://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "Actor": "apify:Actor",
+    "Run": "apify:Run",
+    "Dataset": "apify:Dataset",
+    "KeyValueStore": "apify:KeyValueStore",
+    "id": {
+      "@id": "dcterms:identifier",
+      "@type": "xsd:string"
+    },
+    "name": "schema:name",
+    "description": "schema:description",
+    "username": {
+      "@id": "apify:username",
+      "@type": "xsd:string"
+    },
+    "title": "schema:name",
+    "status": {
+      "@id": "apify:status",
+      "@type": "xsd:string"
+    },
+    "startedAt": {
+      "@id": "schema:startDate",
+      "@type": "xsd:dateTime"
+    },
+    "finishedAt": {
+      "@id": "schema:endDate",
+      "@type": "xsd:dateTime"
+    },
+    "itemCount": {
+      "@id": "apify:itemCount",
+      "@type": "xsd:integer"
+    }
+  }
+}

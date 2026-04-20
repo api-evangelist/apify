@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/apify/refs/heads/main/json-structure/apify-dataset-structure.json",
+  "description": "An Apify dataset for storing structured scraping results.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Dataset ID.",
+      "example": "s5gkMuSS6Tsh4iOLF"
+    },
+    "name": {
+      "type": "string",
+      "description": "Dataset name.",
+      "example": "my-dataset"
+    },
+    "itemCount": {
+      "type": "int32",
+      "description": "Number of items in the dataset.",
+      "example": 150
+    }
+  },
+  "name": "Dataset"
+}

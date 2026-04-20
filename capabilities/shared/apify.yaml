@@ -1,0 +1,187 @@
+naftiko: "1.0.0-alpha1"
+
+info:
+  label: "Apify API"
+  description: "Apify REST API v2 for managing Actors, runs, datasets, key-value stores, and request queues."
+  tags:
+    - Apify
+    - Web Scraping
+    - Automation
+  created: "2026-04-19"
+  modified: "2026-04-19"
+
+binds:
+  - namespace: env
+    keys:
+      APIFY_TOKEN: APIFY_TOKEN
+
+capability:
+  consumes:
+    - type: http
+      namespace: apify
+      baseUri: https://api.apify.com/v2
+      description: "Apify REST API for managing web scraping actors and data."
+      authentication:
+        type: bearer
+        token: "{{APIFY_TOKEN}}"
+      resources:
+        - name: actors
+          path: /acts
+          description: "Manage and run Apify Actors."
+          operations:
+            - name: list-actors
+              method: GET
+              description: "List all Actors."
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+            - name: get-actor
+              method: GET
+              description: "Get a specific Actor."
+              inputParameters:
+                - name: actorId
+                  in: path
+                  type: string
+                  required: true
+                  description: "Actor ID."
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+            - name: run-actor
+              method: POST
+              description: "Run an Actor."
+              inputParameters:
+                - name: actorId
+                  in: path
+                  type: string
+                  required: true
+                  description: "Actor ID."
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+        - name: actor-runs
+          path: /actor-runs
+          description: "Monitor Actor runs."
+          operations:
+            - name: get-run
+              method: GET
+              description: "Get run details."
+              inputParameters:
+                - name: runId
+                  in: path
+                  type: string
+                  required: true
+                  description: "Run ID."
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+            - name: abort-run
+              method: POST
+              description: "Abort a running Actor."
+              inputParameters:
+                - name: runId
+                  in: path
+                  type: string
+                  required: true
+                  description: "Run ID."
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+        - name: datasets
+          path: /datasets
+          description: "Manage datasets."
+          operations:
+            - name: list-datasets
+              method: GET
+              description: "List all datasets."
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+            - name: get-dataset-items
+              method: GET
+              description: "Get dataset items."
+              inputParameters:
+                - name: datasetId
+                  in: path
+                  type: string
+                  required: true
+                  description: "Dataset ID."
+                - name: format
+                  in: query
+                  type: string
+                  required: false
+                  description: "Output format."
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+
+  exposes:
+    - type: rest
+      port: 8100
+      namespace: apify-rest
+      resources:
+        - path: /v1/actors
+          name: actors
+          description: "List actors."
+          operations:
+            - method: GET
+              name: list-actors
+              description: "List Actors."
+              call: "apify.list-actors"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+    - type: mcp
+      port: 9100
+      namespace: apify-mcp
+      transport: http
+      tools:
+        - name: list-actors
+          description: "List all Apify Actors available to the account."
+          hints: {readOnly: true, destructive: false, idempotent: true}
+          call: "apify.list-actors"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: run-actor
+          description: "Run an Apify Actor for web scraping or automation."
+          hints: {readOnly: false, destructive: false, idempotent: false}
+          call: "apify.run-actor"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: get-run
+          description: "Get the status and details of an Actor run."
+          hints: {readOnly: true, destructive: false, idempotent: true}
+          call: "apify.get-run"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: get-dataset-items
+          description: "Retrieve scraped data items from an Apify dataset."
+          hints: {readOnly: true, destructive: false, idempotent: true}
+          call: "apify.get-dataset-items"
+          outputParameters:
+            - type: object
+              mapping: "$."
+        - name: abort-run
+          description: "Abort a currently running Apify Actor."
+          hints: {readOnly: false, destructive: true, idempotent: true}
+          call: "apify.abort-run"
+          outputParameters:
+            - type: object
+              mapping: "$."

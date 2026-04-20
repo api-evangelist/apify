@@ -1,0 +1,705 @@
+openapi: 3.0.3
+info:
+  title: Apify API
+  description: >-
+    The Apify REST API (v2) provides programmatic access to the Apify platform,
+    allowing you to manage actors, run scraping tasks, access datasets, key-value
+    stores, and request queues. Rate limits: 250,000 requests/minute globally,
+    60-400 requests/second per resource.
+  version: "v2"
+  contact:
+    name: Apify
+    url: https://apify.com
+  x-generated-from: documentation
+servers:
+  - url: https://api.apify.com/v2
+    description: Apify Production API
+security:
+  - bearerAuth: []
+tags:
+  - name: Actors
+    description: Manage and run Apify Actors.
+  - name: Actor Runs
+    description: Monitor and manage Actor run executions.
+  - name: Datasets
+    description: Manage structured data storage from Actor runs.
+  - name: Key-Value Stores
+    description: Manage persistent key-value storage.
+  - name: Request Queues
+    description: Manage URL queues for web crawling.
+  - name: Webhooks
+    description: Manage webhook notifications for events.
+  - name: Schedules
+    description: Manage scheduled Actor and task runs.
+  - name: Tasks
+    description: Manage saved Actor task configurations.
+  - name: Users
+    description: User and account management.
+paths:
+  /acts:
+    get:
+      operationId: listActors
+      summary: Apify List Actors
+      description: Returns a list of Actors owned by the authenticated user.
+      tags: [Actors]
+      parameters:
+        - name: my
+          in: query
+          description: If true, return only Actors owned by the user.
+          schema: {type: boolean}
+        - name: limit
+          in: query
+          description: Maximum number of results to return.
+          schema: {type: integer, default: 10}
+        - name: offset
+          in: query
+          description: Number of results to skip.
+          schema: {type: integer, default: 0}
+      responses:
+        '200':
+          description: List of Actors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActorList'
+              examples:
+                ListActors200Example:
+                  summary: Default listActors 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      items:
+                        - id: "mTD6bTz2HCjSQHeBn"
+                          name: web-scraper
+                          username: apify
+                          title: Web Scraper
+                        - id: "k99HkWZyhsTeHR4Ly"
+                          name: cheerio-scraper
+                          username: apify
+                          title: Cheerio Scraper
+                      total: 2
+                      offset: 0
+                      limit: 10
+        '401': {$ref: '#/components/responses/Unauthorized'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /acts/{actorId}:
+    get:
+      operationId: getActor
+      summary: Apify Get Actor
+      description: Returns details of a specific Actor.
+      tags: [Actors]
+      parameters:
+        - name: actorId
+          in: path
+          required: true
+          description: Actor ID or username~actorName.
+          schema: {type: string}
+      responses:
+        '200':
+          description: Actor details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActorDetail'
+              examples:
+                GetActor200Example:
+                  summary: Default getActor 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      id: "mTD6bTz2HCjSQHeBn"
+                      name: web-scraper
+                      username: apify
+                      title: Web Scraper
+                      description: Crawls websites and extracts data using JavaScript.
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /acts/{actorId}/runs:
+    post:
+      operationId: runActor
+      summary: Apify Run Actor
+      description: >-
+        Runs a specific Actor and returns its run details. The Actor is started
+        asynchronously by default. Use waitForFinish parameter for synchronous execution.
+      tags: [Actors]
+      parameters:
+        - name: actorId
+          in: path
+          required: true
+          description: Actor ID or username~actorName.
+          schema: {type: string}
+        - name: waitForFinish
+          in: query
+          description: Wait for run to finish (max 300 seconds). Returns run details when complete.
+          schema: {type: integer}
+        - name: memory
+          in: query
+          description: Memory limit in MB (128-32768).
+          schema: {type: integer}
+        - name: build
+          in: query
+          description: Tag or number of the Actor build to run.
+          schema: {type: string}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Actor input as JSON object.
+            examples:
+              RunActorRequestExample:
+                summary: Default runActor request
+                x-microcks-default: true
+                value:
+                  startUrls:
+                    - url: https://example.com
+                  maxRequestsPerCrawl: 100
+      responses:
+        '201':
+          description: Actor run started.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Run'
+              examples:
+                RunActor201Example:
+                  summary: Default runActor 201 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      id: "HG7ML7M8z78YcAPEB"
+                      actId: "mTD6bTz2HCjSQHeBn"
+                      status: RUNNING
+                      startedAt: "2026-04-19T10:00:00Z"
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+    get:
+      operationId: listActorRuns
+      summary: Apify List Actor Runs
+      description: Returns a list of all runs for a specific Actor.
+      tags: [Actor Runs]
+      parameters:
+        - name: actorId
+          in: path
+          required: true
+          description: Actor ID or username~actorName.
+          schema: {type: string}
+        - name: limit
+          in: query
+          description: Maximum number of results.
+          schema: {type: integer, default: 10}
+        - name: offset
+          in: query
+          description: Number of results to skip.
+          schema: {type: integer, default: 0}
+        - name: status
+          in: query
+          description: Filter by run status.
+          schema: {type: string, enum: [READY, RUNNING, SUCCEEDED, FAILED, ABORTING, ABORTED, TIMING-OUT, TIMED-OUT]}
+      responses:
+        '200':
+          description: List of Actor runs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunList'
+              examples:
+                ListActorRuns200Example:
+                  summary: Default listActorRuns 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      items:
+                        - id: "HG7ML7M8z78YcAPEB"
+                          status: SUCCEEDED
+                          startedAt: "2026-04-19T10:00:00Z"
+                          finishedAt: "2026-04-19T10:05:00Z"
+                      total: 1
+                      offset: 0
+                      limit: 10
+        '401': {$ref: '#/components/responses/Unauthorized'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /actor-runs/{runId}:
+    get:
+      operationId: getRun
+      summary: Apify Get Run
+      description: Returns details of a specific Actor run.
+      tags: [Actor Runs]
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          description: Actor run ID.
+          schema: {type: string}
+      responses:
+        '200':
+          description: Actor run details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Run'
+              examples:
+                GetRun200Example:
+                  summary: Default getRun 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      id: "HG7ML7M8z78YcAPEB"
+                      actId: "mTD6bTz2HCjSQHeBn"
+                      status: SUCCEEDED
+                      startedAt: "2026-04-19T10:00:00Z"
+                      finishedAt: "2026-04-19T10:05:00Z"
+                      defaultDatasetId: "s5gkMuSS6Tsh4iOLF"
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /actor-runs/{runId}/abort:
+    post:
+      operationId: abortRun
+      summary: Apify Abort Run
+      description: Aborts a running Actor run.
+      tags: [Actor Runs]
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          description: Actor run ID.
+          schema: {type: string}
+      responses:
+        '200':
+          description: Run aborted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Run'
+              examples:
+                AbortRun200Example:
+                  summary: Default abortRun 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      id: "HG7ML7M8z78YcAPEB"
+                      status: ABORTED
+        '401': {$ref: '#/components/responses/Unauthorized'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /datasets:
+    get:
+      operationId: listDatasets
+      summary: Apify List Datasets
+      description: Returns a list of datasets owned by the user.
+      tags: [Datasets]
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of results.
+          schema: {type: integer, default: 10}
+        - name: offset
+          in: query
+          description: Number of results to skip.
+          schema: {type: integer, default: 0}
+      responses:
+        '200':
+          description: List of datasets.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetList'
+              examples:
+                ListDatasets200Example:
+                  summary: Default listDatasets 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      items:
+                        - id: "s5gkMuSS6Tsh4iOLF"
+                          name: my-dataset
+                          itemCount: 150
+                      total: 1
+                      offset: 0
+                      limit: 10
+        '401': {$ref: '#/components/responses/Unauthorized'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /datasets/{datasetId}/items:
+    get:
+      operationId: getDatasetItems
+      summary: Apify Get Dataset Items
+      description: Returns items stored in a dataset. Supports multiple output formats.
+      tags: [Datasets]
+      parameters:
+        - name: datasetId
+          in: path
+          required: true
+          description: Dataset ID.
+          schema: {type: string}
+        - name: format
+          in: query
+          description: Output format (json, csv, xml, html, rss, xlsx, jsonl).
+          schema: {type: string, enum: [json, csv, xml, html, rss, xlsx, jsonl], default: json}
+        - name: limit
+          in: query
+          description: Maximum number of items.
+          schema: {type: integer}
+        - name: offset
+          in: query
+          description: Number of items to skip.
+          schema: {type: integer}
+        - name: fields
+          in: query
+          description: Comma-separated list of fields to include.
+          schema: {type: string}
+      responses:
+        '200':
+          description: Dataset items.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          type: object
+                      total:
+                        type: integer
+              examples:
+                GetDatasetItems200Example:
+                  summary: Default getDatasetItems 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      items:
+                        - url: "https://example.com"
+                          title: "Example Page"
+                          price: 29.99
+                      total: 1
+        '401': {$ref: '#/components/responses/Unauthorized'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /key-value-stores:
+    get:
+      operationId: listKeyValueStores
+      summary: Apify List Key-Value Stores
+      description: Returns a list of key-value stores owned by the user.
+      tags: [Key-Value Stores]
+      responses:
+        '200':
+          description: List of key-value stores.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyValueStoreList'
+              examples:
+                ListKeyValueStores200Example:
+                  summary: Default listKeyValueStores 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      items:
+                        - id: "WkzbQMuFYuamGv3YQ"
+                          name: my-store
+                      total: 1
+        '401': {$ref: '#/components/responses/Unauthorized'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /key-value-stores/{storeId}/records/{recordKey}:
+    get:
+      operationId: getRecord
+      summary: Apify Get Record
+      description: Returns the value of a specific record from a key-value store.
+      tags: [Key-Value Stores]
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          description: Key-value store ID.
+          schema: {type: string}
+        - name: recordKey
+          in: path
+          required: true
+          description: Record key.
+          schema: {type: string}
+      responses:
+        '200':
+          description: Record value.
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                GetRecord200Example:
+                  summary: Default getRecord 200 response
+                  x-microcks-default: true
+                  value:
+                    someKey: someValue
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+    put:
+      operationId: setRecord
+      summary: Apify Set Record
+      description: Stores a value under a specific key in a key-value store.
+      tags: [Key-Value Stores]
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          description: Key-value store ID.
+          schema: {type: string}
+        - name: recordKey
+          in: path
+          required: true
+          description: Record key.
+          schema: {type: string}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            examples:
+              SetRecordRequestExample:
+                summary: Default setRecord request
+                x-microcks-default: true
+                value:
+                  someKey: someValue
+      responses:
+        '200':
+          description: Record stored successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                SetRecord200Example:
+                  summary: Default setRecord 200 response
+                  x-microcks-default: true
+                  value: {}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /request-queues:
+    get:
+      operationId: listRequestQueues
+      summary: Apify List Request Queues
+      description: Returns a list of request queues owned by the user.
+      tags: [Request Queues]
+      responses:
+        '200':
+          description: List of request queues.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestQueueList'
+              examples:
+                ListRequestQueues200Example:
+                  summary: Default listRequestQueues 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      items:
+                        - id: "ZTWed2bBPbQ6CPQEL"
+                          name: my-queue
+                          pendingRequestCount: 42
+                      total: 1
+        '401': {$ref: '#/components/responses/Unauthorized'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /users/me:
+    get:
+      operationId: getMe
+      summary: Apify Get Current User
+      description: Returns information about the authenticated user.
+      tags: [Users]
+      responses:
+        '200':
+          description: Current user details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                GetMe200Example:
+                  summary: Default getMe 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      id: "wRsJZtadYvn4mBZmm"
+                      username: jsmith
+                      email: jsmith@example.com
+                      plan: STARTER
+        '401': {$ref: '#/components/responses/Unauthorized'}
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: "Bearer token from Apify console Settings > Integrations."
+  schemas:
+    Actor:
+      type: object
+      description: An Apify Actor.
+      properties:
+        id: {type: string, description: Actor ID., example: "mTD6bTz2HCjSQHeBn"}
+        name: {type: string, description: Actor name., example: web-scraper}
+        username: {type: string, description: Owner username., example: apify}
+        title: {type: string, description: Display title., example: Web Scraper}
+        description: {type: string, description: Actor description.}
+    ActorList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items: {$ref: '#/components/schemas/Actor'}
+            total: {type: integer}
+            offset: {type: integer}
+            limit: {type: integer}
+    ActorDetail:
+      type: object
+      properties:
+        data: {$ref: '#/components/schemas/Actor'}
+    Run:
+      type: object
+      description: An Apify Actor run.
+      properties:
+        data:
+          type: object
+          properties:
+            id: {type: string, example: "HG7ML7M8z78YcAPEB"}
+            actId: {type: string, example: "mTD6bTz2HCjSQHeBn"}
+            status:
+              type: string
+              enum: [READY, RUNNING, SUCCEEDED, FAILED, ABORTING, ABORTED, TIMING-OUT, TIMED-OUT]
+              example: RUNNING
+            startedAt: {type: string, format: date-time}
+            finishedAt: {type: string, format: date-time}
+            defaultDatasetId: {type: string}
+    RunList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  id: {type: string}
+                  status: {type: string}
+                  startedAt: {type: string, format: date-time}
+                  finishedAt: {type: string, format: date-time}
+            total: {type: integer}
+            offset: {type: integer}
+            limit: {type: integer}
+    Dataset:
+      type: object
+      description: An Apify dataset for storing structured data.
+      properties:
+        id: {type: string, example: "s5gkMuSS6Tsh4iOLF"}
+        name: {type: string, example: my-dataset}
+        itemCount: {type: integer, description: Number of items in the dataset., example: 150}
+    DatasetList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items: {$ref: '#/components/schemas/Dataset'}
+            total: {type: integer}
+            offset: {type: integer}
+            limit: {type: integer}
+    KeyValueStore:
+      type: object
+      description: An Apify key-value store.
+      properties:
+        id: {type: string, example: "WkzbQMuFYuamGv3YQ"}
+        name: {type: string, example: my-store}
+    KeyValueStoreList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items: {$ref: '#/components/schemas/KeyValueStore'}
+            total: {type: integer}
+    RequestQueue:
+      type: object
+      description: An Apify request queue for managing URLs.
+      properties:
+        id: {type: string, example: "ZTWed2bBPbQ6CPQEL"}
+        name: {type: string, example: my-queue}
+        pendingRequestCount: {type: integer, example: 42}
+    RequestQueueList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items: {$ref: '#/components/schemas/RequestQueue'}
+            total: {type: integer}
+    User:
+      type: object
+      description: An Apify user account.
+      properties:
+        data:
+          type: object
+          properties:
+            id: {type: string, example: "wRsJZtadYvn4mBZmm"}
+            username: {type: string, example: jsmith}
+            email: {type: string, format: email, example: jsmith@example.com}
+            plan: {type: string, enum: [FREE, STARTER, SCALE, BUSINESS, ENTERPRISE], example: STARTER}
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type: {type: string}
+            message: {type: string}
+  responses:
+    Unauthorized:
+      description: Authentication failed.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}

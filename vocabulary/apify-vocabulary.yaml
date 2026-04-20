@@ -1,0 +1,144 @@
+vocabulary: "1.0.0"
+
+info:
+  provider: "Apify"
+  description: "Unified taxonomy of Apify web scraping and automation platform covering Actors, runs, datasets, and storage."
+  created: "2026-04-19"
+  modified: "2026-04-19"
+
+operational:
+  apis:
+    - name: Apify API
+      namespace: apify
+      version: "v2"
+      baseUrl: https://api.apify.com/v2
+      status: active
+
+  resources:
+    - name: actors
+      apis: [apify]
+      actions: [list, get, run, list-runs]
+    - name: actor-runs
+      apis: [apify]
+      actions: [get, abort, list]
+    - name: datasets
+      apis: [apify]
+      actions: [list, get-items]
+    - name: key-value-stores
+      apis: [apify]
+      actions: [list, get-record, set-record]
+    - name: request-queues
+      apis: [apify]
+      actions: [list]
+    - name: users
+      apis: [apify]
+      actions: [get-me]
+
+  actions:
+    - name: list
+      http_method: GET
+      pattern: read
+    - name: get
+      http_method: GET
+      pattern: read
+    - name: run
+      http_method: POST
+      pattern: write
+    - name: abort
+      http_method: POST
+      pattern: destructive
+
+  schemas:
+    core:
+      - name: Actor
+        description: A web scraping or automation script running on Apify platform.
+      - name: Run
+        description: An execution instance of an Actor.
+      - name: Dataset
+        description: Structured storage for Actor output data.
+      - name: KeyValueStore
+        description: Persistent key-value storage for Actor data.
+      - name: RequestQueue
+        description: URL queue for managing web crawling requests.
+
+  parameters:
+    pagination:
+      - name: limit
+        description: Maximum number of results per page.
+      - name: offset
+        description: Number of results to skip.
+      - name: exclusiveStartKey
+        description: Key for key-based pagination.
+    filters:
+      - name: status
+        description: Filter runs by status.
+      - name: format
+        description: Output format for dataset items.
+
+  enums:
+    run_status: [READY, RUNNING, SUCCEEDED, FAILED, ABORTING, ABORTED, TIMING-OUT, TIMED-OUT]
+    output_format: [json, csv, xml, html, rss, xlsx, jsonl]
+    user_plan: [FREE, STARTER, SCALE, BUSINESS, ENTERPRISE]
+
+  authentication:
+    schemes:
+      - name: bearerAuth
+        type: bearer
+        description: Bearer token from Apify console Settings > Integrations.
+
+capability:
+  workflows:
+    - name: Web Scraping and Automation
+      file: capabilities/web-scraping-automation.yaml
+      apis_combined: [Apify API]
+      tool_count: 5
+      personas: [Data Engineer, AI Developer, Web Scraping Engineer]
+
+  personas:
+    - id: data-engineer
+      name: Data Engineer
+      description: Engineer extracting structured data from websites for analytics pipelines.
+      workflows: [Web Scraping and Automation]
+    - id: ai-developer
+      name: AI Developer
+      description: Developer using web scraping to collect training data or RAG document sources.
+      workflows: [Web Scraping and Automation]
+    - id: web-scraping-engineer
+      name: Web Scraping Engineer
+      description: Engineer building and running production web scrapers on Apify.
+      workflows: [Web Scraping and Automation]
+
+  domains:
+    - name: Web Scraping
+      resources: [actors, actor-runs, datasets]
+      workflows: [Web Scraping and Automation]
+
+  namespaces:
+    - name: apify
+      type: consumed
+      baseUri: https://api.apify.com/v2
+    - name: apify-scraping-api
+      type: rest-exposed
+      port: 8080
+    - name: apify-scraping-mcp
+      type: mcp-exposed
+      port: 9090
+
+  binds:
+    - name: APIFY_TOKEN
+      description: Bearer token for Apify API authentication.
+      workflows: [Web Scraping and Automation]
+
+crossReference:
+  - resource: actors
+    operations: [listActors, getActor, runActor]
+    workflows: [Web Scraping and Automation]
+    personas: [Data Engineer, AI Developer, Web Scraping Engineer]
+  - resource: actor-runs
+    operations: [getRun, abortRun]
+    workflows: [Web Scraping and Automation]
+    personas: [Data Engineer, Web Scraping Engineer]
+  - resource: datasets
+    operations: [listDatasets, getDatasetItems]
+    workflows: [Web Scraping and Automation]
+    personas: [Data Engineer, AI Developer]

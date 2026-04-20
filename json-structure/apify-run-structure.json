@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/apify/refs/heads/main/json-structure/apify-run-structure.json",
+  "description": "An Apify Actor run execution.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Run ID.",
+      "example": "HG7ML7M8z78YcAPEB"
+    },
+    "actId": {
+      "type": "string",
+      "description": "Actor ID.",
+      "example": "mTD6bTz2HCjSQHeBn"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "READY",
+        "RUNNING",
+        "SUCCEEDED",
+        "FAILED",
+        "ABORTED",
+        "TIMED-OUT"
+      ],
+      "description": "Run status."
+    },
+    "startedAt": {
+      "type": "datetime",
+      "description": "Run start time."
+    },
+    "finishedAt": {
+      "type": "datetime",
+      "description": "Run finish time."
+    },
+    "defaultDatasetId": {
+      "type": "string",
+      "description": "ID of the default dataset for this run."
+    }
+  },
+  "name": "Run"
+}
