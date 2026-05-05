@@ -1,0 +1,13 @@
+{
+  "repo": "apify",
+  "feeds": [
+    {
+      "source": "https://blog.apify.com",
+      "feed_url": "https://blog.apify.com/rss/",
+      "saved": 10,
+      "title": "Apify Blog"
+    }
+  ],
+  "post_count": 10,
+  "fetched": "2026-05-03T23:22:12Z"
+}
