@@ -3,11 +3,11 @@
   "feeds": [
     {
       "source": "https://blog.apify.com",
-      "feed_url": "https://blog.apify.com/rss/",
-      "saved": 10,
-      "title": "Apify Blog"
+      "feed_url": "https://blog.apify.com/feed/",
+      "title": "Apify Blog",
+      "saved": 7
     }
   ],
-  "post_count": 10,
-  "fetched": "2026-05-03T23:22:12Z"
+  "post_count": 17,
+  "fetched": "2026-05-09T20:17:51Z"
 }
