@@ -130,6 +130,10 @@ common:
         description: No-code automation platform integration for Apify.
       - name: LangChain
         description: LangChain integration for using Apify data loaders in AI applications.
+  - type: Integrations
+    url: https://apify.com/integrations
+integrations:
+  - name: Become an affiliate
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com
