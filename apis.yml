@@ -59,7 +59,7 @@ apis:
         url: json-schema/apify-dataset-schema.json
       - type: JSONSchema
         url: json-schema/apify-key-value-store-schema.json
-      - type: JSON-LD
+      - type: JSONLD
         url: json-ld/apify-context.jsonld
       - type: SDK
         url: https://www.npmjs.com/package/apify-client
