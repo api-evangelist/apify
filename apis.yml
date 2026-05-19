@@ -20,7 +20,7 @@ tags:
 url: >-
   https://raw.githubusercontent.com/api-evangelist/apify/refs/heads/main/apis.yml
 created: '2026-03-26'
-modified: '2026-04-19'
+modified: '2026-05-19'
 specificationVersion: '0.19'
 apis:
   - aid: apify:apify-api
@@ -132,6 +132,12 @@ common:
         description: LangChain integration for using Apify data loaders in AI applications.
   - type: Integrations
     url: https://apify.com/integrations
+  - name: MCP Server
+    url: https://github.com/apify/apify-mcp-server
+    type: MCPServer
+  - name: Agent Skills
+    url: https://github.com/apify/agent-skills
+    type: AgentSkill
 integrations:
   - name: Become an affiliate
 maintainers:
