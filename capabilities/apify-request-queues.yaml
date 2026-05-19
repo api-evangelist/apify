@@ -1,0 +1,70 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Apify API — Request Queues
+  description: 'Apify API — Request Queues. 1 operations. Lead operation: Apify List Request Queues. Self-contained Naftiko
+    capability covering one Apify business surface.'
+  tags:
+  - Apify
+  - Request Queues
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    APIFY_API_KEY: APIFY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: apify-request-queues
+    baseUri: https://api.apify.com/v2
+    description: Apify API — Request Queues business capability. Self-contained, no shared references.
+    resources:
+    - name: request-queues
+      path: /request-queues
+      operations:
+      - name: listrequestqueues
+        method: GET
+        description: Apify List Request Queues
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.APIFY_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: apify-request-queues-rest
+    port: 8080
+    description: REST adapter for Apify API — Request Queues. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/request-queues
+      name: request-queues
+      description: REST surface for request-queues.
+      operations:
+      - method: GET
+        name: listrequestqueues
+        description: Apify List Request Queues
+        call: apify-request-queues.listrequestqueues
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: apify-request-queues-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Apify API — Request Queues. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: apify-list-request-queues
+      description: Apify List Request Queues
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: apify-request-queues.listrequestqueues
+      outputParameters:
+      - type: object
+        mapping: $.
