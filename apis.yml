@@ -145,6 +145,8 @@ common:
 - name: Agent Skills
   url: https://github.com/apify/agent-skills
   type: AgentSkill
+- type: LLMsTxt
+  url: https://docs.apify.com/llms.txt
 integrations:
 - name: Become an affiliate
 maintainers:
