@@ -2,12 +2,20 @@
   "repo": "apify",
   "feeds": [
     {
-      "source": "https://blog.apify.com",
+      "source": "https://blog.apify.com/feed/",
       "feed_url": "https://blog.apify.com/feed/",
-      "title": "Apify Blog",
-      "saved": 8
+      "title": "",
+      "saved": 0,
+      "method": "feed"
+    },
+    {
+      "source": "https://apify.com/pricing",
+      "feed_url": "https://apify.com/pricing",
+      "title": "",
+      "saved": 0,
+      "method": "none"
     }
   ],
-  "post_count": 25,
-  "fetched": "2026-05-17T20:20:35Z"
+  "post_count": 39,
+  "fetched": "2026-06-01T23:35:02Z"
 }
