@@ -54,23 +54,23 @@ apis:
     url: json-schema/apify-key-value-store-schema.json
   - type: JSONLD
     url: json-ld/apify-context.jsonld
-  - type: SDK
+  - type: SDKs
     url: https://www.npmjs.com/package/apify-client
     title: Node.js Client
-  - type: SDK
+  - type: SDKs
     url: https://pypi.org/project/apify-client/
     title: Python Client
-  - type: NaftikoCapability
+  - type: X-NaftikoCapability
     url: capabilities/apify-actor-runs.yaml
-  - type: NaftikoCapability
+  - type: X-NaftikoCapability
     url: capabilities/apify-actors.yaml
-  - type: NaftikoCapability
+  - type: X-NaftikoCapability
     url: capabilities/apify-datasets.yaml
-  - type: NaftikoCapability
+  - type: X-NaftikoCapability
     url: capabilities/apify-key-value-stores.yaml
-  - type: NaftikoCapability
+  - type: X-NaftikoCapability
     url: capabilities/apify-request-queues.yaml
-  - type: NaftikoCapability
+  - type: X-NaftikoCapability
     url: capabilities/apify-users.yaml
 common:
 - type: LinkedIn
@@ -85,7 +85,7 @@ common:
   url: https://apify.com/pricing
 - type: Blog
   url: https://blog.apify.com
-- type: SignUp
+- type: Signup
   url: https://console.apify.com/sign-up
 - type: Login
   url: https://console.apify.com/sign-in
@@ -144,8 +144,8 @@ common:
   type: MCPServer
 - name: Agent Skills
   url: https://github.com/apify/agent-skills
-  type: AgentSkill
-- type: LLMsTxt
+  type: AgentSkills
+- type: LlmsText
   url: https://docs.apify.com/llms.txt
 integrations:
 - name: Become an affiliate
