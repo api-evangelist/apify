@@ -73,6 +73,12 @@ apis:
   - type: X-NaftikoCapability
     url: capabilities/apify-users.yaml
 common:
+- type: VulnerabilityDisclosure
+  url: security/apify-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/apify-domain-security.yml
+- type: Authentication
+  url: authentication/apify-authentication.yml
 - type: LinkedIn
   url: https://www.linkedin.com/company/apify
 - type: Website

@@ -1,0 +1,13 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/apify-api.yaml
+summary:
+  types:
+  - http
+schemes:
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  description: Bearer token from Apify console Settings > Integrations.
+  sources:
+  - openapi/apify-api.yaml
