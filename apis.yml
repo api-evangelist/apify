@@ -73,6 +73,8 @@ apis:
   - type: X-NaftikoCapability
     url: capabilities/apify-users.yaml
 common:
+- type: AgenticAccess
+  url: agentic-access/apify-agentic-access.yml
 - type: VulnerabilityDisclosure
   url: security/apify-vulnerability-disclosure.yml
 - type: DomainSecurity
