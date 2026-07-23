@@ -1,0 +1,186 @@
+openapi: 3.0.3
+info:
+  title: Apify Actor Runs Key-Value Stores API
+  description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.'
+  version: v2
+  contact:
+    name: Apify
+    url: https://apify.com
+  x-generated-from: documentation
+servers:
+- url: https://api.apify.com/v2
+  description: Apify Production API
+security:
+- bearerAuth: []
+tags:
+- name: Key-Value Stores
+  description: Manage persistent key-value storage.
+paths:
+  /key-value-stores:
+    get:
+      operationId: listKeyValueStores
+      summary: Apify List Key-Value Stores
+      description: Returns a list of key-value stores owned by the user.
+      tags:
+      - Key-Value Stores
+      responses:
+        '200':
+          description: List of key-value stores.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KeyValueStoreList'
+              examples:
+                ListKeyValueStores200Example:
+                  summary: Default listKeyValueStores 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      items:
+                      - id: WkzbQMuFYuamGv3YQ
+                        name: my-store
+                      total: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /key-value-stores/{storeId}/records/{recordKey}:
+    get:
+      operationId: getRecord
+      summary: Apify Get Record
+      description: Returns the value of a specific record from a key-value store.
+      tags:
+      - Key-Value Stores
+      parameters:
+      - name: storeId
+        in: path
+        required: true
+        description: Key-value store ID.
+        schema:
+          type: string
+      - name: recordKey
+        in: path
+        required: true
+        description: Record key.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Record value.
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                GetRecord200Example:
+                  summary: Default getRecord 200 response
+                  x-microcks-default: true
+                  value:
+                    someKey: someValue
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+    put:
+      operationId: setRecord
+      summary: Apify Set Record
+      description: Stores a value under a specific key in a key-value store.
+      tags:
+      - Key-Value Stores
+      parameters:
+      - name: storeId
+        in: path
+        required: true
+        description: Key-value store ID.
+        schema:
+          type: string
+      - name: recordKey
+        in: path
+        required: true
+        description: Record key.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            examples:
+              SetRecordRequestExample:
+                summary: Default setRecord request
+                x-microcks-default: true
+                value:
+                  someKey: someValue
+      responses:
+        '200':
+          description: Record stored successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                SetRecord200Example:
+                  summary: Default setRecord 200 response
+                  x-microcks-default: true
+                  value: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  schemas:
+    KeyValueStoreList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/KeyValueStore'
+            total:
+              type: integer
+    KeyValueStore:
+      type: object
+      description: An Apify key-value store.
+      properties:
+        id:
+          type: string
+          example: WkzbQMuFYuamGv3YQ
+        name:
+          type: string
+          example: my-store
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
+  responses:
+    Unauthorized:
+      description: Authentication failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token from Apify console Settings > Integrations.

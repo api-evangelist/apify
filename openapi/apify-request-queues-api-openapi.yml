@@ -1,0 +1,97 @@
+openapi: 3.0.3
+info:
+  title: Apify Actor Runs Request Queues API
+  description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.'
+  version: v2
+  contact:
+    name: Apify
+    url: https://apify.com
+  x-generated-from: documentation
+servers:
+- url: https://api.apify.com/v2
+  description: Apify Production API
+security:
+- bearerAuth: []
+tags:
+- name: Request Queues
+  description: Manage URL queues for web crawling.
+paths:
+  /request-queues:
+    get:
+      operationId: listRequestQueues
+      summary: Apify List Request Queues
+      description: Returns a list of request queues owned by the user.
+      tags:
+      - Request Queues
+      responses:
+        '200':
+          description: List of request queues.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestQueueList'
+              examples:
+                ListRequestQueues200Example:
+                  summary: Default listRequestQueues 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      items:
+                      - id: ZTWed2bBPbQ6CPQEL
+                        name: my-queue
+                        pendingRequestCount: 42
+                      total: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  schemas:
+    RequestQueueList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/RequestQueue'
+            total:
+              type: integer
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
+    RequestQueue:
+      type: object
+      description: An Apify request queue for managing URLs.
+      properties:
+        id:
+          type: string
+          example: ZTWed2bBPbQ6CPQEL
+        name:
+          type: string
+          example: my-queue
+        pendingRequestCount:
+          type: integer
+          example: 42
+  responses:
+    Unauthorized:
+      description: Authentication failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token from Apify console Settings > Integrations.

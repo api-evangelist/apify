@@ -1,0 +1,286 @@
+openapi: 3.0.3
+info:
+  title: Apify Actor Runs Actors API
+  description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.'
+  version: v2
+  contact:
+    name: Apify
+    url: https://apify.com
+  x-generated-from: documentation
+servers:
+- url: https://api.apify.com/v2
+  description: Apify Production API
+security:
+- bearerAuth: []
+tags:
+- name: Actors
+  description: Manage and run Apify Actors.
+paths:
+  /acts:
+    get:
+      operationId: listActors
+      summary: Apify List Actors
+      description: Returns a list of Actors owned by the authenticated user.
+      tags:
+      - Actors
+      parameters:
+      - name: my
+        in: query
+        description: If true, return only Actors owned by the user.
+        schema:
+          type: boolean
+      - name: limit
+        in: query
+        description: Maximum number of results to return.
+        schema:
+          type: integer
+          default: 10
+      - name: offset
+        in: query
+        description: Number of results to skip.
+        schema:
+          type: integer
+          default: 0
+      responses:
+        '200':
+          description: List of Actors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActorList'
+              examples:
+                ListActors200Example:
+                  summary: Default listActors 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      items:
+                      - id: mTD6bTz2HCjSQHeBn
+                        name: web-scraper
+                        username: apify
+                        title: Web Scraper
+                      - id: k99HkWZyhsTeHR4Ly
+                        name: cheerio-scraper
+                        username: apify
+                        title: Cheerio Scraper
+                      total: 2
+                      offset: 0
+                      limit: 10
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /acts/{actorId}:
+    get:
+      operationId: getActor
+      summary: Apify Get Actor
+      description: Returns details of a specific Actor.
+      tags:
+      - Actors
+      parameters:
+      - name: actorId
+        in: path
+        required: true
+        description: Actor ID or username~actorName.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Actor details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActorDetail'
+              examples:
+                GetActor200Example:
+                  summary: Default getActor 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      id: mTD6bTz2HCjSQHeBn
+                      name: web-scraper
+                      username: apify
+                      title: Web Scraper
+                      description: Crawls websites and extracts data using JavaScript.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /acts/{actorId}/runs:
+    post:
+      operationId: runActor
+      summary: Apify Run Actor
+      description: Runs a specific Actor and returns its run details. The Actor is started asynchronously by default. Use waitForFinish parameter for synchronous execution.
+      tags:
+      - Actors
+      parameters:
+      - name: actorId
+        in: path
+        required: true
+        description: Actor ID or username~actorName.
+        schema:
+          type: string
+      - name: waitForFinish
+        in: query
+        description: Wait for run to finish (max 300 seconds). Returns run details when complete.
+        schema:
+          type: integer
+      - name: memory
+        in: query
+        description: Memory limit in MB (128-32768).
+        schema:
+          type: integer
+      - name: build
+        in: query
+        description: Tag or number of the Actor build to run.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Actor input as JSON object.
+            examples:
+              RunActorRequestExample:
+                summary: Default runActor request
+                x-microcks-default: true
+                value:
+                  startUrls:
+                  - url: https://example.com
+                  maxRequestsPerCrawl: 100
+      responses:
+        '201':
+          description: Actor run started.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Run'
+              examples:
+                RunActor201Example:
+                  summary: Default runActor 201 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      id: HG7ML7M8z78YcAPEB
+                      actId: mTD6bTz2HCjSQHeBn
+                      status: RUNNING
+                      startedAt: '2026-04-19T10:00:00Z'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  responses:
+    Unauthorized:
+      description: Authentication failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    ActorDetail:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Actor'
+    ActorList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Actor'
+            total:
+              type: integer
+            offset:
+              type: integer
+            limit:
+              type: integer
+    Actor:
+      type: object
+      description: An Apify Actor.
+      properties:
+        id:
+          type: string
+          description: Actor ID.
+          example: mTD6bTz2HCjSQHeBn
+        name:
+          type: string
+          description: Actor name.
+          example: web-scraper
+        username:
+          type: string
+          description: Owner username.
+          example: apify
+        title:
+          type: string
+          description: Display title.
+          example: Web Scraper
+        description:
+          type: string
+          description: Actor description.
+    Run:
+      type: object
+      description: An Apify Actor run.
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              example: HG7ML7M8z78YcAPEB
+            actId:
+              type: string
+              example: mTD6bTz2HCjSQHeBn
+            status:
+              type: string
+              enum:
+              - READY
+              - RUNNING
+              - SUCCEEDED
+              - FAILED
+              - ABORTING
+              - ABORTED
+              - TIMING-OUT
+              - TIMED-OUT
+              example: RUNNING
+            startedAt:
+              type: string
+              format: date-time
+            finishedAt:
+              type: string
+              format: date-time
+            defaultDatasetId:
+              type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token from Apify console Settings > Integrations.

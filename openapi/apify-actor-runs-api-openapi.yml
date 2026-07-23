@@ -1,0 +1,248 @@
+openapi: 3.0.3
+info:
+  title: Apify Actor Runs API
+  description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.'
+  version: v2
+  contact:
+    name: Apify
+    url: https://apify.com
+  x-generated-from: documentation
+servers:
+- url: https://api.apify.com/v2
+  description: Apify Production API
+security:
+- bearerAuth: []
+tags:
+- name: Actor Runs
+  description: Monitor and manage Actor run executions.
+paths:
+  /acts/{actorId}/runs:
+    get:
+      operationId: listActorRuns
+      summary: Apify List Actor Runs
+      description: Returns a list of all runs for a specific Actor.
+      tags:
+      - Actor Runs
+      parameters:
+      - name: actorId
+        in: path
+        required: true
+        description: Actor ID or username~actorName.
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Maximum number of results.
+        schema:
+          type: integer
+          default: 10
+      - name: offset
+        in: query
+        description: Number of results to skip.
+        schema:
+          type: integer
+          default: 0
+      - name: status
+        in: query
+        description: Filter by run status.
+        schema:
+          type: string
+          enum:
+          - READY
+          - RUNNING
+          - SUCCEEDED
+          - FAILED
+          - ABORTING
+          - ABORTED
+          - TIMING-OUT
+          - TIMED-OUT
+      responses:
+        '200':
+          description: List of Actor runs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunList'
+              examples:
+                ListActorRuns200Example:
+                  summary: Default listActorRuns 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      items:
+                      - id: HG7ML7M8z78YcAPEB
+                        status: SUCCEEDED
+                        startedAt: '2026-04-19T10:00:00Z'
+                        finishedAt: '2026-04-19T10:05:00Z'
+                      total: 1
+                      offset: 0
+                      limit: 10
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /actor-runs/{runId}:
+    get:
+      operationId: getRun
+      summary: Apify Get Run
+      description: Returns details of a specific Actor run.
+      tags:
+      - Actor Runs
+      parameters:
+      - name: runId
+        in: path
+        required: true
+        description: Actor run ID.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Actor run details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Run'
+              examples:
+                GetRun200Example:
+                  summary: Default getRun 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      id: HG7ML7M8z78YcAPEB
+                      actId: mTD6bTz2HCjSQHeBn
+                      status: SUCCEEDED
+                      startedAt: '2026-04-19T10:00:00Z'
+                      finishedAt: '2026-04-19T10:05:00Z'
+                      defaultDatasetId: s5gkMuSS6Tsh4iOLF
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+  /actor-runs/{runId}/abort:
+    post:
+      operationId: abortRun
+      summary: Apify Abort Run
+      description: Aborts a running Actor run.
+      tags:
+      - Actor Runs
+      parameters:
+      - name: runId
+        in: path
+        required: true
+        description: Actor run ID.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Run aborted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Run'
+              examples:
+                AbortRun200Example:
+                  summary: Default abortRun 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      id: HG7ML7M8z78YcAPEB
+                      status: ABORTED
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  responses:
+    Unauthorized:
+      description: Authentication failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    RunList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string
+                  startedAt:
+                    type: string
+                    format: date-time
+                  finishedAt:
+                    type: string
+                    format: date-time
+            total:
+              type: integer
+            offset:
+              type: integer
+            limit:
+              type: integer
+    Run:
+      type: object
+      description: An Apify Actor run.
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              example: HG7ML7M8z78YcAPEB
+            actId:
+              type: string
+              example: mTD6bTz2HCjSQHeBn
+            status:
+              type: string
+              enum:
+              - READY
+              - RUNNING
+              - SUCCEEDED
+              - FAILED
+              - ABORTING
+              - ABORTED
+              - TIMING-OUT
+              - TIMED-OUT
+              example: RUNNING
+            startedAt:
+              type: string
+              format: date-time
+            finishedAt:
+              type: string
+              format: date-time
+            defaultDatasetId:
+              type: string
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token from Apify console Settings > Integrations.

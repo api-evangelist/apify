@@ -1,0 +1,97 @@
+openapi: 3.0.3
+info:
+  title: Apify Actor Runs Users API
+  description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.'
+  version: v2
+  contact:
+    name: Apify
+    url: https://apify.com
+  x-generated-from: documentation
+servers:
+- url: https://api.apify.com/v2
+  description: Apify Production API
+security:
+- bearerAuth: []
+tags:
+- name: Users
+  description: User and account management.
+paths:
+  /users/me:
+    get:
+      operationId: getMe
+      summary: Apify Get Current User
+      description: Returns information about the authenticated user.
+      tags:
+      - Users
+      responses:
+        '200':
+          description: Current user details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                GetMe200Example:
+                  summary: Default getMe 200 response
+                  x-microcks-default: true
+                  value:
+                    data:
+                      id: wRsJZtadYvn4mBZmm
+                      username: jsmith
+                      email: jsmith@example.com
+                      plan: STARTER
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      x-microcks-operation:
+        delay: 0
+        dispatcher: FALLBACK
+components:
+  schemas:
+    User:
+      type: object
+      description: An Apify user account.
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: string
+              example: wRsJZtadYvn4mBZmm
+            username:
+              type: string
+              example: jsmith
+            email:
+              type: string
+              format: email
+              example: jsmith@example.com
+            plan:
+              type: string
+              enum:
+              - FREE
+              - STARTER
+              - SCALE
+              - BUSINESS
+              - ENTERPRISE
+              example: STARTER
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
+  responses:
+    Unauthorized:
+      description: Authentication failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token from Apify console Settings > Integrations.
