@@ -5,7 +5,20 @@ description: Apify is a full-stack web scraping and browser automation platform 
   scheduling, and storage. The platform hosts thousands of ready-made Actors for scraping social media, search engines, maps,
   e-commerce sites, and more.
 type: Index
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: freemium
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Freemium · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/apify.png
 tags:
 - Actors
 - Browser Automation
@@ -19,25 +32,18 @@ created: '2026-03-26'
 modified: '2026-05-19'
 specificationVersion: '0.19'
 apis:
-- aid: apify:apify-api
-  name: Apify API
-  description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors,
-    run scraping tasks, access datasets, key-value stores, and request queues. Authentication uses Bearer tokens. Rate limits:
-    250,000 requests/minute globally, 60-400 requests/second per resource.'
+- aid: apify:apify-actor-runs-api
+  name: Apify Actor Runs API
+  description: Monitor and manage Actor run executions.
   humanURL: https://apify.com
   baseURL: https://api.apify.com/v2
   tags:
-  - Actors
-  - Automation
-  - Crawling
-  - Data Extraction
-  - Datasets
-  - Web Scraping
+  - Actor Runs
   properties:
+  - type: OpenAPI
+    url: openapi/apify-actor-runs-api-openapi.yml
   - type: Documentation
     url: https://docs.apify.com/api/v2
-  - type: OpenAPI
-    url: openapi/apify-api.yaml
   - type: GettingStarted
     url: https://docs.apify.com/api/v2/getting-started
   - type: Authentication
@@ -56,10 +62,228 @@ apis:
     url: json-ld/apify-context.jsonld
   - type: SDKs
     url: https://www.npmjs.com/package/apify-client
-    title: Node.js Client
   - type: SDKs
     url: https://pypi.org/project/apify-client/
-    title: Python Client
+  - type: X-NaftikoCapability
+    url: capabilities/apify-actor-runs.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-actors.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-datasets.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-key-value-stores.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-request-queues.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-users.yaml
+- aid: apify:apify-actors-api
+  name: Apify Actors API
+  description: Manage and run Apify Actors.
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Actors
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-actors-api-openapi.yml
+  - type: Documentation
+    url: https://docs.apify.com/api/v2
+  - type: GettingStarted
+    url: https://docs.apify.com/api/v2/getting-started
+  - type: Authentication
+    url: https://docs.apify.com/api/v2#authentication
+  - type: RateLimits
+    url: https://docs.apify.com/api/v2#rate-limiting-and-scaling
+  - type: JSONSchema
+    url: json-schema/apify-actor-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-run-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-dataset-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-key-value-store-schema.json
+  - type: JSONLD
+    url: json-ld/apify-context.jsonld
+  - type: SDKs
+    url: https://www.npmjs.com/package/apify-client
+  - type: SDKs
+    url: https://pypi.org/project/apify-client/
+  - type: X-NaftikoCapability
+    url: capabilities/apify-actor-runs.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-actors.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-datasets.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-key-value-stores.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-request-queues.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-users.yaml
+- aid: apify:apify-datasets-api
+  name: Apify Datasets API
+  description: Manage structured data storage from Actor runs.
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Datasets
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-datasets-api-openapi.yml
+  - type: Documentation
+    url: https://docs.apify.com/api/v2
+  - type: GettingStarted
+    url: https://docs.apify.com/api/v2/getting-started
+  - type: Authentication
+    url: https://docs.apify.com/api/v2#authentication
+  - type: RateLimits
+    url: https://docs.apify.com/api/v2#rate-limiting-and-scaling
+  - type: JSONSchema
+    url: json-schema/apify-actor-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-run-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-dataset-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-key-value-store-schema.json
+  - type: JSONLD
+    url: json-ld/apify-context.jsonld
+  - type: SDKs
+    url: https://www.npmjs.com/package/apify-client
+  - type: SDKs
+    url: https://pypi.org/project/apify-client/
+  - type: X-NaftikoCapability
+    url: capabilities/apify-actor-runs.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-actors.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-datasets.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-key-value-stores.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-request-queues.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-users.yaml
+- aid: apify:apify-key-value-stores-api
+  name: Apify Key-Value Stores API
+  description: Manage persistent key-value storage.
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Key-Value Stores
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-key-value-stores-api-openapi.yml
+  - type: Documentation
+    url: https://docs.apify.com/api/v2
+  - type: GettingStarted
+    url: https://docs.apify.com/api/v2/getting-started
+  - type: Authentication
+    url: https://docs.apify.com/api/v2#authentication
+  - type: RateLimits
+    url: https://docs.apify.com/api/v2#rate-limiting-and-scaling
+  - type: JSONSchema
+    url: json-schema/apify-actor-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-run-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-dataset-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-key-value-store-schema.json
+  - type: JSONLD
+    url: json-ld/apify-context.jsonld
+  - type: SDKs
+    url: https://www.npmjs.com/package/apify-client
+  - type: SDKs
+    url: https://pypi.org/project/apify-client/
+  - type: X-NaftikoCapability
+    url: capabilities/apify-actor-runs.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-actors.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-datasets.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-key-value-stores.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-request-queues.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-users.yaml
+- aid: apify:apify-request-queues-api
+  name: Apify Request Queues API
+  description: Manage URL queues for web crawling.
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Request Queues
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-request-queues-api-openapi.yml
+  - type: Documentation
+    url: https://docs.apify.com/api/v2
+  - type: GettingStarted
+    url: https://docs.apify.com/api/v2/getting-started
+  - type: Authentication
+    url: https://docs.apify.com/api/v2#authentication
+  - type: RateLimits
+    url: https://docs.apify.com/api/v2#rate-limiting-and-scaling
+  - type: JSONSchema
+    url: json-schema/apify-actor-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-run-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-dataset-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-key-value-store-schema.json
+  - type: JSONLD
+    url: json-ld/apify-context.jsonld
+  - type: SDKs
+    url: https://www.npmjs.com/package/apify-client
+  - type: SDKs
+    url: https://pypi.org/project/apify-client/
+  - type: X-NaftikoCapability
+    url: capabilities/apify-actor-runs.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-actors.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-datasets.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-key-value-stores.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-request-queues.yaml
+  - type: X-NaftikoCapability
+    url: capabilities/apify-users.yaml
+- aid: apify:apify-users-api
+  name: Apify Users API
+  description: User and account management.
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-users-api-openapi.yml
+  - type: Documentation
+    url: https://docs.apify.com/api/v2
+  - type: GettingStarted
+    url: https://docs.apify.com/api/v2/getting-started
+  - type: Authentication
+    url: https://docs.apify.com/api/v2#authentication
+  - type: RateLimits
+    url: https://docs.apify.com/api/v2#rate-limiting-and-scaling
+  - type: JSONSchema
+    url: json-schema/apify-actor-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-run-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-dataset-schema.json
+  - type: JSONSchema
+    url: json-schema/apify-key-value-store-schema.json
+  - type: JSONLD
+    url: json-ld/apify-context.jsonld
+  - type: SDKs
+    url: https://www.npmjs.com/package/apify-client
+  - type: SDKs
+    url: https://pypi.org/project/apify-client/
   - type: X-NaftikoCapability
     url: capabilities/apify-actor-runs.yaml
   - type: X-NaftikoCapability
@@ -73,6 +297,8 @@ apis:
   - type: X-NaftikoCapability
     url: capabilities/apify-users.yaml
 common:
+- type: PostmanWorkspace
+  url: https://www.postman.com/kinlaneapi/apify/overview
 - type: AgenticAccess
   url: agentic-access/apify-agentic-access.yml
 - type: VulnerabilityDisclosure
