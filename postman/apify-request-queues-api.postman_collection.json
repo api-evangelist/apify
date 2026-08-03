@@ -1,0 +1,154 @@
+{
+  "info": {
+    "_postman_id": "0af41a87-231a-46fb-9e43-c6eb02d28068",
+    "name": "Apify Actor Runs Request Queues API",
+    "description": "The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.\n\nContact Support:\n Name: Apify",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "createdAt": "2026-07-28T01:02:37.000Z",
+    "updatedAt": "2026-07-28T01:02:38.000Z",
+    "lastUpdatedBy": "35240",
+    "uid": "35240-0af41a87-231a-46fb-9e43-c6eb02d28068"
+  },
+  "item": [
+    {
+      "name": "request-queues",
+      "item": [
+        {
+          "name": "Apify List Request Queues",
+          "id": "bfb12c80-ce12-47ea-a3b4-941222fed827",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/request-queues",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "request-queues"
+              ]
+            },
+            "description": "Returns a list of request queues owned by the user."
+          },
+          "response": [
+            {
+              "id": "7d92eeb9-cf64-43af-8226-964851e33e8b",
+              "name": "List of request queues.",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/request-queues",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "request-queues"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"pendingRequestCount\": \"<integer>\"\n      },\n      {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"pendingRequestCount\": \"<integer>\"\n      }\n    ],\n    \"total\": \"<integer>\"\n  }\n}",
+              "createdAt": "2026-07-28T01:02:38.000Z",
+              "updatedAt": "2026-07-28T01:02:38.000Z",
+              "uid": "35240-7d92eeb9-cf64-43af-8226-964851e33e8b"
+            },
+            {
+              "id": "81e945a3-5af3-4f87-8c1f-ff94665aed81",
+              "name": "Authentication failed.",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/request-queues",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "request-queues"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+              "createdAt": "2026-07-28T01:02:38.000Z",
+              "updatedAt": "2026-07-28T01:02:38.000Z",
+              "uid": "35240-81e945a3-5af3-4f87-8c1f-ff94665aed81"
+            }
+          ],
+          "createdAt": "2026-07-28T01:02:38.000Z",
+          "updatedAt": "2026-07-28T01:02:38.000Z",
+          "uid": "35240-bfb12c80-ce12-47ea-a3b4-941222fed827"
+        }
+      ],
+      "id": "88c565eb-ca62-4c13-bbbf-491786ee734f",
+      "createdAt": "2026-07-28T01:02:38.000Z",
+      "updatedAt": "2026-07-28T01:02:38.000Z",
+      "uid": "35240-88c565eb-ca62-4c13-bbbf-491786ee734f"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.apify.com/v2"
+    }
+  ]
+}

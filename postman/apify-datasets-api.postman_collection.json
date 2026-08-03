@@ -1,0 +1,413 @@
+{
+  "info": {
+    "_postman_id": "c8bba730-82c8-4225-870a-45e383ebd076",
+    "name": "Apify Actor Runs Datasets API",
+    "description": "The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.\n\nContact Support:\n Name: Apify",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "createdAt": "2026-07-28T01:02:35.000Z",
+    "updatedAt": "2026-07-28T01:02:36.000Z",
+    "lastUpdatedBy": "35240",
+    "uid": "35240-c8bba730-82c8-4225-870a-45e383ebd076"
+  },
+  "item": [
+    {
+      "name": "datasets",
+      "item": [
+        {
+          "name": "{datasetId}",
+          "item": [
+            {
+              "name": "items",
+              "item": [
+                {
+                  "name": "Apify Get Dataset Items",
+                  "id": "07c51e9a-d442-40b5-8715-d927140a3138",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/datasets/:datasetId/items?format=json&limit=<integer>&offset=<integer>&fields=<string>",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "datasets",
+                        ":datasetId",
+                        "items"
+                      ],
+                      "query": [
+                        {
+                          "description": "Output format (json, csv, xml, html, rss, xlsx, jsonl).",
+                          "key": "format",
+                          "value": "json"
+                        },
+                        {
+                          "description": "Maximum number of items.",
+                          "key": "limit",
+                          "value": "<integer>"
+                        },
+                        {
+                          "description": "Number of items to skip.",
+                          "key": "offset",
+                          "value": "<integer>"
+                        },
+                        {
+                          "description": "Comma-separated list of fields to include.",
+                          "key": "fields",
+                          "value": "<string>"
+                        }
+                      ],
+                      "variable": [
+                        {
+                          "id": "56891f3b-cca0-4df3-825c-fd494d50f395",
+                          "key": "datasetId",
+                          "value": "<string>",
+                          "description": "(Required) Dataset ID."
+                        }
+                      ]
+                    },
+                    "description": "Returns items stored in a dataset. Supports multiple output formats."
+                  },
+                  "response": [
+                    {
+                      "id": "0dbb68d2-fa12-4a80-940f-f294cf46a23e",
+                      "name": "Dataset items.",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/datasets/:datasetId/items?format=json&limit=<integer>&offset=<integer>&fields=<string>",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "datasets",
+                            ":datasetId",
+                            "items"
+                          ],
+                          "query": [
+                            {
+                              "description": "Output format (json, csv, xml, html, rss, xlsx, jsonl).",
+                              "key": "format",
+                              "value": "json"
+                            },
+                            {
+                              "description": "Maximum number of items.",
+                              "key": "limit",
+                              "value": "<integer>"
+                            },
+                            {
+                              "description": "Number of items to skip.",
+                              "key": "offset",
+                              "value": "<integer>"
+                            },
+                            {
+                              "description": "Comma-separated list of fields to include.",
+                              "key": "fields",
+                              "value": "<string>"
+                            }
+                          ],
+                          "variable": [
+                            {
+                              "key": "datasetId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": "{\n  \"data\": {\n    \"total\": \"<integer>\"\n  }\n}",
+                      "createdAt": "2026-07-28T01:02:36.000Z",
+                      "updatedAt": "2026-07-28T01:02:36.000Z",
+                      "uid": "35240-0dbb68d2-fa12-4a80-940f-f294cf46a23e"
+                    },
+                    {
+                      "id": "799417a6-5a99-4607-bdfc-74d5cf6f45fa",
+                      "name": "Authentication failed.",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/datasets/:datasetId/items?format=json&limit=<integer>&offset=<integer>&fields=<string>",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "datasets",
+                            ":datasetId",
+                            "items"
+                          ],
+                          "query": [
+                            {
+                              "description": "Output format (json, csv, xml, html, rss, xlsx, jsonl).",
+                              "key": "format",
+                              "value": "json"
+                            },
+                            {
+                              "description": "Maximum number of items.",
+                              "key": "limit",
+                              "value": "<integer>"
+                            },
+                            {
+                              "description": "Number of items to skip.",
+                              "key": "offset",
+                              "value": "<integer>"
+                            },
+                            {
+                              "description": "Comma-separated list of fields to include.",
+                              "key": "fields",
+                              "value": "<string>"
+                            }
+                          ],
+                          "variable": [
+                            {
+                              "key": "datasetId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                      "createdAt": "2026-07-28T01:02:36.000Z",
+                      "updatedAt": "2026-07-28T01:02:36.000Z",
+                      "uid": "35240-799417a6-5a99-4607-bdfc-74d5cf6f45fa"
+                    }
+                  ],
+                  "createdAt": "2026-07-28T01:02:36.000Z",
+                  "updatedAt": "2026-07-28T01:02:36.000Z",
+                  "uid": "35240-07c51e9a-d442-40b5-8715-d927140a3138"
+                }
+              ],
+              "id": "7e83efa9-add3-42cc-8834-0a56dc1611f8",
+              "createdAt": "2026-07-28T01:02:36.000Z",
+              "updatedAt": "2026-07-28T01:02:36.000Z",
+              "uid": "35240-7e83efa9-add3-42cc-8834-0a56dc1611f8"
+            }
+          ],
+          "id": "2e7ce0a1-dac0-4e03-80c5-127769790d0d",
+          "createdAt": "2026-07-28T01:02:36.000Z",
+          "updatedAt": "2026-07-28T01:02:36.000Z",
+          "uid": "35240-2e7ce0a1-dac0-4e03-80c5-127769790d0d"
+        },
+        {
+          "name": "Apify List Datasets",
+          "id": "30ebd3d0-2083-46de-9ff5-151e04dbebcb",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/datasets?limit=10&offset=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "datasets"
+              ],
+              "query": [
+                {
+                  "description": "Maximum number of results.",
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "description": "Number of results to skip.",
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "Returns a list of datasets owned by the user."
+          },
+          "response": [
+            {
+              "id": "a3c1c507-e58f-443e-97ab-0a2644f0c40b",
+              "name": "List of datasets.",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/datasets?limit=10&offset=0",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "datasets"
+                  ],
+                  "query": [
+                    {
+                      "description": "Maximum number of results.",
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "description": "Number of results to skip.",
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"itemCount\": \"<integer>\"\n      },\n      {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"itemCount\": \"<integer>\"\n      }\n    ],\n    \"total\": \"<integer>\",\n    \"offset\": \"<integer>\",\n    \"limit\": \"<integer>\"\n  }\n}",
+              "createdAt": "2026-07-28T01:02:36.000Z",
+              "updatedAt": "2026-07-28T01:02:36.000Z",
+              "uid": "35240-a3c1c507-e58f-443e-97ab-0a2644f0c40b"
+            },
+            {
+              "id": "1a3472d3-2fc8-42ca-9264-6d85211e00c9",
+              "name": "Authentication failed.",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/datasets?limit=10&offset=0",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "datasets"
+                  ],
+                  "query": [
+                    {
+                      "description": "Maximum number of results.",
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "description": "Number of results to skip.",
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+              "createdAt": "2026-07-28T01:02:36.000Z",
+              "updatedAt": "2026-07-28T01:02:36.000Z",
+              "uid": "35240-1a3472d3-2fc8-42ca-9264-6d85211e00c9"
+            }
+          ],
+          "createdAt": "2026-07-28T01:02:36.000Z",
+          "updatedAt": "2026-07-28T01:02:36.000Z",
+          "uid": "35240-30ebd3d0-2083-46de-9ff5-151e04dbebcb"
+        }
+      ],
+      "id": "fc3c6707-2d68-4d73-93d1-59e831620dd4",
+      "createdAt": "2026-07-28T01:02:36.000Z",
+      "updatedAt": "2026-07-28T01:02:36.000Z",
+      "uid": "35240-fc3c6707-2d68-4d73-93d1-59e831620dd4"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.apify.com/v2"
+    }
+  ]
+}

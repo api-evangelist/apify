@@ -1,0 +1,166 @@
+{
+  "info": {
+    "_postman_id": "0c757bb8-a0c6-4d18-b10e-a185f7332257",
+    "name": "Apify Actor Runs Users API",
+    "description": "The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.\n\nContact Support:\n Name: Apify",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "createdAt": "2026-07-28T01:02:38.000Z",
+    "updatedAt": "2026-07-28T01:02:39.000Z",
+    "lastUpdatedBy": "35240",
+    "uid": "35240-0c757bb8-a0c6-4d18-b10e-a185f7332257"
+  },
+  "item": [
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "me",
+          "item": [
+            {
+              "name": "Apify Get Current User",
+              "id": "dbb22473-0923-400a-aa12-8cc531d5e5e4",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/users/me",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    "me"
+                  ]
+                },
+                "description": "Returns information about the authenticated user."
+              },
+              "response": [
+                {
+                  "id": "3cc11c7a-b1ae-462a-8670-698bb53c2a07",
+                  "name": "Current user details.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/users/me",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "users",
+                        "me"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"username\": \"<string>\",\n    \"email\": \"<email>\",\n    \"plan\": \"STARTER\"\n  }\n}",
+                  "createdAt": "2026-07-28T01:02:39.000Z",
+                  "updatedAt": "2026-07-28T01:02:39.000Z",
+                  "uid": "35240-3cc11c7a-b1ae-462a-8670-698bb53c2a07"
+                },
+                {
+                  "id": "0909aa8e-db62-4a17-9012-0d6d7c84e090",
+                  "name": "Authentication failed.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/users/me",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "users",
+                        "me"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                  "createdAt": "2026-07-28T01:02:39.000Z",
+                  "updatedAt": "2026-07-28T01:02:39.000Z",
+                  "uid": "35240-0909aa8e-db62-4a17-9012-0d6d7c84e090"
+                }
+              ],
+              "createdAt": "2026-07-28T01:02:39.000Z",
+              "updatedAt": "2026-07-28T01:02:39.000Z",
+              "uid": "35240-dbb22473-0923-400a-aa12-8cc531d5e5e4"
+            }
+          ],
+          "id": "bac007b1-fbb0-4d95-8062-c691aa460ee1",
+          "createdAt": "2026-07-28T01:02:39.000Z",
+          "updatedAt": "2026-07-28T01:02:39.000Z",
+          "uid": "35240-bac007b1-fbb0-4d95-8062-c691aa460ee1"
+        }
+      ],
+      "id": "a4071147-7c99-4737-8404-41a1ade7e7b6",
+      "createdAt": "2026-07-28T01:02:39.000Z",
+      "updatedAt": "2026-07-28T01:02:39.000Z",
+      "uid": "35240-a4071147-7c99-4737-8404-41a1ade7e7b6"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.apify.com/v2"
+    }
+  ]
+}

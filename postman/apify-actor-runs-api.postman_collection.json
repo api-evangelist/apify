@@ -1,0 +1,597 @@
+{
+  "info": {
+    "_postman_id": "537a258d-64d6-4db2-8aa7-d3faf708d66c",
+    "name": "Apify Actor Runs API",
+    "description": "The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.\n\nContact Support:\n Name: Apify",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "createdAt": "2026-07-28T01:02:34.000Z",
+    "updatedAt": "2026-07-28T01:02:34.000Z",
+    "lastUpdatedBy": "35240",
+    "uid": "35240-537a258d-64d6-4db2-8aa7-d3faf708d66c"
+  },
+  "item": [
+    {
+      "name": "acts",
+      "item": [
+        {
+          "name": "{actorId}",
+          "item": [
+            {
+              "name": "runs",
+              "item": [
+                {
+                  "name": "Apify List Actor Runs",
+                  "id": "f32217eb-4dd0-4dbd-9ad5-9e3cc28aebc5",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/acts/:actorId/runs?limit=10&offset=0&status=RUNNING",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "acts",
+                        ":actorId",
+                        "runs"
+                      ],
+                      "query": [
+                        {
+                          "description": "Maximum number of results.",
+                          "key": "limit",
+                          "value": "10"
+                        },
+                        {
+                          "description": "Number of results to skip.",
+                          "key": "offset",
+                          "value": "0"
+                        },
+                        {
+                          "description": "Filter by run status.",
+                          "key": "status",
+                          "value": "RUNNING"
+                        }
+                      ],
+                      "variable": [
+                        {
+                          "id": "52c6e92e-970e-45b5-a3dd-ac397abfa763",
+                          "key": "actorId",
+                          "value": "<string>",
+                          "description": "(Required) Actor ID or username~actorName."
+                        }
+                      ]
+                    },
+                    "description": "Returns a list of all runs for a specific Actor."
+                  },
+                  "response": [
+                    {
+                      "id": "5a323ab5-9e41-4363-b07c-cd52c9aa1b9e",
+                      "name": "List of Actor runs.",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/acts/:actorId/runs?limit=10&offset=0&status=RUNNING",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "acts",
+                            ":actorId",
+                            "runs"
+                          ],
+                          "query": [
+                            {
+                              "description": "Maximum number of results.",
+                              "key": "limit",
+                              "value": "10"
+                            },
+                            {
+                              "description": "Number of results to skip.",
+                              "key": "offset",
+                              "value": "0"
+                            },
+                            {
+                              "description": "Filter by run status.",
+                              "key": "status",
+                              "value": "RUNNING"
+                            }
+                          ],
+                          "variable": [
+                            {
+                              "key": "actorId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"status\": \"<string>\",\n        \"startedAt\": \"<dateTime>\",\n        \"finishedAt\": \"<dateTime>\"\n      },\n      {\n        \"id\": \"<string>\",\n        \"status\": \"<string>\",\n        \"startedAt\": \"<dateTime>\",\n        \"finishedAt\": \"<dateTime>\"\n      }\n    ],\n    \"total\": \"<integer>\",\n    \"offset\": \"<integer>\",\n    \"limit\": \"<integer>\"\n  }\n}",
+                      "createdAt": "2026-07-28T01:02:34.000Z",
+                      "updatedAt": "2026-07-28T01:02:34.000Z",
+                      "uid": "35240-5a323ab5-9e41-4363-b07c-cd52c9aa1b9e"
+                    },
+                    {
+                      "id": "c2bc3684-4048-41a3-b1bf-3cb61d21a792",
+                      "name": "Authentication failed.",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/acts/:actorId/runs?limit=10&offset=0&status=RUNNING",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "acts",
+                            ":actorId",
+                            "runs"
+                          ],
+                          "query": [
+                            {
+                              "description": "Maximum number of results.",
+                              "key": "limit",
+                              "value": "10"
+                            },
+                            {
+                              "description": "Number of results to skip.",
+                              "key": "offset",
+                              "value": "0"
+                            },
+                            {
+                              "description": "Filter by run status.",
+                              "key": "status",
+                              "value": "RUNNING"
+                            }
+                          ],
+                          "variable": [
+                            {
+                              "key": "actorId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                      "createdAt": "2026-07-28T01:02:34.000Z",
+                      "updatedAt": "2026-07-28T01:02:34.000Z",
+                      "uid": "35240-c2bc3684-4048-41a3-b1bf-3cb61d21a792"
+                    }
+                  ],
+                  "createdAt": "2026-07-28T01:02:34.000Z",
+                  "updatedAt": "2026-07-28T01:02:34.000Z",
+                  "uid": "35240-f32217eb-4dd0-4dbd-9ad5-9e3cc28aebc5"
+                }
+              ],
+              "id": "7994e2e8-2fb4-43f2-b4a8-b956dc69316a",
+              "createdAt": "2026-07-28T01:02:34.000Z",
+              "updatedAt": "2026-07-28T01:02:34.000Z",
+              "uid": "35240-7994e2e8-2fb4-43f2-b4a8-b956dc69316a"
+            }
+          ],
+          "id": "431eadd3-d0e2-4546-aa1c-cea8cb96c625",
+          "createdAt": "2026-07-28T01:02:34.000Z",
+          "updatedAt": "2026-07-28T01:02:34.000Z",
+          "uid": "35240-431eadd3-d0e2-4546-aa1c-cea8cb96c625"
+        }
+      ],
+      "id": "2616a85e-2f06-4f7e-bd02-3c8958912737",
+      "createdAt": "2026-07-28T01:02:34.000Z",
+      "updatedAt": "2026-07-28T01:02:34.000Z",
+      "uid": "35240-2616a85e-2f06-4f7e-bd02-3c8958912737"
+    },
+    {
+      "name": "actor-runs",
+      "item": [
+        {
+          "name": "{runId}",
+          "item": [
+            {
+              "name": "abort",
+              "item": [
+                {
+                  "name": "Apify Abort Run",
+                  "id": "fdfd1a25-4f32-4d6d-97d0-36c4a0bef937",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/actor-runs/:runId/abort",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "actor-runs",
+                        ":runId",
+                        "abort"
+                      ],
+                      "variable": [
+                        {
+                          "id": "e9d003e6-40db-4462-805c-09d639677ed2",
+                          "key": "runId",
+                          "value": "<string>",
+                          "description": "(Required) Actor run ID."
+                        }
+                      ]
+                    },
+                    "description": "Aborts a running Actor run."
+                  },
+                  "response": [
+                    {
+                      "id": "1dc306e2-3e25-4d7a-8b68-304b887f4ffe",
+                      "name": "Run aborted.",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/actor-runs/:runId/abort",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "actor-runs",
+                            ":runId",
+                            "abort"
+                          ],
+                          "variable": [
+                            {
+                              "key": "runId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"actId\": \"<string>\",\n    \"status\": \"ABORTED\",\n    \"startedAt\": \"<dateTime>\",\n    \"finishedAt\": \"<dateTime>\",\n    \"defaultDatasetId\": \"<string>\"\n  }\n}",
+                      "createdAt": "2026-07-28T01:02:34.000Z",
+                      "updatedAt": "2026-07-28T01:02:34.000Z",
+                      "uid": "35240-1dc306e2-3e25-4d7a-8b68-304b887f4ffe"
+                    },
+                    {
+                      "id": "62cde00f-f27b-4d4d-a961-6c0fc07e8e6d",
+                      "name": "Authentication failed.",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/actor-runs/:runId/abort",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "actor-runs",
+                            ":runId",
+                            "abort"
+                          ],
+                          "variable": [
+                            {
+                              "key": "runId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                      "createdAt": "2026-07-28T01:02:34.000Z",
+                      "updatedAt": "2026-07-28T01:02:34.000Z",
+                      "uid": "35240-62cde00f-f27b-4d4d-a961-6c0fc07e8e6d"
+                    }
+                  ],
+                  "createdAt": "2026-07-28T01:02:34.000Z",
+                  "updatedAt": "2026-07-28T01:02:34.000Z",
+                  "uid": "35240-fdfd1a25-4f32-4d6d-97d0-36c4a0bef937"
+                }
+              ],
+              "id": "f0141e2f-49cb-4a22-b47e-76288459c4b2",
+              "createdAt": "2026-07-28T01:02:34.000Z",
+              "updatedAt": "2026-07-28T01:02:34.000Z",
+              "uid": "35240-f0141e2f-49cb-4a22-b47e-76288459c4b2"
+            },
+            {
+              "name": "Apify Get Run",
+              "id": "40d12f03-83e4-45b5-9a22-b725d0121edd",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/actor-runs/:runId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "actor-runs",
+                    ":runId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "3ba354f3-1e4f-4770-8743-5d68bae386b5",
+                      "key": "runId",
+                      "value": "<string>",
+                      "description": "(Required) Actor run ID."
+                    }
+                  ]
+                },
+                "description": "Returns details of a specific Actor run."
+              },
+              "response": [
+                {
+                  "id": "5390ce77-3a9c-4879-bc2d-e8ff4bc29ce8",
+                  "name": "Actor run details.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/actor-runs/:runId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "actor-runs",
+                        ":runId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "runId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"actId\": \"<string>\",\n    \"status\": \"ABORTED\",\n    \"startedAt\": \"<dateTime>\",\n    \"finishedAt\": \"<dateTime>\",\n    \"defaultDatasetId\": \"<string>\"\n  }\n}",
+                  "createdAt": "2026-07-28T01:02:34.000Z",
+                  "updatedAt": "2026-07-28T01:02:34.000Z",
+                  "uid": "35240-5390ce77-3a9c-4879-bc2d-e8ff4bc29ce8"
+                },
+                {
+                  "id": "84f07afe-58da-4413-86e3-80bbcd773a13",
+                  "name": "Authentication failed.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/actor-runs/:runId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "actor-runs",
+                        ":runId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "runId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                  "createdAt": "2026-07-28T01:02:34.000Z",
+                  "updatedAt": "2026-07-28T01:02:34.000Z",
+                  "uid": "35240-84f07afe-58da-4413-86e3-80bbcd773a13"
+                },
+                {
+                  "id": "ff343c6c-aee4-4642-a94d-9e113e709011",
+                  "name": "Resource not found.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/actor-runs/:runId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "actor-runs",
+                        ":runId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "runId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                  "createdAt": "2026-07-28T01:02:34.000Z",
+                  "updatedAt": "2026-07-28T01:02:34.000Z",
+                  "uid": "35240-ff343c6c-aee4-4642-a94d-9e113e709011"
+                }
+              ],
+              "createdAt": "2026-07-28T01:02:34.000Z",
+              "updatedAt": "2026-07-28T01:02:34.000Z",
+              "uid": "35240-40d12f03-83e4-45b5-9a22-b725d0121edd"
+            }
+          ],
+          "id": "a38b18a3-abfe-4d36-af03-b73996d447dd",
+          "createdAt": "2026-07-28T01:02:34.000Z",
+          "updatedAt": "2026-07-28T01:02:34.000Z",
+          "uid": "35240-a38b18a3-abfe-4d36-af03-b73996d447dd"
+        }
+      ],
+      "id": "9173e1f4-4006-4d40-b1f6-9e3242b7780f",
+      "createdAt": "2026-07-28T01:02:34.000Z",
+      "updatedAt": "2026-07-28T01:02:34.000Z",
+      "uid": "35240-9173e1f4-4006-4d40-b1f6-9e3242b7780f"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.apify.com/v2"
+    }
+  ]
+}

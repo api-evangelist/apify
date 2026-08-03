@@ -1,0 +1,584 @@
+{
+  "info": {
+    "_postman_id": "a4fc2504-edfa-41ea-826a-18047af579e0",
+    "name": "Apify Actor Runs Key-Value Stores API",
+    "description": "The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.\n\nContact Support:\n Name: Apify",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "createdAt": "2026-07-28T01:02:36.000Z",
+    "updatedAt": "2026-07-28T01:02:36.000Z",
+    "lastUpdatedBy": "35240",
+    "uid": "35240-a4fc2504-edfa-41ea-826a-18047af579e0"
+  },
+  "item": [
+    {
+      "name": "key-value-stores",
+      "item": [
+        {
+          "name": "{storeId}",
+          "item": [
+            {
+              "name": "records",
+              "item": [
+                {
+                  "name": "{recordKey}",
+                  "item": [
+                    {
+                      "name": "Apify Get Record",
+                      "id": "61a7164e-2a9e-4216-b1b6-9f5000d13c22",
+                      "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                      },
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/key-value-stores/:storeId/records/:recordKey",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "key-value-stores",
+                            ":storeId",
+                            "records",
+                            ":recordKey"
+                          ],
+                          "variable": [
+                            {
+                              "id": "7b1680e1-6c0d-488f-b4e0-7241f7df4cd5",
+                              "key": "storeId",
+                              "value": "<string>",
+                              "description": "(Required) Key-value store ID."
+                            },
+                            {
+                              "id": "265e4b3f-3dd8-4548-adf1-c88ce24618cf",
+                              "key": "recordKey",
+                              "value": "<string>",
+                              "description": "(Required) Record key."
+                            }
+                          ]
+                        },
+                        "description": "Returns the value of a specific record from a key-value store."
+                      },
+                      "response": [
+                        {
+                          "id": "e8c557a5-403a-4ae8-8229-7df0359dacc0",
+                          "name": "Record value.",
+                          "originalRequest": {
+                            "method": "GET",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/key-value-stores/:storeId/records/:recordKey",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "key-value-stores",
+                                ":storeId",
+                                "records",
+                                ":recordKey"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "storeId"
+                                },
+                                {
+                                  "key": "recordKey"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "OK",
+                          "code": 200,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "responseTime": null,
+                          "body": "{}",
+                          "createdAt": "2026-07-28T01:02:37.000Z",
+                          "updatedAt": "2026-07-28T01:02:37.000Z",
+                          "uid": "35240-e8c557a5-403a-4ae8-8229-7df0359dacc0"
+                        },
+                        {
+                          "id": "917a51ae-50ac-4a43-ab92-b3fde803b6e9",
+                          "name": "Authentication failed.",
+                          "originalRequest": {
+                            "method": "GET",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/key-value-stores/:storeId/records/:recordKey",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "key-value-stores",
+                                ":storeId",
+                                "records",
+                                ":recordKey"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "storeId"
+                                },
+                                {
+                                  "key": "recordKey"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Unauthorized",
+                          "code": 401,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "responseTime": null,
+                          "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                          "createdAt": "2026-07-28T01:02:37.000Z",
+                          "updatedAt": "2026-07-28T01:02:37.000Z",
+                          "uid": "35240-917a51ae-50ac-4a43-ab92-b3fde803b6e9"
+                        },
+                        {
+                          "id": "7e67b93b-97f8-4c28-b374-70570c3d9025",
+                          "name": "Resource not found.",
+                          "originalRequest": {
+                            "method": "GET",
+                            "header": [
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "url": {
+                              "raw": "{{baseUrl}}/key-value-stores/:storeId/records/:recordKey",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "key-value-stores",
+                                ":storeId",
+                                "records",
+                                ":recordKey"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "storeId"
+                                },
+                                {
+                                  "key": "recordKey"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Not Found",
+                          "code": 404,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "responseTime": null,
+                          "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                          "createdAt": "2026-07-28T01:02:37.000Z",
+                          "updatedAt": "2026-07-28T01:02:37.000Z",
+                          "uid": "35240-7e67b93b-97f8-4c28-b374-70570c3d9025"
+                        }
+                      ],
+                      "createdAt": "2026-07-28T01:02:37.000Z",
+                      "updatedAt": "2026-07-28T01:02:37.000Z",
+                      "uid": "35240-61a7164e-2a9e-4216-b1b6-9f5000d13c22"
+                    },
+                    {
+                      "name": "Apify Set Record",
+                      "id": "4dd6543b-4e03-477d-ab8b-ef932c4ba339",
+                      "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                      },
+                      "request": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/key-value-stores/:storeId/records/:recordKey",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "key-value-stores",
+                            ":storeId",
+                            "records",
+                            ":recordKey"
+                          ],
+                          "variable": [
+                            {
+                              "id": "72005a76-ab04-4eaf-a27c-bc56a49097dd",
+                              "key": "storeId",
+                              "value": "<string>",
+                              "description": "(Required) Key-value store ID."
+                            },
+                            {
+                              "id": "e83167eb-94e3-4d4b-8a79-cb8eb1d12c2f",
+                              "key": "recordKey",
+                              "value": "<string>",
+                              "description": "(Required) Record key."
+                            }
+                          ]
+                        },
+                        "description": "Stores a value under a specific key in a key-value store."
+                      },
+                      "response": [
+                        {
+                          "id": "d261925a-d579-4046-b628-6900912cd9e5",
+                          "name": "Record stored successfully.",
+                          "originalRequest": {
+                            "method": "PUT",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/key-value-stores/:storeId/records/:recordKey",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "key-value-stores",
+                                ":storeId",
+                                "records",
+                                ":recordKey"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "storeId"
+                                },
+                                {
+                                  "key": "recordKey"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "OK",
+                          "code": 200,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "responseTime": null,
+                          "body": "{}",
+                          "createdAt": "2026-07-28T01:02:37.000Z",
+                          "updatedAt": "2026-07-28T01:02:37.000Z",
+                          "uid": "35240-d261925a-d579-4046-b628-6900912cd9e5"
+                        },
+                        {
+                          "id": "1f04dfd3-4101-4476-b649-b8abb9df24cf",
+                          "name": "Authentication failed.",
+                          "originalRequest": {
+                            "method": "PUT",
+                            "header": [
+                              {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                              },
+                              {
+                                "key": "Accept",
+                                "value": "application/json"
+                              },
+                              {
+                                "description": "Added as a part of security scheme: bearer",
+                                "key": "Authorization",
+                                "value": "Bearer <token>"
+                              }
+                            ],
+                            "body": {
+                              "mode": "raw",
+                              "raw": "{}",
+                              "options": {
+                                "raw": {
+                                  "headerFamily": "json",
+                                  "language": "json"
+                                }
+                              }
+                            },
+                            "url": {
+                              "raw": "{{baseUrl}}/key-value-stores/:storeId/records/:recordKey",
+                              "host": [
+                                "{{baseUrl}}"
+                              ],
+                              "path": [
+                                "key-value-stores",
+                                ":storeId",
+                                "records",
+                                ":recordKey"
+                              ],
+                              "variable": [
+                                {
+                                  "key": "storeId"
+                                },
+                                {
+                                  "key": "recordKey"
+                                }
+                              ]
+                            }
+                          },
+                          "status": "Unauthorized",
+                          "code": 401,
+                          "_postman_previewlanguage": "json",
+                          "header": [
+                            {
+                              "key": "Content-Type",
+                              "value": "application/json"
+                            }
+                          ],
+                          "cookie": [],
+                          "responseTime": null,
+                          "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                          "createdAt": "2026-07-28T01:02:37.000Z",
+                          "updatedAt": "2026-07-28T01:02:37.000Z",
+                          "uid": "35240-1f04dfd3-4101-4476-b649-b8abb9df24cf"
+                        }
+                      ],
+                      "createdAt": "2026-07-28T01:02:37.000Z",
+                      "updatedAt": "2026-07-28T01:02:37.000Z",
+                      "uid": "35240-4dd6543b-4e03-477d-ab8b-ef932c4ba339"
+                    }
+                  ],
+                  "id": "017d457d-751d-4625-9a2e-e53f43ea1f93",
+                  "createdAt": "2026-07-28T01:02:37.000Z",
+                  "updatedAt": "2026-07-28T01:02:37.000Z",
+                  "uid": "35240-017d457d-751d-4625-9a2e-e53f43ea1f93"
+                }
+              ],
+              "id": "d0932aff-c47d-4714-a8d5-6cd4d6124b03",
+              "createdAt": "2026-07-28T01:02:37.000Z",
+              "updatedAt": "2026-07-28T01:02:37.000Z",
+              "uid": "35240-d0932aff-c47d-4714-a8d5-6cd4d6124b03"
+            }
+          ],
+          "id": "955b8004-30ff-45f2-a173-4c5ad580eff1",
+          "createdAt": "2026-07-28T01:02:37.000Z",
+          "updatedAt": "2026-07-28T01:02:37.000Z",
+          "uid": "35240-955b8004-30ff-45f2-a173-4c5ad580eff1"
+        },
+        {
+          "name": "Apify List Key-Value Stores",
+          "id": "bde52e1f-2af2-422b-87d3-ed382807fc7c",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/key-value-stores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "key-value-stores"
+              ]
+            },
+            "description": "Returns a list of key-value stores owned by the user."
+          },
+          "response": [
+            {
+              "id": "07df154f-0b8c-42a5-8808-16248a829b88",
+              "name": "List of key-value stores.",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/key-value-stores",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "key-value-stores"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\"\n      },\n      {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\"\n      }\n    ],\n    \"total\": \"<integer>\"\n  }\n}",
+              "createdAt": "2026-07-28T01:02:37.000Z",
+              "updatedAt": "2026-07-28T01:02:37.000Z",
+              "uid": "35240-07df154f-0b8c-42a5-8808-16248a829b88"
+            },
+            {
+              "id": "85f13038-a70b-41d9-a47f-e696e99e31c6",
+              "name": "Authentication failed.",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/key-value-stores",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "key-value-stores"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+              "createdAt": "2026-07-28T01:02:37.000Z",
+              "updatedAt": "2026-07-28T01:02:37.000Z",
+              "uid": "35240-85f13038-a70b-41d9-a47f-e696e99e31c6"
+            }
+          ],
+          "createdAt": "2026-07-28T01:02:37.000Z",
+          "updatedAt": "2026-07-28T01:02:37.000Z",
+          "uid": "35240-bde52e1f-2af2-422b-87d3-ed382807fc7c"
+        }
+      ],
+      "id": "9c23ca07-510a-4921-b925-c726abe11a44",
+      "createdAt": "2026-07-28T01:02:37.000Z",
+      "updatedAt": "2026-07-28T01:02:37.000Z",
+      "uid": "35240-9c23ca07-510a-4921-b925-c726abe11a44"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.apify.com/v2"
+    }
+  ]
+}

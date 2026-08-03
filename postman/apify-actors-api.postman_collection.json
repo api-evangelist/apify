@@ -1,0 +1,719 @@
+{
+  "info": {
+    "_postman_id": "dc5e0213-caa5-4d11-ab41-72cbca03607d",
+    "name": "Apify Actor Runs Actors API",
+    "description": "The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.\n\nContact Support:\n Name: Apify",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "createdAt": "2026-07-28T01:02:34.000Z",
+    "updatedAt": "2026-07-28T01:02:35.000Z",
+    "lastUpdatedBy": "35240",
+    "uid": "35240-dc5e0213-caa5-4d11-ab41-72cbca03607d"
+  },
+  "item": [
+    {
+      "name": "acts",
+      "item": [
+        {
+          "name": "{actorId}",
+          "item": [
+            {
+              "name": "runs",
+              "item": [
+                {
+                  "name": "Apify Run Actor",
+                  "id": "e77755e2-3eaa-4a8a-af9b-8d7ae8997a0e",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/acts/:actorId/runs?waitForFinish=<integer>&memory=<integer>&build=<string>",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "acts",
+                        ":actorId",
+                        "runs"
+                      ],
+                      "query": [
+                        {
+                          "description": "Wait for run to finish (max 300 seconds). Returns run details when complete.",
+                          "key": "waitForFinish",
+                          "value": "<integer>"
+                        },
+                        {
+                          "description": "Memory limit in MB (128-32768).",
+                          "key": "memory",
+                          "value": "<integer>"
+                        },
+                        {
+                          "description": "Tag or number of the Actor build to run.",
+                          "key": "build",
+                          "value": "<string>"
+                        }
+                      ],
+                      "variable": [
+                        {
+                          "id": "ee685919-2c12-41f9-8943-dda1604bdaed",
+                          "key": "actorId",
+                          "value": "<string>",
+                          "description": "(Required) Actor ID or username~actorName."
+                        }
+                      ]
+                    },
+                    "description": "Runs a specific Actor and returns its run details. The Actor is started asynchronously by default. Use waitForFinish parameter for synchronous execution."
+                  },
+                  "response": [
+                    {
+                      "id": "c107716e-b6ae-40b5-9cc2-0b127e7c50c0",
+                      "name": "Actor run started.",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/acts/:actorId/runs?waitForFinish=<integer>&memory=<integer>&build=<string>",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "acts",
+                            ":actorId",
+                            "runs"
+                          ],
+                          "query": [
+                            {
+                              "description": "Wait for run to finish (max 300 seconds). Returns run details when complete.",
+                              "key": "waitForFinish",
+                              "value": "<integer>"
+                            },
+                            {
+                              "description": "Memory limit in MB (128-32768).",
+                              "key": "memory",
+                              "value": "<integer>"
+                            },
+                            {
+                              "description": "Tag or number of the Actor build to run.",
+                              "key": "build",
+                              "value": "<string>"
+                            }
+                          ],
+                          "variable": [
+                            {
+                              "key": "actorId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Created",
+                      "code": 201,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"actId\": \"<string>\",\n    \"status\": \"ABORTED\",\n    \"startedAt\": \"<dateTime>\",\n    \"finishedAt\": \"<dateTime>\",\n    \"defaultDatasetId\": \"<string>\"\n  }\n}",
+                      "createdAt": "2026-07-28T01:02:35.000Z",
+                      "updatedAt": "2026-07-28T01:02:35.000Z",
+                      "uid": "35240-c107716e-b6ae-40b5-9cc2-0b127e7c50c0"
+                    },
+                    {
+                      "id": "4df2309b-84c9-478d-80d2-06b2bcac0900",
+                      "name": "Authentication failed.",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/acts/:actorId/runs?waitForFinish=<integer>&memory=<integer>&build=<string>",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "acts",
+                            ":actorId",
+                            "runs"
+                          ],
+                          "query": [
+                            {
+                              "description": "Wait for run to finish (max 300 seconds). Returns run details when complete.",
+                              "key": "waitForFinish",
+                              "value": "<integer>"
+                            },
+                            {
+                              "description": "Memory limit in MB (128-32768).",
+                              "key": "memory",
+                              "value": "<integer>"
+                            },
+                            {
+                              "description": "Tag or number of the Actor build to run.",
+                              "key": "build",
+                              "value": "<string>"
+                            }
+                          ],
+                          "variable": [
+                            {
+                              "key": "actorId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                      "createdAt": "2026-07-28T01:02:35.000Z",
+                      "updatedAt": "2026-07-28T01:02:35.000Z",
+                      "uid": "35240-4df2309b-84c9-478d-80d2-06b2bcac0900"
+                    },
+                    {
+                      "id": "e2de72a7-5c4d-47ad-bb3f-a4c4f23f5b29",
+                      "name": "Resource not found.",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          },
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{}",
+                          "options": {
+                            "raw": {
+                              "headerFamily": "json",
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "{{baseUrl}}/acts/:actorId/runs?waitForFinish=<integer>&memory=<integer>&build=<string>",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "acts",
+                            ":actorId",
+                            "runs"
+                          ],
+                          "query": [
+                            {
+                              "description": "Wait for run to finish (max 300 seconds). Returns run details when complete.",
+                              "key": "waitForFinish",
+                              "value": "<integer>"
+                            },
+                            {
+                              "description": "Memory limit in MB (128-32768).",
+                              "key": "memory",
+                              "value": "<integer>"
+                            },
+                            {
+                              "description": "Tag or number of the Actor build to run.",
+                              "key": "build",
+                              "value": "<string>"
+                            }
+                          ],
+                          "variable": [
+                            {
+                              "key": "actorId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Not Found",
+                      "code": 404,
+                      "_postman_previewlanguage": "json",
+                      "header": [
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        }
+                      ],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                      "createdAt": "2026-07-28T01:02:35.000Z",
+                      "updatedAt": "2026-07-28T01:02:35.000Z",
+                      "uid": "35240-e2de72a7-5c4d-47ad-bb3f-a4c4f23f5b29"
+                    }
+                  ],
+                  "createdAt": "2026-07-28T01:02:35.000Z",
+                  "updatedAt": "2026-07-28T01:02:35.000Z",
+                  "uid": "35240-e77755e2-3eaa-4a8a-af9b-8d7ae8997a0e"
+                }
+              ],
+              "id": "471eafc7-2f06-4ac3-9302-759ebfe60a71",
+              "createdAt": "2026-07-28T01:02:35.000Z",
+              "updatedAt": "2026-07-28T01:02:35.000Z",
+              "uid": "35240-471eafc7-2f06-4ac3-9302-759ebfe60a71"
+            },
+            {
+              "name": "Apify Get Actor",
+              "id": "eb8e5157-5b4d-4f74-9b73-f99323d686be",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/acts/:actorId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "acts",
+                    ":actorId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "789349fd-dafb-4220-b677-430a8ac2bed2",
+                      "key": "actorId",
+                      "value": "<string>",
+                      "description": "(Required) Actor ID or username~actorName."
+                    }
+                  ]
+                },
+                "description": "Returns details of a specific Actor."
+              },
+              "response": [
+                {
+                  "id": "648f2e74-2eb4-4252-80a2-a96e70c80c24",
+                  "name": "Actor details.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/acts/:actorId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "acts",
+                        ":actorId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "actorId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"data\": {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"username\": \"<string>\",\n    \"title\": \"<string>\",\n    \"description\": \"<string>\"\n  }\n}",
+                  "createdAt": "2026-07-28T01:02:35.000Z",
+                  "updatedAt": "2026-07-28T01:02:35.000Z",
+                  "uid": "35240-648f2e74-2eb4-4252-80a2-a96e70c80c24"
+                },
+                {
+                  "id": "a00f62b6-85d5-4908-8859-27eb3e90a65d",
+                  "name": "Authentication failed.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/acts/:actorId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "acts",
+                        ":actorId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "actorId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                  "createdAt": "2026-07-28T01:02:35.000Z",
+                  "updatedAt": "2026-07-28T01:02:35.000Z",
+                  "uid": "35240-a00f62b6-85d5-4908-8859-27eb3e90a65d"
+                },
+                {
+                  "id": "bfcee134-06a0-4a31-ad70-5f1c4a551205",
+                  "name": "Resource not found.",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/acts/:actorId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "acts",
+                        ":actorId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "actorId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+                  "createdAt": "2026-07-28T01:02:35.000Z",
+                  "updatedAt": "2026-07-28T01:02:35.000Z",
+                  "uid": "35240-bfcee134-06a0-4a31-ad70-5f1c4a551205"
+                }
+              ],
+              "createdAt": "2026-07-28T01:02:35.000Z",
+              "updatedAt": "2026-07-28T01:02:35.000Z",
+              "uid": "35240-eb8e5157-5b4d-4f74-9b73-f99323d686be"
+            }
+          ],
+          "id": "0825aaba-95ee-4733-8e5e-911cbcef3872",
+          "createdAt": "2026-07-28T01:02:35.000Z",
+          "updatedAt": "2026-07-28T01:02:35.000Z",
+          "uid": "35240-0825aaba-95ee-4733-8e5e-911cbcef3872"
+        },
+        {
+          "name": "Apify List Actors",
+          "id": "05b597ab-eaa0-4c48-b574-34ab1c0f6d75",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/acts?my=<boolean>&limit=10&offset=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "acts"
+              ],
+              "query": [
+                {
+                  "description": "If true, return only Actors owned by the user.",
+                  "key": "my",
+                  "value": "<boolean>"
+                },
+                {
+                  "description": "Maximum number of results to return.",
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "description": "Number of results to skip.",
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "Returns a list of Actors owned by the authenticated user."
+          },
+          "response": [
+            {
+              "id": "306eaee3-18db-4a65-8207-7d791e1268d7",
+              "name": "List of Actors.",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/acts?my=<boolean>&limit=10&offset=0",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "acts"
+                  ],
+                  "query": [
+                    {
+                      "description": "If true, return only Actors owned by the user.",
+                      "key": "my",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "description": "Maximum number of results to return.",
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "description": "Number of results to skip.",
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"username\": \"<string>\",\n        \"title\": \"<string>\",\n        \"description\": \"<string>\"\n      },\n      {\n        \"id\": \"<string>\",\n        \"name\": \"<string>\",\n        \"username\": \"<string>\",\n        \"title\": \"<string>\",\n        \"description\": \"<string>\"\n      }\n    ],\n    \"total\": \"<integer>\",\n    \"offset\": \"<integer>\",\n    \"limit\": \"<integer>\"\n  }\n}",
+              "createdAt": "2026-07-28T01:02:35.000Z",
+              "updatedAt": "2026-07-28T01:02:35.000Z",
+              "uid": "35240-306eaee3-18db-4a65-8207-7d791e1268d7"
+            },
+            {
+              "id": "b627cf2e-0a0f-49b5-86c7-dc09669fbee9",
+              "name": "Authentication failed.",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/acts?my=<boolean>&limit=10&offset=0",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "acts"
+                  ],
+                  "query": [
+                    {
+                      "description": "If true, return only Actors owned by the user.",
+                      "key": "my",
+                      "value": "<boolean>"
+                    },
+                    {
+                      "description": "Maximum number of results to return.",
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "description": "Number of results to skip.",
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"error\": {\n    \"type\": \"<string>\",\n    \"message\": \"<string>\"\n  }\n}",
+              "createdAt": "2026-07-28T01:02:35.000Z",
+              "updatedAt": "2026-07-28T01:02:35.000Z",
+              "uid": "35240-b627cf2e-0a0f-49b5-86c7-dc09669fbee9"
+            }
+          ],
+          "createdAt": "2026-07-28T01:02:35.000Z",
+          "updatedAt": "2026-07-28T01:02:35.000Z",
+          "uid": "35240-05b597ab-eaa0-4c48-b574-34ab1c0f6d75"
+        }
+      ],
+      "id": "9955c0bd-2b5b-4b18-80a3-eaf02693ba13",
+      "createdAt": "2026-07-28T01:02:35.000Z",
+      "updatedAt": "2026-07-28T01:02:35.000Z",
+      "uid": "35240-9955c0bd-2b5b-4b18-80a3-eaf02693ba13"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.apify.com/v2"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "provider": "apify",
+  "sources": [
+    "apify-actor-runs-api-openapi.yml",
+    "apify-actors-api-openapi.yml",
+    "apify-datasets-api-openapi.yml",
+    "apify-key-value-stores-api-openapi.yml",
+    "apify-request-queues-api-openapi.yml",
+    "apify-users-api-openapi.yml"
+  ],
+  "outputs": [
+    "apify-actor-runs-api-openapi.yml",
+    "apify-actors-api-openapi.yml",
+    "apify-datasets-api-openapi.yml",
+    "apify-key-value-stores-api-openapi.yml",
+    "apify-request-queues-api-openapi.yml",
+    "apify-users-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
