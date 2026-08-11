@@ -64,18 +64,6 @@ apis:
     url: https://www.npmjs.com/package/apify-client
   - type: SDKs
     url: https://pypi.org/project/apify-client/
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actor-runs.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actors.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-datasets.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-key-value-stores.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-request-queues.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-users.yaml
 - aid: apify:apify-actors-api
   name: Apify Actors API
   description: Manage and run Apify Actors.
@@ -108,18 +96,6 @@ apis:
     url: https://www.npmjs.com/package/apify-client
   - type: SDKs
     url: https://pypi.org/project/apify-client/
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actor-runs.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actors.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-datasets.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-key-value-stores.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-request-queues.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-users.yaml
 - aid: apify:apify-datasets-api
   name: Apify Datasets API
   description: Manage structured data storage from Actor runs.
@@ -152,18 +128,6 @@ apis:
     url: https://www.npmjs.com/package/apify-client
   - type: SDKs
     url: https://pypi.org/project/apify-client/
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actor-runs.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actors.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-datasets.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-key-value-stores.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-request-queues.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-users.yaml
 - aid: apify:apify-key-value-stores-api
   name: Apify Key-Value Stores API
   description: Manage persistent key-value storage.
@@ -196,18 +160,6 @@ apis:
     url: https://www.npmjs.com/package/apify-client
   - type: SDKs
     url: https://pypi.org/project/apify-client/
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actor-runs.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actors.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-datasets.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-key-value-stores.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-request-queues.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-users.yaml
 - aid: apify:apify-request-queues-api
   name: Apify Request Queues API
   description: Manage URL queues for web crawling.
@@ -240,18 +192,6 @@ apis:
     url: https://www.npmjs.com/package/apify-client
   - type: SDKs
     url: https://pypi.org/project/apify-client/
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actor-runs.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actors.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-datasets.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-key-value-stores.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-request-queues.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-users.yaml
 - aid: apify:apify-users-api
   name: Apify Users API
   description: User and account management.
@@ -284,18 +224,6 @@ apis:
     url: https://www.npmjs.com/package/apify-client
   - type: SDKs
     url: https://pypi.org/project/apify-client/
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actor-runs.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-actors.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-datasets.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-key-value-stores.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-request-queues.yaml
-  - type: X-NaftikoCapability
-    url: capabilities/apify-users.yaml
 common:
 - type: PostmanWorkspace
   url: https://www.postman.com/kinlaneapi/apify/overview
