@@ -1,0 +1,99 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Apify Actor Runs API",
+    "version": "v2"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Actor Runs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Apify List Actor Runs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.apify.com/v2/acts/:actorId/runs",
+            "params": [
+              {
+                "name": "actorId",
+                "value": "",
+                "type": "path",
+                "description": "Actor ID or username~actorName."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of results."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of results to skip."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filter by run status."
+              }
+            ]
+          },
+          "docs": "Returns a list of all runs for a specific Actor."
+        },
+        {
+          "info": {
+            "name": "Apify Get Run",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.apify.com/v2/actor-runs/:runId",
+            "params": [
+              {
+                "name": "runId",
+                "value": "",
+                "type": "path",
+                "description": "Actor run ID."
+              }
+            ]
+          },
+          "docs": "Returns details of a specific Actor run."
+        },
+        {
+          "info": {
+            "name": "Apify Abort Run",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.apify.com/v2/actor-runs/:runId/abort",
+            "params": [
+              {
+                "name": "runId",
+                "value": "",
+                "type": "path",
+                "description": "Actor run ID."
+              }
+            ]
+          },
+          "docs": "Aborts a running Actor run."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

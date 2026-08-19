@@ -1,0 +1,89 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Apify Actor Runs Key-Value Stores API",
+    "version": "v2"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Key-Value Stores",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Apify List Key-Value Stores",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.apify.com/v2/key-value-stores"
+          },
+          "docs": "Returns a list of key-value stores owned by the user."
+        },
+        {
+          "info": {
+            "name": "Apify Get Record",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.apify.com/v2/key-value-stores/:storeId/records/:recordKey",
+            "params": [
+              {
+                "name": "storeId",
+                "value": "",
+                "type": "path",
+                "description": "Key-value store ID."
+              },
+              {
+                "name": "recordKey",
+                "value": "",
+                "type": "path",
+                "description": "Record key."
+              }
+            ]
+          },
+          "docs": "Returns the value of a specific record from a key-value store."
+        },
+        {
+          "info": {
+            "name": "Apify Set Record",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.apify.com/v2/key-value-stores/:storeId/records/:recordKey",
+            "params": [
+              {
+                "name": "storeId",
+                "value": "",
+                "type": "path",
+                "description": "Key-value store ID."
+              },
+              {
+                "name": "recordKey",
+                "value": "",
+                "type": "path",
+                "description": "Record key."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Stores a value under a specific key in a key-value store."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

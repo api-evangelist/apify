@@ -1,0 +1,115 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Apify Actor Runs Actors API",
+    "version": "v2"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Actors",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Apify List Actors",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.apify.com/v2/acts",
+            "params": [
+              {
+                "name": "my",
+                "value": "",
+                "type": "query",
+                "description": "If true, return only Actors owned by the user."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of results to return."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of results to skip."
+              }
+            ]
+          },
+          "docs": "Returns a list of Actors owned by the authenticated user."
+        },
+        {
+          "info": {
+            "name": "Apify Get Actor",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.apify.com/v2/acts/:actorId",
+            "params": [
+              {
+                "name": "actorId",
+                "value": "",
+                "type": "path",
+                "description": "Actor ID or username~actorName."
+              }
+            ]
+          },
+          "docs": "Returns details of a specific Actor."
+        },
+        {
+          "info": {
+            "name": "Apify Run Actor",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.apify.com/v2/acts/:actorId/runs",
+            "params": [
+              {
+                "name": "actorId",
+                "value": "",
+                "type": "path",
+                "description": "Actor ID or username~actorName."
+              },
+              {
+                "name": "waitForFinish",
+                "value": "",
+                "type": "query",
+                "description": "Wait for run to finish (max 300 seconds). Returns run details when complete."
+              },
+              {
+                "name": "memory",
+                "value": "",
+                "type": "query",
+                "description": "Memory limit in MB (128-32768)."
+              },
+              {
+                "name": "build",
+                "value": "",
+                "type": "query",
+                "description": "Tag or number of the Actor build to run."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Runs a specific Actor and returns its run details. The Actor is started asynchronously by default. Use waitForFinish parameter for synchronous execution."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

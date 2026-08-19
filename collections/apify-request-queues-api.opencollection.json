@@ -1,0 +1,35 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Apify Actor Runs Request Queues API",
+    "version": "v2"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Request Queues",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Apify List Request Queues",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.apify.com/v2/request-queues"
+          },
+          "docs": "Returns a list of request queues owned by the user."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
