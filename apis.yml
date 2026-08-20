@@ -198,6 +198,8 @@ apis:
   humanURL: https://apify.com
   baseURL: https://api.apify.com/v2
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
