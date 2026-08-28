@@ -5,6 +5,18 @@ description: Apify is a full-stack web scraping and browser automation platform 
   scheduling, and storage. The platform hosts thousands of ready-made Actors for scraping social media, search engines, maps,
   e-commerce sites, and more.
 type: Index
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: freemium
   onboarding: self-serve
