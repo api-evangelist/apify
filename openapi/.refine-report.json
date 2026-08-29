@@ -19,6 +19,14 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
+  "notes": [
+    "apify-actor-runs-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apify-actors-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apify-datasets-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apify-key-value-stores-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apify-request-queues-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apify-users-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
   "skipped": []
 }

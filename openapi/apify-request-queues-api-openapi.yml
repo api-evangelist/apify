@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
   title: Apify Actor Runs Request Queues API
   description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.'
@@ -48,6 +48,19 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    RequestQueue:
+      type: object
+      description: An Apify request queue for managing URLs.
+      properties:
+        id:
+          type: string
+          example: ZTWed2bBPbQ6CPQEL
+        name:
+          type: string
+          example: my-queue
+        pendingRequestCount:
+          type: integer
+          example: 42
     RequestQueueList:
       type: object
       properties:
@@ -70,19 +83,6 @@ components:
               type: string
             message:
               type: string
-    RequestQueue:
-      type: object
-      description: An Apify request queue for managing URLs.
-      properties:
-        id:
-          type: string
-          example: ZTWed2bBPbQ6CPQEL
-        name:
-          type: string
-          example: my-queue
-        pendingRequestCount:
-          type: integer
-          example: 42
   responses:
     Unauthorized:
       description: Authentication failed.

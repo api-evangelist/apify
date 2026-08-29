@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
   title: Apify Actor Runs Actors API
   description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.'
@@ -178,25 +178,40 @@ paths:
         delay: 0
         dispatcher: FALLBACK
 components:
-  responses:
-    Unauthorized:
-      description: Authentication failed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: Resource not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
-    ActorDetail:
+    Run:
       type: object
+      description: An Apify Actor run.
       properties:
         data:
-          $ref: '#/components/schemas/Actor'
+          type: object
+          properties:
+            id:
+              type: string
+              example: HG7ML7M8z78YcAPEB
+            actId:
+              type: string
+              example: mTD6bTz2HCjSQHeBn
+            status:
+              type: string
+              enum:
+              - READY
+              - RUNNING
+              - SUCCEEDED
+              - FAILED
+              - ABORTING
+              - ABORTED
+              - TIMING-OUT
+              - TIMED-OUT
+              example: RUNNING
+            startedAt:
+              type: string
+              format: date-time
+            finishedAt:
+              type: string
+              format: date-time
+            defaultDatasetId:
+              type: string
     ActorList:
       type: object
       properties:
@@ -236,39 +251,11 @@ components:
         description:
           type: string
           description: Actor description.
-    Run:
+    ActorDetail:
       type: object
-      description: An Apify Actor run.
       properties:
         data:
-          type: object
-          properties:
-            id:
-              type: string
-              example: HG7ML7M8z78YcAPEB
-            actId:
-              type: string
-              example: mTD6bTz2HCjSQHeBn
-            status:
-              type: string
-              enum:
-              - READY
-              - RUNNING
-              - SUCCEEDED
-              - FAILED
-              - ABORTING
-              - ABORTED
-              - TIMING-OUT
-              - TIMED-OUT
-              example: RUNNING
-            startedAt:
-              type: string
-              format: date-time
-            finishedAt:
-              type: string
-              format: date-time
-            defaultDatasetId:
-              type: string
+          $ref: '#/components/schemas/Actor'
     Error:
       type: object
       properties:
@@ -279,6 +266,19 @@ components:
               type: string
             message:
               type: string
+  responses:
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Authentication failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     bearerAuth:
       type: http
