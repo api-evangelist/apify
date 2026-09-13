@@ -82,6 +82,7 @@ conformance:
       media type. ARD permits extension types without core registration.'
     - '[apify-ultimate-scraper] Media type ''application/ai-skill+md'' is a valid application extension
       media type. ARD permits extension types without core registration.'
+  did_web: null
 catalog:
   host_display_name: Apify
   host_identifier: apify.com
