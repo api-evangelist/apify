@@ -158,6 +158,43 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
+    RunList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string
+                  startedAt:
+                    type: string
+                    format: date-time
+                  finishedAt:
+                    type: string
+                    format: date-time
+            total:
+              type: integer
+            offset:
+              type: integer
+            limit:
+              type: integer
     Run:
       type: object
       description: An Apify Actor run.
@@ -191,52 +228,15 @@ components:
               format: date-time
             defaultDatasetId:
               type: string
-    RunList:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            items:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  status:
-                    type: string
-                  startedAt:
-                    type: string
-                    format: date-time
-                  finishedAt:
-                    type: string
-                    format: date-time
-            total:
-              type: integer
-            offset:
-              type: integer
-            limit:
-              type: integer
-    Error:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            type:
-              type: string
-            message:
-              type: string
   responses:
-    NotFound:
-      description: Resource not found.
+    Unauthorized:
+      description: Authentication failed.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Authentication failed.
+    NotFound:
+      description: Resource not found.
       content:
         application/json:
           schema:

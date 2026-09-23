@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Apify Actor Runs Key-Value Stores API
+  title: Apify Key-Value Stores API
   description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.'
   version: v2
   contact:
@@ -13,7 +13,7 @@ servers:
 security:
 - bearerAuth: []
 tags:
-- name: Key-Value Stores
+- name: Key Value Stores
   description: Manage persistent key-value storage.
 paths:
   /key-value-stores:
@@ -22,7 +22,7 @@ paths:
       summary: Apify List Key-Value Stores
       description: Returns a list of key-value stores owned by the user.
       tags:
-      - Key-Value Stores
+      - Key Value Stores
       responses:
         '200':
           description: List of key-value stores.
@@ -51,7 +51,7 @@ paths:
       summary: Apify Get Record
       description: Returns the value of a specific record from a key-value store.
       tags:
-      - Key-Value Stores
+      - Key Value Stores
       parameters:
       - name: storeId
         in: path
@@ -90,7 +90,7 @@ paths:
       summary: Apify Set Record
       description: Stores a value under a specific key in a key-value store.
       tags:
-      - Key-Value Stores
+      - Key Value Stores
       parameters:
       - name: storeId
         in: path
@@ -134,16 +134,6 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    KeyValueStore:
-      type: object
-      description: An Apify key-value store.
-      properties:
-        id:
-          type: string
-          example: WkzbQMuFYuamGv3YQ
-        name:
-          type: string
-          example: my-store
     Error:
       type: object
       properties:
@@ -154,6 +144,16 @@ components:
               type: string
             message:
               type: string
+    KeyValueStore:
+      type: object
+      description: An Apify key-value store.
+      properties:
+        id:
+          type: string
+          example: WkzbQMuFYuamGv3YQ
+        name:
+          type: string
+          example: my-store
     KeyValueStoreList:
       type: object
       properties:
@@ -167,14 +167,14 @@ components:
             total:
               type: integer
   responses:
-    NotFound:
-      description: Resource not found.
+    Unauthorized:
+      description: Authentication failed.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Authentication failed.
+    NotFound:
+      description: Resource not found.
       content:
         application/json:
           schema:

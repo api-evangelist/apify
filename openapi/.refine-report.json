@@ -1,12 +1,7 @@
 {
   "provider": "apify",
   "sources": [
-    "apify-actor-runs-api-openapi.yml",
-    "apify-actors-api-openapi.yml",
-    "apify-datasets-api-openapi.yml",
-    "apify-key-value-stores-api-openapi.yml",
-    "apify-request-queues-api-openapi.yml",
-    "apify-users-api-openapi.yml"
+    "_ae-authored/apify-api.yaml"
   ],
   "outputs": [
     "apify-actor-runs-api-openapi.yml",
@@ -20,13 +15,16 @@
   "errors": [],
   "warnings": [],
   "notes": [
-    "apify-actor-runs-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "apify-actors-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "apify-datasets-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "apify-key-value-stores-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "apify-request-queues-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "apify-users-api-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "sourced from openapi/_original/ (0 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "apify-api.yaml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
     "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "apify-actor-runs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "apify-actors-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "apify-datasets-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "apify-key-value-stores-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "apify-request-queues-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "apify-users-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Apify Actor Runs Actors API
+  title: Apify Actors API
   description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.'
   version: v2
   contact:
@@ -179,6 +179,39 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
+    Actor:
+      type: object
+      description: An Apify Actor.
+      properties:
+        id:
+          type: string
+          description: Actor ID.
+          example: mTD6bTz2HCjSQHeBn
+        name:
+          type: string
+          description: Actor name.
+          example: web-scraper
+        username:
+          type: string
+          description: Owner username.
+          example: apify
+        title:
+          type: string
+          description: Display title.
+          example: Web Scraper
+        description:
+          type: string
+          description: Actor description.
     Run:
       type: object
       description: An Apify Actor run.
@@ -212,6 +245,11 @@ components:
               format: date-time
             defaultDatasetId:
               type: string
+    ActorDetail:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Actor'
     ActorList:
       type: object
       properties:
@@ -228,53 +266,15 @@ components:
               type: integer
             limit:
               type: integer
-    Actor:
-      type: object
-      description: An Apify Actor.
-      properties:
-        id:
-          type: string
-          description: Actor ID.
-          example: mTD6bTz2HCjSQHeBn
-        name:
-          type: string
-          description: Actor name.
-          example: web-scraper
-        username:
-          type: string
-          description: Owner username.
-          example: apify
-        title:
-          type: string
-          description: Display title.
-          example: Web Scraper
-        description:
-          type: string
-          description: Actor description.
-    ActorDetail:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Actor'
-    Error:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            type:
-              type: string
-            message:
-              type: string
   responses:
-    NotFound:
-      description: Resource not found.
+    Unauthorized:
+      description: Authentication failed.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Authentication failed.
+    NotFound:
+      description: Resource not found.
       content:
         application/json:
           schema:
