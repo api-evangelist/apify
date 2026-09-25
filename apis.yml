@@ -243,6 +243,8 @@ apis:
   - type: SDKs
     url: https://pypi.org/project/apify-client/
 common:
+- type: VendorFacets
+  url: vendor-facets/apify-vendor-facets.yml
 - type: PostmanWorkspace
   url: https://www.postman.com/kinlaneapi/apify/overview
 - type: AgenticAccess
