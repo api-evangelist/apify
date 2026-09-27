@@ -48,6 +48,19 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    RequestQueue:
+      type: object
+      description: An Apify request queue for managing URLs.
+      properties:
+        id:
+          type: string
+          example: ZTWed2bBPbQ6CPQEL
+        name:
+          type: string
+          example: my-queue
+        pendingRequestCount:
+          type: integer
+          example: 42
     Error:
       type: object
       properties:
@@ -70,19 +83,6 @@ components:
                 $ref: '#/components/schemas/RequestQueue'
             total:
               type: integer
-    RequestQueue:
-      type: object
-      description: An Apify request queue for managing URLs.
-      properties:
-        id:
-          type: string
-          example: ZTWed2bBPbQ6CPQEL
-        name:
-          type: string
-          example: my-queue
-        pendingRequestCount:
-          type: integer
-          example: 42
   responses:
     Unauthorized:
       description: Authentication failed.

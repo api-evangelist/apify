@@ -179,16 +179,6 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    Error:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            type:
-              type: string
-            message:
-              type: string
     Actor:
       type: object
       description: An Apify Actor.
@@ -212,6 +202,32 @@ components:
         description:
           type: string
           description: Actor description.
+    ActorList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Actor'
+            total:
+              type: integer
+            offset:
+              type: integer
+            limit:
+              type: integer
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
     Run:
       type: object
       description: An Apify Actor run.
@@ -250,22 +266,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Actor'
-    ActorList:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/Actor'
-            total:
-              type: integer
-            offset:
-              type: integer
-            limit:
-              type: integer
   responses:
     Unauthorized:
       description: Authentication failed.
