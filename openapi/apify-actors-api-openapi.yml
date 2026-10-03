@@ -179,45 +179,6 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    Actor:
-      type: object
-      description: An Apify Actor.
-      properties:
-        id:
-          type: string
-          description: Actor ID.
-          example: mTD6bTz2HCjSQHeBn
-        name:
-          type: string
-          description: Actor name.
-          example: web-scraper
-        username:
-          type: string
-          description: Owner username.
-          example: apify
-        title:
-          type: string
-          description: Display title.
-          example: Web Scraper
-        description:
-          type: string
-          description: Actor description.
-    ActorList:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/Actor'
-            total:
-              type: integer
-            offset:
-              type: integer
-            limit:
-              type: integer
     Error:
       type: object
       properties:
@@ -266,15 +227,54 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Actor'
+    ActorList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Actor'
+            total:
+              type: integer
+            offset:
+              type: integer
+            limit:
+              type: integer
+    Actor:
+      type: object
+      description: An Apify Actor.
+      properties:
+        id:
+          type: string
+          description: Actor ID.
+          example: mTD6bTz2HCjSQHeBn
+        name:
+          type: string
+          description: Actor name.
+          example: web-scraper
+        username:
+          type: string
+          description: Owner username.
+          example: apify
+        title:
+          type: string
+          description: Display title.
+          example: Web Scraper
+        description:
+          type: string
+          description: Actor description.
   responses:
-    Unauthorized:
-      description: Authentication failed.
+    NotFound:
+      description: Resource not found.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    NotFound:
-      description: Resource not found.
+    Unauthorized:
+      description: Authentication failed.
       content:
         application/json:
           schema:

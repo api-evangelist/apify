@@ -61,16 +61,6 @@ components:
         pendingRequestCount:
           type: integer
           example: 42
-    Error:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            type:
-              type: string
-            message:
-              type: string
     RequestQueueList:
       type: object
       properties:
@@ -83,6 +73,16 @@ components:
                 $ref: '#/components/schemas/RequestQueue'
             total:
               type: integer
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
   responses:
     Unauthorized:
       description: Authentication failed.

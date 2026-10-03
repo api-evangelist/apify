@@ -47,16 +47,6 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    Error:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            type:
-              type: string
-            message:
-              type: string
     User:
       type: object
       description: An Apify user account.
@@ -83,6 +73,16 @@ components:
               - BUSINESS
               - ENTERPRISE
               example: STARTER
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
   responses:
     Unauthorized:
       description: Authentication failed.
