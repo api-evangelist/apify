@@ -1,49 +1,55 @@
-# Kin Score artifact — apify — 2026-08-29T213958
+# Kin Score artifact — apify — 2026-09-25T210408
 # The API Evangelist rating (https://github.com/api-evangelist/kin-score). Generated; do not edit.
 ---
 kin_score:
   slug: apify
-  schema_version: 0.16.0
-  scored_at: '2026-08-29'
-  run_ts: 2026-08-29T213958
-  composite: 37.9
+  schema_version: 0.23.0
+  scored_at: '2026-09-25'
+  run_ts: 2026-09-25T210408
+  composite: 37.0
   band: thin
   facets:
-    discoverability: 81.5
-    contract_quality: 27.3
-    governance: 13.6
-    operational_transparency: 10.5
-    developer_ergonomics: 66.7
-    commercial_clarity: 32.9
+    discoverability: 80.0
+    contract_quality: 26.6
     contract_governance: 13.6
+    operational_transparency: 10.5
+    developer_ergonomics: 62.4
     access_clarity: 32.9
   agent_readiness:
-    score: 31.9
+    score: 52.9
     band: agent-ready
+    band_gated_from: agent-native
     dimensions:
       spec_presence: true
       agentic_access: derived
       reversibility_documented: false
-      mcp_server: documented
-      auth_clarity: bearer
+      mcp_server: verified
+      auth_clarity: served
       idempotency: false
       error_semantics: false
       openapi_examples: verified
       rate_limit_signal: documented
       event_surface_described: false
-      agent_skills: true
+      agent_skills: unknown
       well_known_catalog: false
       consent_identity: false
       agent_card: false
       dry_run_mode: false
-      delegated_identity: false
-      protected_resource_metadata: false
-      dynamic_client_registration: false
+      delegated_identity: served
+      protected_resource_metadata: verified
+      dynamic_client_registration: true
       agentic_commerce: false
+  regulatory:
+    applies: true
+    regime: Horizontal (data, software, accessibility, platform)
+    regime_id: horizontal
+    score: 22.5
+    matched_via: fallback
   provenance:
+    mcp: first-party
     agentic_access: derived
     contracts:
-      total: 6
-      derived: 6
+      total: 7
+      derived: 7
       coverage: 100.0
       callable: 100.0
