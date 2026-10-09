@@ -1,0 +1,19 @@
+# harvested from https://github.com/apify/apify-docs/blob/316b3fdb2727d974bbc60c6cf479156f7bbebd17/.spectral.yaml on 2026-10-09 — a Spectral ruleset published in the provider's own GitHub repository (apify/apify-docs); found by GitHub code search, fetched verbatim
+x-method: harvested
+x-stamped: 2026-10-09
+x-source-url: https://github.com/apify/apify-docs/blob/316b3fdb2727d974bbc60c6cf479156f7bbebd17/.spectral.yaml
+# Configuration of Spectral, a tool for linting OpenAPI specification.
+extends:
+  - 'spectral:oas'
+
+rules:
+  # Allow nullable fields in examples - these reference schemas with nullable properties
+  oas3-valid-media-example: off
+  oas3-valid-schema-example: off
+
+overrides:
+  - files:
+      - apify-api/openapi/openapi.yaml
+    rules:
+      # Allow $ref for tags field - Redocly bundles it during build
+      oas3-schema: off

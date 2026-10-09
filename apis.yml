@@ -335,6 +335,8 @@ common:
   type: AgentSkills
 - type: LlmsText
   url: https://docs.apify.com/llms.txt
+- type: SpectralRules
+  url: https://github.com/apify/apify-docs/blob/316b3fdb2727d974bbc60c6cf479156f7bbebd17/.spectral.yaml
 integrations:
 - name: Become an affiliate
 maintainers:
