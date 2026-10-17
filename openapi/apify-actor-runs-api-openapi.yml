@@ -157,47 +157,17 @@ paths:
         delay: 0
         dispatcher: FALLBACK
 components:
-  responses:
-    Unauthorized:
-      description: Authentication failed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: Resource not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
-    RunList:
+    Error:
       type: object
       properties:
-        data:
+        error:
           type: object
           properties:
-            items:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: string
-                  status:
-                    type: string
-                  startedAt:
-                    type: string
-                    format: date-time
-                  finishedAt:
-                    type: string
-                    format: date-time
-            total:
-              type: integer
-            offset:
-              type: integer
-            limit:
-              type: integer
+            type:
+              type: string
+            message:
+              type: string
     Run:
       type: object
       description: An Apify Actor run.
@@ -231,16 +201,46 @@ components:
               format: date-time
             defaultDatasetId:
               type: string
-    Error:
+    RunList:
       type: object
       properties:
-        error:
+        data:
           type: object
           properties:
-            type:
-              type: string
-            message:
-              type: string
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string
+                  startedAt:
+                    type: string
+                    format: date-time
+                  finishedAt:
+                    type: string
+                    format: date-time
+            total:
+              type: integer
+            offset:
+              type: integer
+            limit:
+              type: integer
+  responses:
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Authentication failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     bearerAuth:
       type: http

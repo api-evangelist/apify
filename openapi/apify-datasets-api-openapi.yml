@@ -139,20 +139,6 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    Dataset:
-      type: object
-      description: An Apify dataset for storing structured data.
-      properties:
-        id:
-          type: string
-          example: s5gkMuSS6Tsh4iOLF
-        name:
-          type: string
-          example: my-dataset
-        itemCount:
-          type: integer
-          description: Number of items in the dataset.
-          example: 150
     Error:
       type: object
       properties:
@@ -179,6 +165,20 @@ components:
               type: integer
             limit:
               type: integer
+    Dataset:
+      type: object
+      description: An Apify dataset for storing structured data.
+      properties:
+        id:
+          type: string
+          example: s5gkMuSS6Tsh4iOLF
+        name:
+          type: string
+          example: my-dataset
+        itemCount:
+          type: integer
+          description: Number of items in the dataset.
+          example: 150
   responses:
     Unauthorized:
       description: Authentication failed.
