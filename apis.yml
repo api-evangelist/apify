@@ -242,6 +242,738 @@ apis:
     url: https://www.npmjs.com/package/apify-client
   - type: SDKs
     url: https://pypi.org/project/apify-client/
+- aid: apify:apify-actor-builds-api
+  name: Apify Actor builds API
+  description: >-
+    The API endpoints described in this section enable you to manage, and delete Apify Actor builds.
+
+
+    Note that if any returned build object contains usage in dollars, your effective
+
+    unit pricing at the time of query has been used for computation of this dollar equivalent, and hence
+    it should be
+
+    used only for informative purposes.
+
+
+    You can learn more about platform usage in the [documentation](https://docs.apify.com/platform/actors/running/usage-and-resources#usage).
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Actor builds
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-actor-builds-api-openapi.yml
+- aid: apify:apify-actor-tasks-api
+  name: Apify Actor tasks API
+  description: >-
+    The API endpoints described in this section enable you to create, manage, delete, and run Apify Actor
+    tasks.
+
+    For more information, see the [Actor tasks documentation](https://docs.apify.com/platform/actors/running/tasks).
+
+
+    :::note
+
+
+    For all the API endpoints that accept the `actorTaskId` parameter to
+
+    specify a task, you can pass either the task ID (e.g. `HG7ML7M8z78YcAPEB`) or a tilde-separated
+
+    username of the task's owner and the task's name (e.g. `janedoe~my-task`).
+
+
+    :::
+
+
+    Some of the API endpoints return run objects. If any such run object
+
+    contains usage in dollars, your effective unit pricing at the time of query
+
+    has been used for computation of this dollar equivalent, and hence it should be
+
+    used only for informative purposes.
+
+
+    You can learn more about platform usage in the [documentation](https://docs.apify.com/platform/actors/running/usage-and-resources#usage).
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Actor tasks
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-actor-tasks-api-openapi.yml
+- aid: apify:apify-actors-actor-builds-api
+  name: Apify Actors/Actor builds API
+  description: The API endpoints in this section allow you to manage your Apify Actors builds.
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Actors/Actor builds
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-actors-actor-builds-api-openapi.yml
+- aid: apify:apify-actors-actor-runs-api
+  name: Apify Actors/Actor runs API
+  description: >-
+    The API endpoints in this section allow you to manage your Apify Actors runs.
+
+
+    Some API endpoints return run objects. If a run object includes usage costs in dollars, note that
+    these values are calculated based on your effective unit pricing at the time of the query. As a result,
+    the dollar amounts should be treated as informational only and not as exact figures.
+
+
+    For completed runs, aggregated fields such as `stats` or dollar usage totals are eventually consistent
+    and update within a few seconds. For values that must match finalized totals, wait about 10 seconds
+    after the run completed, then fetch the run again.
+
+
+    For more information about platform usage and resource calculations, see the [Usage and Resources
+    documentation](https://docs.apify.com/platform/actors/running/usage-and-resources#usage).
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Actors/Actor runs
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-actors-actor-runs-api-openapi.yml
+- aid: apify:apify-actors-actor-versions-api
+  name: Apify Actors/Actor versions API
+  description: >-
+    The API endpoints in this section allow you to manage your Apify Actors versions.
+
+
+    - The version object contains the source code of a specific version of an Actor.
+
+    - The `sourceType` property indicates where the source code is hosted, and based
+
+    on its value the Version object has the following additional property:
+
+
+    | **Value** | **Description**  |
+
+    |---|---|
+
+    | `"SOURCE_FILES"`   | Source code is comprised of multiple files specified in the `sourceFiles` array.
+    Each item of the array is an object with the following fields:<br/> - `name`: File path and name<br/>
+    - `format`: Format of the content, can be either `"TEXT"` or `"BASE64"`<br/> - `content`: File content<br/><br/>Source
+    files can be shown and edited in the Apify Console's Web IDE. |
+
+    | `"GIT_REPO"` | Source code is cloned from a Git repository, whose URL is specified in the `gitRepoUrl`
+    field. |
+
+    | `"TARBALL"` | Source code is downloaded using a tarball or Zip file from a URL specified in the
+    `tarballUrl` field.  |
+
+    |`"GITHUB_GIST"`| Source code is taken from a GitHub Gist, whose URL is specified in the `gitHubGistUrl`
+    field. |
+
+
+    For more information about source code and Actor versions, check out [Source code](https://docs.apify.com/platform/actors/development/actor-definition/source-code)
+
+    in Actors documentation.
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Actors/Actor versions
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-actors-actor-versions-api-openapi.yml
+- aid: apify:apify-actors-webhook-collection-api
+  name: Apify Actors/Webhook collection API
+  description: >-
+    The API endpoint in this section allows you to get a list of webhooks of a specific Actor.
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Actors/Webhook collection
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-actors-webhook-collection-api-openapi.yml
+- aid: apify:apify-default-dataset-api
+  name: Apify Default dataset API
+  description: >-
+    The API endpoints described in this section are convenience endpoints that provide access to Actor
+    run's default dataset without the need to resolve the dataset ID first.
+
+
+    Subset of functionality described in: [Datasets](/api/v2/storage-datasets)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Default dataset
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-default-dataset-api-openapi.yml
+- aid: apify:apify-default-key-value-store-api
+  name: Apify Default key-value store API
+  description: >-
+    The API endpoints described in this section are convenience endpoints that provide access to Actor
+    run's default key-value store without the need to resolve the key-value store ID first.
+
+
+    Subset of functionality described in: [Key-value stores](/api/v2/storage-key-value-stores)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Default key-value store
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-default-key-value-store-api-openapi.yml
+- aid: apify:apify-default-request-queue-api
+  name: Apify Default request queue API
+  description: >-
+    The API endpoints described in this section are convenience endpoints that provide access to Actor
+    run's default request queue without the need to resolve the request queue ID first.
+
+
+    Subset of functionality described in: [Request queues](/api/v2/storage-request-queues)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Default request queue
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-default-request-queue-api-openapi.yml
+- aid: apify:apify-last-actor-run-s-abort-api
+  name: Apify Last Actor run's abort API
+  description: >-
+    The API endpoint described in this section is a convenience endpoint that aborts the Actor's last
+    run.
+
+
+    Same as of functionality described in: [Abort run](/api/v2/actor-run-abort-post)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor run's abort
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-run-s-abort-api-openapi.yml
+- aid: apify:apify-last-actor-run-s-default-dataset-api
+  name: Apify Last Actor run's default dataset API
+  description: >-
+    The API endpoints described in this section are convenience endpoints that provide access to Actor's
+    last run's default dataset without the need to resolve the dataset ID first.
+
+
+    Subset of functionality described in: [Datasets](/api/v2/storage-datasets)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor run's default dataset
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-run-s-default-dataset-api-openapi.yml
+- aid: apify:apify-last-actor-run-s-default-key-value-store-api
+  name: Apify Last Actor run's default key-value store API
+  description: >-
+    The API endpoints described in this section are convenience endpoints that provide access to Actor's
+    last run's default key-value store without the need to resolve the key-value store ID first.
+
+
+    Subset of functionality described in: [Key-value stores](/api/v2/storage-key-value-stores)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor run's default key-value store
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-run-s-default-key-value-store-api-openapi.yml
+- aid: apify:apify-last-actor-run-s-default-request-queue-api
+  name: Apify Last Actor run's default request queue API
+  description: >-
+    The API endpoints described in this section are convenience endpoints that provide access to Actor's
+    last run's default request queue without the need to resolve the request queue ID first.
+
+
+    Subset of functionality described in: [Request queues](/api/v2/storage-request-queues)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor run's default request queue
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-run-s-default-request-queue-api-openapi.yml
+- aid: apify:apify-last-actor-run-s-log-api
+  name: Apify Last Actor run's log API
+  description: >-
+    The API endpoint described in this section is convenience endpoint that provides access to last Actor
+    run's log.
+
+
+    Same as of functionality described in: [Logs](/api/v2/logs)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor run's log
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-run-s-log-api-openapi.yml
+- aid: apify:apify-last-actor-run-s-metamorph-api
+  name: Apify Last Actor run's metamorph API
+  description: >-
+    The API endpoint described in this section is a convenience endpoint that metamorphs the Actor's last
+    run into a run of another Actor.
+
+
+    Same as of functionality described in: [Metamorph run](/api/v2/actor-run-metamorph-post)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor run's metamorph
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-run-s-metamorph-api-openapi.yml
+- aid: apify:apify-last-actor-run-s-reboot-api
+  name: Apify Last Actor run's reboot API
+  description: >-
+    The API endpoint described in this section is a convenience endpoint that reboots the Actor's last
+    run.
+
+
+    Same as of functionality described in: [Reboot run](/api/v2/actor-run-reboot-post)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor run's reboot
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-run-s-reboot-api-openapi.yml
+- aid: apify:apify-last-actor-task-run-s-abort-api
+  name: Apify Last Actor task run's abort API
+  description: >-
+    The API endpoint described in this section is a convenience endpoint that aborts the Actor task's
+    last run.
+
+
+    Same as of functionality described in: [Abort run](/api/v2/actor-run-abort-post)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor task run's abort
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-task-run-s-abort-api-openapi.yml
+- aid: apify:apify-last-actor-task-run-s-default-dataset-api
+  name: Apify Last Actor task run's default dataset API
+  description: >-
+    The API endpoints described in this section are convenience endpoints that provide access to Actor
+    task's last run's default dataset without the need to resolve the dataset ID first.
+
+
+    Subset of functionality described in: [Datasets](/api/v2/storage-datasets)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor task run's default dataset
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-task-run-s-default-dataset-api-openapi.yml
+- aid: apify:apify-last-actor-task-run-s-default-key-value-store-api
+  name: Apify Last Actor task run's default key-value store API
+  description: >-
+    The API endpoints described in this section are convenience endpoints that provide access to Actor
+    task's last run's default key-value store without the need to resolve the key-value store ID first.
+
+
+    Subset of functionality described in: [Key-value stores](/api/v2/storage-key-value-stores)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor task run's default key-value store
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-task-run-s-default-key-value-store-api-openapi.yml
+- aid: apify:apify-last-actor-task-run-s-default-request-queue-api
+  name: Apify Last Actor task run's default request queue API
+  description: >-
+    The API endpoints described in this section are convenience endpoints that provide access to Actor
+    task's last run's default request queue without the need to resolve the request queue ID first.
+
+
+    Subset of functionality described in: [Request queues](/api/v2/storage-request-queues)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor task run's default request queue
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-task-run-s-default-request-queue-api-openapi.yml
+- aid: apify:apify-last-actor-task-run-s-log-api
+  name: Apify Last Actor task run's log API
+  description: >-
+    The API endpoint described in this section is convenience endpoint that provides access to last Actor
+    task run's log.
+
+
+    Same as of functionality described in: [Logs](/api/v2/logs)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor task run's log
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-task-run-s-log-api-openapi.yml
+- aid: apify:apify-last-actor-task-run-s-metamorph-api
+  name: Apify Last Actor task run's metamorph API
+  description: >-
+    The API endpoint described in this section is a convenience endpoint that metamorphs the Actor task's
+    last run into a run of another Actor.
+
+
+    Same as of functionality described in: [Metamorph run](/api/v2/actor-run-metamorph-post)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor task run's metamorph
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-task-run-s-metamorph-api-openapi.yml
+- aid: apify:apify-last-actor-task-run-s-reboot-api
+  name: Apify Last Actor task run's reboot API
+  description: >-
+    The API endpoint described in this section is a convenience endpoint that reboots the Actor task's
+    last run.
+
+
+    Same as of functionality described in: [Reboot run](/api/v2/actor-run-reboot-post)
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Last Actor task run's reboot
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-last-actor-task-run-s-reboot-api-openapi.yml
+- aid: apify:apify-logs-api
+  name: Apify Logs API
+  description: >-
+    The API endpoints described in this section are used the download the logs
+
+    generated by Actor builds and runs. Note that only the trailing 5M characters
+
+    of the log are stored, the rest is discarded.
+
+
+    :::note
+
+
+    Note that the endpoints do not require the authentication token, the calls
+
+    are authenticated using a hard-to-guess ID of the Actor build or run.
+
+
+    :::
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Logs
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-logs-api-openapi.yml
+- aid: apify:apify-schedules-api
+  name: Apify Schedules API
+  description: >-
+    This section describes API endpoints for managing schedules.
+
+
+    Schedules are used to automatically start your Actors at certain times. Each schedule
+
+    can be associated with a number of Actors and Actor tasks. It is also possible
+
+    to override the settings of each Actor (task) similarly to when invoking the Actor
+
+    (task) using the API.
+
+    For more information, see [Schedules documentation](https://docs.apify.com/platform/schedules).
+
+
+    Each schedule is assigned actions for it to perform. Actions can be of two types
+
+    - `RUN_ACTOR` and `RUN_ACTOR_TASK`.
+
+
+    For details, see the documentation of the [Get schedule](#/reference/schedules/schedule-object/get-schedule)
+    endpoint.
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Schedules
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-schedules-api-openapi.yml
+- aid: apify:apify-storage-datasets-api
+  name: Apify Storage/Datasets API
+  description: >-
+    This section describes API endpoints to manage Datasets.
+
+
+    Dataset is a storage for structured data, where each record stored has the same attributes,
+
+    such as online store products or real estate offers. You can imagine it as a table,
+
+    where each object is a row and its attributes are columns. Dataset is an append-only
+
+    storage - you can only add new records to it but you cannot modify or remove existing
+
+    records. Typically it is used to store crawling results.
+
+
+    For more information, see the [Datasets documentation](https://docs.apify.com/platform/storage/dataset).
+
+
+    :::note
+
+
+    Some of the endpoints do not require the authentication token, the calls
+
+    are authenticated using the hard-to-guess ID of the dataset.
+
+
+    :::
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Storage/Datasets
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-storage-datasets-api-openapi.yml
+- aid: apify:apify-storage-key-value-stores-api
+  name: Apify Storage/Key-value stores API
+  description: >-
+    This section describes API endpoints to manage Key-value stores.
+
+    Key-value store is a simple storage for saving and reading data records or files.
+
+    Each data record is represented by a unique key and associated with a MIME content type.
+
+    Key-value stores are ideal for saving screenshots, Actor inputs and outputs, web pages,
+
+    PDFs or to persist the state of crawlers.
+
+
+    For more information, see the [Key-value store documentation](https://docs.apify.com/platform/storage/key-value-store).
+
+
+    :::note
+
+
+    Some of the endpoints do not require the authentication token, the calls
+
+    are authenticated using a hard-to-guess ID of the key-value store.
+
+
+    :::
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Storage/Key-value stores
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-storage-key-value-stores-api-openapi.yml
+- aid: apify:apify-storage-request-queues-api
+  name: Apify Storage/Request queues API
+  description: >-
+    This section describes API endpoints to create, manage, and delete request queues.
+
+
+    Request queue is a storage for a queue of HTTP URLs to crawl, which is typically
+
+    used for deep crawling of websites where you
+
+    start with several URLs and then recursively follow links to other pages.
+
+    The storage supports both breadth-first and depth-first crawling orders.
+
+
+    For more information, see the [Request queue documentation](https://docs.apify.com/platform/storage/request-queue).
+
+
+    :::note
+
+
+    Some of the endpoints do not require the authentication token, the calls
+
+    are authenticated using the hard-to-guess ID of the queue.
+
+
+    :::
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Storage/Request queues
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-storage-request-queues-api-openapi.yml
+- aid: apify:apify-storage-request-queues-requests-api
+  name: Apify Storage/Request queues/Requests API
+  description: >-
+    This section describes API endpoints to create, manage, and delete requests within request queues.
+
+
+    Request queue is a storage for a queue of HTTP URLs to crawl, which is typically
+
+    used for deep crawling of websites where you
+
+    start with several URLs and then recursively follow links to other pages.
+
+    The storage supports both breadth-first and depth-first crawling orders.
+
+
+    For more information, see the [Request queue documentation](https://docs.apify.com/platform/storage/request-queue).
+
+
+    :::note
+
+
+    Some of the endpoints do not require the authentication token, the calls
+
+    are authenticated using the hard-to-guess ID of the queue.
+
+
+    :::
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Storage/Request queues/Requests
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-storage-request-queues-requests-api-openapi.yml
+- aid: apify:apify-storage-request-queues-requests-locks-api
+  name: Apify Storage/Request queues/Requests locks API
+  description: >-
+    This section describes API endpoints to create, manage, and delete request locks within request queues.
+
+
+    Request queue is a storage for a queue of HTTP URLs to crawl, which is typically
+
+    used for deep crawling of websites where you
+
+    start with several URLs and then recursively follow links to other pages.
+
+    The storage supports both breadth-first and depth-first crawling orders.
+
+
+    For more information, see the [Request queue documentation](https://docs.apify.com/platform/storage/request-queue).
+
+
+    :::note
+
+
+    Some of the endpoints do not require the authentication token, the calls
+
+    are authenticated using the hard-to-guess ID of the queue.
+
+
+    :::
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Storage/Request queues/Requests locks
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-storage-request-queues-requests-locks-api-openapi.yml
+- aid: apify:apify-store-api
+  name: Apify Store API
+  description: >-
+    [Apify Store](https://apify.com/store) is home to thousands of public Actors available
+
+    to the Apify community.
+
+    The API endpoints described in this section are used to retrieve these Actors.
+
+
+    :::note
+
+
+    These endpoints do not require the authentication token.
+
+
+    :::
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Store
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-store-api-openapi.yml
+- aid: apify:apify-tools-api
+  name: Apify Tools API
+  description: >-
+    The API endpoints described in this section let you test your proxy connection.
+
+
+    For details, see the [Apify Proxy](https://docs.apify.com/platform/proxy).
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Tools
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-tools-api-openapi.yml
+- aid: apify:apify-tools-encoding-api
+  name: Apify Tools/Encoding API
+  description: >-
+    The API endpoints described in this section provide utility tools for encoding and decoding data.
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Tools/Encoding
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-tools-encoding-api-openapi.yml
+- aid: apify:apify-users-usage-api
+  name: Apify Users/Usage API
+  description: >-
+    The API endpoints described in this section return your account's usage for the
+
+    current monthly cycle and let you view and update your account limits.
+
+
+    For details, see the [Limits](https://docs.apify.com/account/limits).
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Users/Usage
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-users-usage-api-openapi.yml
+- aid: apify:apify-webhooks-webhook-dispatches-api
+  name: Apify Webhooks/Webhook dispatches API
+  description: This section describes API endpoints to get webhook dispatches.
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Webhooks/Webhook dispatches
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-webhooks-webhook-dispatches-api-openapi.yml
+- aid: apify:apify-webhooks-webhooks-api
+  name: Apify Webhooks/Webhooks API
+  description: >-
+    This section describes API endpoints to manage webhooks.
+
+
+    Webhooks provide an easy and reliable way to configure the Apify platform
+
+    to carry out an action (e.g. a HTTP request to another service) when a certain
+
+    system event occurs.
+
+    For example, you can use webhooks to start another Actor when an Actor run finishes
+
+    or fails.
+
+
+    For more information see [Webhooks documentation](https://docs.apify.com/platform/integrations/webhooks).
+  humanURL: https://apify.com
+  baseURL: https://api.apify.com/v2
+  tags:
+  - Webhooks/Webhooks
+  properties:
+  - type: OpenAPI
+    url: openapi/apify-webhooks-webhooks-api-openapi.yml
 common:
 - type: Plans
   url: plans/apify-plans-pricing.yml

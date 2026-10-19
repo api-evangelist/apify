@@ -48,16 +48,6 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
-    Error:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            type:
-              type: string
-            message:
-              type: string
     RequestQueueList:
       type: object
       properties:
@@ -83,6 +73,16 @@ components:
         pendingRequestCount:
           type: integer
           example: 42
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
   responses:
     Unauthorized:
       description: Authentication failed.

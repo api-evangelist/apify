@@ -1,0 +1,1370 @@
+openapi: 3.2.0
+info:
+  title: Apify Store API
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  description: 'The Apify API (version 2) provides programmatic access to the Apify
+
+    platform. The API is organized
+
+    around RESTful
+
+    HTTP endpoints. You can download the complete OpenAPI schema of Apify API in the YAML or JSON formats. The source code is also available on GitHub. All requests and responses (including errors) are encoded in
+
+    JSON format with UTF-8 encoding,
+
+    with a few exceptions that are explicitly described in the reference. To access the API, we recommend using one of our API clients:
+
+
+    Stable API clients:
+
+    - For Node.js, we recommend the `apify-client` NPM
+
+    package. - For Python, we recommend the `apify-client` PyPI
+
+    package. Experimental API clients:
+
+    - For Java, we recommend the `apify-client` Maven central component. - For Rust, we recommend the `apify-client` crate. - For .NET, we recommend the `apify-client` Nuget package. - For PHP, we recommend the `apify-client` Packagist package. - For Go, we recommend the `apify-client` package. The clients'' functions correspond to the API endpoints and have the same
+
+    parameters. This simplifies development of apps that depend on the Apify
+
+    platform. :::note Important Request Details
+
+
+    - `Content-Type` header: For requests with a JSON body, you must include the `Content-Type: application/json` header. - Method override: You can override the HTTP method using the `method` query parameter. This is useful for clients that can only send `GET` requests. For example, to call a `POST` endpoint, append `?method=POST` to the URL of your `GET` request. :::
+
+
+    ## Authentication
+
+
+    **You can find your API token on the
+
+    Integrations page in the
+
+    Apify Console.**
+
+
+    To use your token in a request, either:
+
+
+    - Add the token to your request''s `Authorization` header as `Bearer `. E.g., `Authorization: Bearer xxxxxxx`. More info. (Recommended). - Add it as the `token` parameter to your request URL. (Less secure). Using your token in the request header is more secure than using it as a URL
+
+    parameter because URLs are often stored
+
+    in browser history and server logs. This creates a chance for someone
+
+    unauthorized to access your API token. **Never share your API token or password with untrusted parties!**
+
+
+    For more information, see our
+
+    integrations documentation. ### Agentic payments
+
+
+    AI agents can authenticate and pay for Actor runs without an Apify account
+
+    using agentic payments. Instead of an API token, the request carries a
+
+    payment credential that both authorizes and pays for the call. Apify supports
+
+    the x402 protocol
+
+    (`PAYMENT-SIGNATURE` header) and
+
+    Skyfire
+
+    (`skyfire-pay-id` header). ## Basic usage
+
+
+    To run an Actor, send a POST request to the Run
+
+    Actor endpoint using either the
+
+    Actor ID code (e.g. `vKg4IjxZbEYTYeW8T`) or its name (e.g. `janedoe~my-actor`):
+
+
+    `https://api.apify.com/v2/actors/[actor_id]/runs`
+
+
+    If the Actor is not runnable anonymously, you will receive a 401 or 403
+
+    response code. This means you need to add your secret API
+
+    token to the request''s
+
+    `Authorization` header (recommended) or as a
+
+    URL query parameter `?token=[your_token]` (less secure). Optionally, you can include the query parameters described in the Run
+
+    Actor section to customize your
+
+    run. If you''re using Node.js, the best way to run an Actor is using the
+
+    `Apify.call()` method from the Apify
+
+    SDK. It
+
+    runs the Actor using the account you are currently logged into (determined
+
+    by the secret API token). The result is an Actor run
+
+    object and its output (if
+
+    any). A typical workflow is as follows:
+
+
+    1. Run an Actor or task using the Run
+
+    Actor or Run
+
+    task API endpoints. 2. Monitor the Actor run by periodically polling its progress using the Get
+
+    run API
+
+    endpoint. 3. Fetch the results from the Get
+
+    items API endpoint using the
+
+    `defaultDatasetId`, which you receive in the Run request response. Additional data may be stored in a key-value store. You can fetch them from
+
+    the Get record API endpoint
+
+    using the `defaultKeyValueStoreId` and the store''s `key`. **Note**: Instead of periodic polling, you can also run your
+
+    Actor or
+
+    task
+
+    synchronously.'
+  contact: {}
+  version: v2-2026-10-08T073338Z
+servers:
+- url: https://api.apify.com
+  variables: {}
+security:
+- httpBearer: []
+- apiKey: []
+tags:
+- name: Store
+  x-displayName: Get data from Apify Store
+  x-legacy-doc-urls:
+  - '#/reference/store'
+  - '#tag/Store'
+  - '#/reference/store/store-actors-collection'
+  - '#tag/StoreStore-Actors-collection'
+  description: 'Apify Store is home to thousands of public Actors available
+
+    to the Apify community.
+
+    The API endpoints described in this section are used to retrieve these Actors.
+
+
+    :::note
+
+
+    These endpoints do not require the authentication token.
+
+
+    :::'
+  x-trait: true
+paths:
+  /v2/store:
+    get:
+      tags:
+      - Store
+      summary: Get list of Actors in Store
+      description: 'Gets the list of public Actors in Apify Store. You can use `search`
+
+        parameter to search Actors by string in title, name, description, username
+
+        and readme.
+
+        If you need detailed info about a specific Actor, use the Get
+
+        Actor endpoint.
+
+
+        The endpoint supports pagination using the `limit` and `offset` parameters.
+
+        It will not return more than 1,000 records.'
+      operationId: store_get
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      - name: search
+        in: query
+        description: 'String to search by. The search runs on the following fields: `title`,
+
+          `name`, `description`, `username`, `readme`.
+
+          '
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: web scraper
+      - name: sortBy
+        in: query
+        description: 'Specifies the field by which to sort the results. The supported values
+
+          are `relevance` (default), `popularity`, `newest` and `lastUpdate`.
+
+          '
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: '''popularity'''
+      - name: category
+        in: query
+        description: Filters the results by the specified category.
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: '''AI'''
+      - name: username
+        in: query
+        description: Filters the results by the specified username.
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: '''apify'''
+      - name: pricingModel
+        in: query
+        description: 'Only return Actors with the specified pricing model.
+
+          '
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - FREE
+          - FLAT_PRICE_PER_MONTH
+          - PRICE_PER_DATASET_ITEM
+          - PAY_PER_EVENT
+          example: FREE
+      - name: allowsAgenticUsers
+        in: query
+        description: 'If true, only return Actors that allow agentic users. If false, only
+
+          return Actors that do not allow agentic users.
+
+          '
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          example: true
+      - name: responseFormat
+        in: query
+        description: 'Controls the shape of the response. Use `full` (default) for the
+
+          complete response including image URLs and all fields. Use `agent`
+
+          for a reduced field set optimized for LLM consumers, which only
+
+          includes `id`, `title`, `name`, `username`, `description`, `notice`,
+
+          `badge`, `categories`, and minimal `stats`.
+
+          '
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - full
+          - agent
+          default: full
+          example: agent
+      - name: includeUnrunnableActors
+        in: query
+        description: 'By default, search results exclude Actors that are not safe to run
+
+          automatically (e.g. Actors from developers who haven''t passed KYC, or
+
+          full-permission Actors without a large user base). Set to `true` to
+
+          bypass this safety filtering and include all Actors in the results.
+
+          '
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          default: false
+          example: true
+      responses:
+        '200':
+          description: ''
+          headers:
+            X-Apify-Pagination-Offset:
+              description: The offset of the first item in the current page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '0'
+            X-Apify-Pagination-Limit:
+              description: The maximum number of items returned per page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '100'
+            X-Apify-Pagination-Count:
+              description: The number of items returned in the current page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '100'
+            X-Apify-Pagination-Total:
+              description: The total number of items available.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '10204'
+            X-Apify-Pagination-Desc:
+              description: Whether the items are sorted in descending order.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: 'false'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfStoreActorsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/store/store-actors-collection/get-list-of-actors-in-store
+      - https://docs.apify.com/api/v2#/reference/store/get-list-of-actors-in-store
+      - https://docs.apify.com/api/v2#tag/StoreStore-Actors-collection/operation/store_get
+components:
+  parameters:
+    offset:
+      name: offset
+      in: query
+      description: 'Number of items that should be skipped at the start. The default value is `0`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 0
+    limit:
+      name: limit
+      in: query
+      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 1000
+  schemas:
+    StoreActor:
+      title: StoreActor
+      required:
+      - id
+      - title
+      - name
+      - username
+      - stats
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - zdc3Pyhyz3m8vjDeM
+        title:
+          type: string
+          examples:
+          - My Public Actor
+        name:
+          type: string
+          examples:
+          - my-public-actor
+        username:
+          type: string
+          examples:
+          - jane35
+        userFullName:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Jane H. Doe
+        description:
+          type:
+          - string
+          - 'null'
+          examples:
+          - My public actor!
+        categories:
+          type: array
+          items:
+            type: string
+          example:
+          - MARKETING
+          - LEAD_GENERATION
+        notice:
+          $ref: '#/components/schemas/ActorNotice'
+        pictureUrl:
+          type:
+          - string
+          - 'null'
+          examples:
+          - https://...
+        userPictureUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+          examples:
+          - https://...
+        url:
+          type:
+          - string
+          - 'null'
+          format: uri
+          examples:
+          - https://...
+        stats:
+          $ref: '#/components/schemas/ActorStats'
+        currentPricingInfo:
+          $ref: '#/components/schemas/CurrentPricingInfo'
+        isWhiteListedForAgenticPayments:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the Actor is whitelisted for agentic payment processing.
+        actorReviewCount:
+          type: integer
+          examples:
+          - 69
+        actorReviewRating:
+          type: number
+          examples:
+          - 4.7
+        bookmarkCount:
+          type: integer
+          examples:
+          - 1269
+        badge:
+          type:
+          - string
+          - 'null'
+          examples:
+          - null
+        readmeSummary:
+          type: string
+          description: A brief, LLM-generated readme summary
+    PaginationResponse:
+      title: PaginationResponse
+      description: Common pagination fields for list responses.
+      required:
+      - total
+      - offset
+      - limit
+      - desc
+      - count
+      type: object
+      properties:
+        total:
+          type: integer
+          description: The total number of items available across all pages.
+          minimum: 0
+          examples:
+          - 1
+        offset:
+          type: integer
+          description: The starting position for this page of results.
+          minimum: 0
+          examples:
+          - 0
+        limit:
+          type: integer
+          description: The maximum number of items returned per page.
+          minimum: 1
+          examples:
+          - 1000
+        desc:
+          type: boolean
+          description: Whether the results are sorted in descending order.
+          examples:
+          - false
+        count:
+          type: integer
+          description: The number of items returned in this response.
+          minimum: 0
+          examples:
+          - 1
+    ListOfStoreActors:
+      title: ListOfStoreActors
+      allOf:
+      - $ref: '#/components/schemas/PaginationResponse'
+      - type: object
+        required:
+        - items
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/StoreActor'
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
+    CurrentPricingInfo:
+      title: CurrentPricingInfo
+      required:
+      - pricingModel
+      type: object
+      properties:
+        pricingModel:
+          type: string
+          examples:
+          - FREE
+        apifyMarginPercentage:
+          type: number
+          examples:
+          - 0.2
+          description: 'Apify''s share of the revenue generated under this pricing info record, as a fraction between 0 and 1. Set by the Apify platform.
+
+            '
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2023-01-01T00:00:00.000Z'
+        startedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2023-01-01T00:00:00.000Z'
+        notifiedAboutChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - null
+        notifiedAboutFutureChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - null
+        isPriceChangeNotificationSuppressed:
+          type: boolean
+          examples:
+          - false
+        forceContainsSignificantPriceChange:
+          type: boolean
+          examples:
+          - false
+        isPPEPlatformUsagePaidByUser:
+          type: boolean
+          examples:
+          - false
+        reasonForChange:
+          type:
+          - string
+          - 'null'
+          examples:
+          - null
+        trialMinutes:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - null
+        unitName:
+          type:
+          - string
+          - 'null'
+          examples:
+          - null
+        pricePerUnitUsd:
+          type:
+          - number
+          - 'null'
+          examples:
+          - null
+        minimalMaxTotalChargeUsd:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.5
+        pricingPerEvent:
+          type:
+          - object
+          - 'null'
+          description: Per-event pricing configuration for pay-per-event Actors.
+          additionalProperties: true
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    ListOfStoreActorsResponse:
+      title: ListOfStoreActorsResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfStoreActors'
+      example:
+        data:
+          total: 100
+          offset: 0
+          limit: 1000
+          desc: false
+          count: 1
+          items:
+          - id: zdc3Pyhyz3m8vjDeM
+            title: My Public Actor
+            name: my-public-actor
+            username: jane35
+            userFullName: Jane Doe
+            description: My public Actor!
+            pictureUrl: https://...
+            userPictureUrl: https://...
+            url: https://...
+            stats:
+              totalBuilds: 9
+              totalRuns: 16
+              totalUsers: 6
+              totalUsers7Days: 2
+              totalUsers30Days: 6
+              totalUsers90Days: 6
+              totalMetamorphs: 2
+              lastRunStartedAt: '2019-07-08T14:01:05.546Z'
+            currentPricingInfo:
+              pricingModel: FREE
+            isWhiteListedForAgenticPayments: true
+          - id: zdc3Pyhyz3m8vjDeM
+            title: My Public Actor
+            name: my-public-actor
+            username: jane35
+            userFullName: Jane H. Doe
+            categories:
+            - MARKETING
+            - LEAD_GENERATION
+            description: My public Actor!
+            pictureUrl: https://...
+            userPictureUrl: https://...
+            url: https://...
+            stats:
+              totalBuilds: 9
+              totalRuns: 16
+              totalUsers: 6
+              totalUsers7Days: 2
+              totalUsers30Days: 6
+              totalUsers90Days: 6
+              totalMetamorphs: 2
+              lastRunStartedAt: '2019-07-08T14:01:05.546Z'
+            currentPricingInfo:
+              pricingModel: FREE
+            isWhiteListedForAgenticPayments: false
+    ActorStats:
+      title: ActorStats
+      type: object
+      description: Usage statistics and Apify Store metrics for the Actor.
+      properties:
+        totalBuilds:
+          type: integer
+          examples:
+          - 9
+          description: The total number of builds of the Actor.
+        totalRuns:
+          type: integer
+          examples:
+          - 16
+          description: The total number of runs of the Actor.
+        totalUsers:
+          type: integer
+          examples:
+          - 6
+          description: The total number of Actor users, including its owner.
+        totalUsers7Days:
+          type: integer
+          examples:
+          - 2
+          description: The number of active users of the Actor in the last 7 days.
+        totalUsers30Days:
+          type: integer
+          examples:
+          - 6
+          description: The number of active users of the Actor in the last 30 days.
+        totalUsers90Days:
+          type: integer
+          examples:
+          - 6
+          description: The number of active users of the Actor in the last 90 days.
+        totalMetamorphs:
+          type: integer
+          examples:
+          - 2
+          description: The total number of times a run of another Actor was [metamorphed](https://docs.apify.com/platform/actors/development/programming-interface/metamorph) into this Actor.
+        lastRunStartedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-07-08T14:01:05.546Z'
+          description: The date and time the most recent run of the Actor started.
+        actorReviewCount:
+          type: integer
+          examples:
+          - 69
+          description: The number of reviews the Actor has received in Apify Store.
+        actorReviewRating:
+          type: number
+          examples:
+          - 4.7
+          description: The average rating of the Actor in Apify Store.
+        bookmarkCount:
+          type: integer
+          examples:
+          - 1269
+          description: The number of users who bookmarked the Actor in Apify Store.
+        publicActorRunStats30Days:
+          type: object
+          description: 'Run status counts from the last 30 days. Only for public Actors.
+
+            Excludes runs started by the Actor''s owner.
+
+            '
+          properties:
+            ABORTED:
+              type: integer
+              examples:
+              - 2542
+              description: The number of runs that were aborted.
+            FAILED:
+              type: integer
+              examples:
+              - 1234
+              description: The number of runs that failed.
+            SUCCEEDED:
+              type: integer
+              examples:
+              - 732805
+              description: The number of runs that succeeded.
+            TIMED-OUT:
+              type: integer
+              examples:
+              - 12556
+              description: The number of runs that timed out.
+            TOTAL:
+              type: integer
+              examples:
+              - 749137
+              description: The total number of runs.
+    ErrorType:
+      title: ErrorType
+      type: string
+      description: Machine-processable error type identifier.
+      enum:
+      - 3d-secure-auth-failed
+      - access-right-already-exists
+      - action-not-found
+      - actor-already-rented
+      - actor-can-not-be-rented
+      - actor-disabled
+      - actor-is-not-rented
+      - actor-memory-limit-exceeded
+      - actor-name-exists-new-owner
+      - actor-name-not-unique
+      - actor-not-found
+      - actor-not-github-actor
+      - actor-not-public
+      - actor-permission-level-not-supported-for-agentic-payments
+      - actor-review-already-exists
+      - actor-run-failed
+      - actor-standby-not-supported-for-agentic-payments
+      - actor-task-name-not-unique
+      - agentic-payment-info-retrieval-error
+      - agentic-payment-information-missing
+      - agentic-payment-insufficient-amount
+      - agentic-payment-provider-internal-error
+      - agentic-payment-provider-unauthorized
+      - airtable-webhook-deprecated
+      - already-subscribed-to-paid-actor
+      - apify-plan-required-to-use-paid-actor
+      - apify-signup-not-allowed
+      - auth-method-not-supported
+      - authorization-server-not-found
+      - auto-issue-date-invalid
+      - background-check-required
+      - billing-system-error
+      - black-friday-plan-expired
+      - braintree-error
+      - braintree-not-linked
+      - braintree-operation-timed-out
+      - braintree-unsupported-currency
+      - build-not-found
+      - build-outdated
+      - cannot-add-apify-events-to-ppe-actor
+      - cannot-add-multiple-pricing-infos
+      - cannot-add-pricing-info-that-alters-past
+      - cannot-add-second-future-pricing-info
+      - cannot-build-actor-from-webhook
+      - cannot-change-billing-interval
+      - cannot-change-owner
+      - cannot-charge-apify-event
+      - cannot-charge-non-pay-per-event-actor
+      - cannot-comment-as-other-user
+      - cannot-copy-actor-task
+      - cannot-create-payout
+      - cannot-create-public-actor
+      - cannot-create-tax-transaction
+      - cannot-delete-critical-actor
+      - cannot-delete-invoice
+      - cannot-delete-paid-actor
+      - cannot-disable-one-time-event-for-apify-start-event
+      - cannot-disable-organization-with-enabled-members
+      - cannot-disable-user-with-subscription
+      - cannot-link-oauth-to-unverified-email
+      - cannot-metamorph-to-pay-per-result-actor
+      - cannot-modify-actor-pricing-too-frequently
+      - cannot-modify-actor-pricing-with-immediate-effect
+      - cannot-monetize-without-payout-billing-info
+      - cannot-override-paid-actor-trial
+      - cannot-permanently-delete-subscription
+      - cannot-publish-actor
+      - cannot-publish-actor-task
+      - cannot-reduce-last-full-token
+      - cannot-reimburse-more-than-original-charge
+      - cannot-reimburse-non-rental-charge
+      - cannot-remove-own-actor-from-recently-used
+      - cannot-remove-payment-method
+      - cannot-remove-pricing-info
+      - cannot-remove-running-run
+      - cannot-remove-user-with-public-actors
+      - cannot-remove-user-with-subscription
+      - cannot-remove-user-with-unpaid-invoice
+      - cannot-rename-env-var
+      - cannot-rent-paid-actor
+      - cannot-review-own-actor
+      - cannot-set-access-rights-for-owner
+      - cannot-set-is-status-message-terminal
+      - cannot-unpublish-critical-actor
+      - cannot-unpublish-paid-actor
+      - cannot-unpublish-profile
+      - cannot-update-invoice-field
+      - concurrent-runs-limit-exceeded
+      - concurrent-update-detected
+      - conference-token-not-found
+      - content-encoding-forbidden-for-html
+      - coupon-already-redeemed
+      - coupon-expired
+      - coupon-for-new-customers
+      - coupon-for-subscribed-users
+      - coupon-limits-are-in-conflict-with-current-limits
+      - coupon-max-number-of-redemptions-reached
+      - coupon-not-found
+      - coupon-not-unique
+      - coupons-disabled
+      - create-github-issue-not-allowed
+      - creator-plan-not-available
+      - cron-expression-invalid
+      - daily-ai-token-limit-exceeded
+      - daily-publication-limit-exceeded
+      - dataset-does-not-have-fields-schema
+      - dataset-does-not-have-schema
+      - dataset-locked
+      - dataset-schema-invalid
+      - dcr-not-supported
+      - default-dataset-not-found
+      - deleting-default-build
+      - deleting-unfinished-build
+      - email-already-taken
+      - email-already-taken-removed-user
+      - email-domain-not-allowed-for-coupon
+      - email-invalid
+      - email-not-allowed
+      - email-not-valid
+      - email-update-too-soon
+      - elevated-permissions-needed
+      - env-var-already-exists
+      - exchange-rate-fetch-failed
+      - expired-conference-token
+      - failed-to-charge-user
+      - final-invoice-negative
+      - full-permission-actor-blocked-for-admin
+      - full-permission-actor-not-approved
+      - github-branch-empty
+      - github-issue-already-exists
+      - github-public-key-not-found
+      - github-repository-not-found
+      - github-signature-does-not-match-payload
+      - github-user-not-authorized-for-issues
+      - gmail-not-allowed
+      - id-does-not-match
+      - incompatible-billing-interval
+      - incomplete-payout-billing-info
+      - inconsistent-currencies
+      - incorrect-pricing-modifier-prefix
+      - input-json-invalid-characters
+      - input-json-not-object
+      - input-json-too-long
+      - input-update-collision
+      - insufficient-permissions
+      - insufficient-permissions-to-change-field
+      - insufficient-security-measures
+      - insufficient-tax-country-evidence
+      - integration-auth-error
+      - internal-server-error
+      - invalid-billing-info
+      - invalid-billing-period-for-payout
+      - invalid-build
+      - invalid-client-key
+      - invalid-collection
+      - invalid-conference-login-password
+      - invalid-content-type-header
+      - invalid-credentials
+      - invalid-git-auth-token
+      - invalid-github-issue-url
+      - invalid-header
+      - invalid-id
+      - invalid-idempotency-key
+      - invalid-input
+      - invalid-input-schema
+      - invalid-invoice
+      - invalid-invoice-type
+      - invalid-issue-date
+      - invalid-label-params
+      - invalid-main-account-user-id
+      - invalid-oauth-app
+      - invalid-oauth-scope
+      - invalid-one-time-invoice
+      - invalid-parameter
+      - invalid-payout-status
+      - invalid-picture-url
+      - invalid-record-key
+      - invalid-request
+      - invalid-resource-type
+      - invalid-signature
+      - invalid-subscription-plan
+      - invalid-tax-number
+      - invalid-tax-number-format
+      - invalid-token
+      - invalid-token-type
+      - invalid-two-factor-code
+      - invalid-two-factor-code-or-recovery-code
+      - invalid-two-factor-recovery-code
+      - invalid-username
+      - invalid-value
+      - invitation-invalid-resource-type
+      - invitation-no-longer-valid
+      - invoice-canceled
+      - invoice-cannot-be-refunded-due-to-too-high-amount
+      - invoice-incomplete
+      - invoice-is-draft
+      - invoice-locked
+      - invoice-must-be-buffer
+      - invoice-not-canceled
+      - invoice-not-draft
+      - invoice-not-found
+      - invoice-outdated
+      - invoice-paid-already
+      - issue-already-connected-to-github
+      - issue-not-found
+      - issues-bad-request
+      - issuer-not-registered
+      - job-finished
+      - label-already-linked
+      - last-api-token
+      - limit-reached
+      - max-items-must-be-greater-than-zero
+      - max-metamorphs-exceeded
+      - max-total-charge-usd-below-minimum
+      - max-total-charge-usd-must-be-greater-than-zero
+      - method-not-allowed
+      - migration-disabled
+      - missing-actor-rights
+      - missing-api-token
+      - missing-billing-info
+      - missing-line-items
+      - missing-payment-date
+      - missing-payout-billing-info
+      - missing-proxy-password
+      - missing-reporting-fields
+      - missing-resource-name
+      - missing-settings
+      - missing-username
+      - monthly-usage-limit-too-low
+      - more-than-one-update-not-allowed
+      - multiple-records-found
+      - must-be-admin
+      - name-not-unique
+      - next-runtime-computation-failed
+      - no-columns-in-exported-dataset
+      - no-payment-attempt-for-refund-found
+      - no-payment-method-available
+      - no-team-account-seats-available
+      - non-temporary-email
+      - not-enough-usage-to-run-paid-actor
+      - not-implemented
+      - not-supported-currencies
+      - o-auth-service-already-connected
+      - o-auth-service-not-connected
+      - oauth-resource-access-failed
+      - one-time-invoice-already-marked-paid
+      - only-drafts-can-be-deleted
+      - operation-canceled
+      - operation-not-allowed
+      - operation-timed-out
+      - organization-cannot-own-itself
+      - organization-role-not-found
+      - overlapping-payout-billing-periods
+      - own-token-required
+      - page-not-found
+      - param-not-one-of
+      - parameter-required
+      - parameters-mismatched
+      - password-reset-email-already-sent
+      - password-reset-token-expired
+      - pay-as-you-go-without-monthly-interval
+      - payment-attempt-status-message-required
+      - payout-already-paid
+      - payout-canceled
+      - payout-invalid-state
+      - payout-must-be-approved-to-be-marked-paid
+      - payout-not-found
+      - payout-number-already-exists
+      - phone-number-invalid
+      - phone-number-landline
+      - phone-number-opted-out
+      - phone-verification-disabled
+      - platform-feature-disabled
+      - price-overrides-validation-failed
+      - pricing-model-not-supported
+      - promotional-plan-not-available
+      - proxy-auth-ip-not-unique
+      - public-actor-disabled
+      - query-timeout
+      - quoted-price-outdated
+      - rate-limit-exceeded
+      - recaptcha-invalid
+      - recaptcha-required
+      - record-not-found
+      - record-not-public
+      - record-or-token-not-found
+      - record-too-large
+      - redirect-uri-mismatch
+      - reduced-plan-not-available
+      - rental-charge-already-reimbursed
+      - rental-not-allowed
+      - request-aborted-prematurely
+      - request-handled-or-locked
+      - request-id-invalid
+      - request-queue-duplicate-requests
+      - request-too-large
+      - requested-dataset-view-does-not-exist
+      - resume-token-expired
+      - run-failed
+      - run-input-body-not-valid-json
+      - run-timeout-exceeded
+      - russia-is-evil
+      - same-user
+      - schedule-actor-not-found
+      - schedule-actor-task-not-found
+      - schedule-name-not-unique
+      - schema-validation
+      - schema-validation-error
+      - schema-validation-failed
+      - service-worker-registration-not-allowed
+      - sign-up-method-not-allowed
+      - slack-integration-not-custom
+      - socket-closed
+      - socket-destroyed
+      - store-schema-invalid
+      - store-terms-not-accepted
+      - stripe-enabled
+      - stripe-generic-decline
+      - stripe-not-enabled
+      - stripe-not-enabled-for-user
+      - tagged-build-required
+      - tax-country-invalid
+      - tax-number-invalid
+      - tax-number-validation-failed
+      - taxamo-call-failed
+      - taxamo-request-failed
+      - testing-error
+      - token-not-provided
+      - too-few-versions
+      - too-many-actor-tasks
+      - too-many-actors
+      - too-many-labels-on-resource
+      - too-many-mcp-connectors
+      - too-many-o-auth-apps
+      - too-many-organizations
+      - too-many-requests
+      - too-many-schedules
+      - too-many-ui-access-keys
+      - too-many-user-labels
+      - too-many-values
+      - too-many-versions
+      - too-many-webhooks
+      - unexpected-route
+      - unknown-build-tag
+      - unknown-payment-provider
+      - unsubscribe-token-invalid
+      - unsupported-actor-pricing-model-for-agentic-payments
+      - unsupported-content-encoding
+      - unsupported-file-type-for-issue
+      - unsupported-file-type-image-expected
+      - unsupported-file-type-text-or-json-expected
+      - unsupported-permission
+      - upcoming-subscription-bill-not-up-to-date
+      - user-already-exists
+      - user-already-verified
+      - user-creates-organizations-too-fast
+      - user-disabled
+      - user-email-is-disposable
+      - user-email-not-set
+      - user-email-not-verified
+      - user-has-no-subscription
+      - user-integration-not-found
+      - user-is-already-invited
+      - user-is-already-organization-member
+      - user-is-not-member-of-organization
+      - user-is-not-organization
+      - user-is-organization
+      - user-is-organization-owner
+      - user-is-removed
+      - user-not-found
+      - user-not-logged-in
+      - user-not-verified
+      - user-or-token-not-found
+      - user-plan-not-allowed-for-coupon
+      - user-problem-with-card
+      - user-record-not-found
+      - username-already-taken
+      - username-missing
+      - username-not-allowed
+      - username-removal-forbidden
+      - username-required
+      - verification-email-already-sent
+      - verification-token-expired
+      - version-already-exists
+      - versions-size-exceeded
+      - weak-password
+      - x402-agentic-payment-already-finalized
+      - x402-agentic-payment-insufficient-amount
+      - x402-agentic-payment-malformed-token
+      - x402-agentic-payment-settlement-failed
+      - x402-agentic-payment-settlement-in-progress
+      - x402-agentic-payment-settlement-stuck
+      - x402-agentic-payment-unauthorized
+      - x402-payment-required
+      - zero-invoice
+    ActorNotice:
+      title: ActorNotice
+      type:
+      - string
+      - 'null'
+      description: A warning displayed on the Actor's page in Apify Store and Console. Can be set by the Actor's developer or automatically by Apify's quality checks.
+      enum:
+      - NONE
+      - RESIDENTIAL_PROXY_REQUIRED
+      - UNDER_MAINTENANCE
+      - null
+      examples:
+      - UNDER_MAINTENANCE
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      description: 'Bearer token provided in the `Authorization` header (e.g., `Authorization: Bearer your_token`—recommended). [More info](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization).
+
+
+        Use your API token to authenticate requests. You can find it on the [Integrations page](https://console.apify.com/account#/integrations) in Apify Console. This method is more secure than query parameters, as headers are not logged in browser history or server logs.
+
+
+        :::danger Security
+
+
+        Do not share your API token (or account password) with untrusted parties.
+
+
+        :::
+
+
+        _When is authentication required?_
+
+        - _Required_ for private Actors, tasks, or resources (e.g., builds of private Actors).
+
+        - _Required_ when using named formats for IDs (e.g., `username~store-name` for stores or `username~queue-name` for queues).
+
+        - _Optional_ for public Actors or resources (e.g., builds of public Actors can be queried without a token).
+
+
+        For more information, see our [integrations documentation](https://docs.apify.com/platform/integrations).'
+    apiKey:
+      type: apiKey
+      name: token
+      in: query
+      description: 'API token provided as a query parameter (e.g., `?token=your_token`—less secure).
+
+
+        Use your API token to authenticate requests. You can find it on the [Integrations page](https://console.apify.com/account#/integrations) in Apify Console.
+
+
+        :::danger Security
+
+
+        Do not share your API token (or account password) with untrusted parties.
+
+
+        :::
+
+
+        _When is authentication required?_
+
+        - _Required_ for private Actors, tasks, or resources (e.g., builds of private Actors).
+
+        - _Required_ when using named formats for IDs (e.g., `username~store-name` for stores or `username~queue-name` for queues).
+
+        - _Optional_ for public Actors or resources (e.g., builds of public Actors can be queried without a token).
+
+
+        For more information, see our [integrations documentation](https://docs.apify.com/platform/integrations).'
+x-tagGroups:
+- name: Actor management
+  tags:
+  - Actors
+  - Actors/Actor versions
+  - Actors/Actor builds
+  - Actors/Actor runs
+  - Actors/Webhook collection
+  - Actors/Last run object and its storages
+- name: Actor builds
+  tags:
+  - Actor builds
+- name: Actor runs
+  tags:
+  - Actor runs
+- name: Actor tasks
+  tags:
+  - Actor tasks
+- name: Storage
+  tags:
+  - Storage/Datasets
+  - Storage/Key-value stores
+  - Storage/Request queues
+  - Storage/Request queues/Requests
+  - Storage/Request queues/Requests locks
+- name: Webhook management
+  tags:
+  - Webhooks/Webhooks
+  - Webhooks/Webhook dispatches
+- name: Schedules
+  tags:
+  - Schedules
+- name: Apify Store
+  tags:
+  - Store
+- name: Logs
+  tags:
+  - Logs
+- name: Users
+  tags:
+  - Users
+  - Users/Usage
+- name: Utility tools
+  tags:
+  - Tools
+  - Tools/Encoding
+- name: Convenience endpoints
+  tags:
+  - Default dataset
+  - Default key-value store
+  - Default request queue
+  - Last Actor run's default dataset
+  - Last Actor run's default key-value store
+  - Last Actor run's default request queue
+  - Last Actor run's log
+  - Last Actor run's abort
+  - Last Actor run's metamorph
+  - Last Actor run's reboot
+  - Last Actor task run's default dataset
+  - Last Actor task run's default key-value store
+  - Last Actor task run's default request queue
+  - Last Actor task run's log
+  - Last Actor task run's abort
+  - Last Actor task run's metamorph
+  - Last Actor task run's reboot

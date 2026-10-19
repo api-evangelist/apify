@@ -1,0 +1,12 @@
+{
+ "url": "https://docs.apify.com/api/openapi.json",
+ "final": "https://docs.apify.com/api/openapi.json",
+ "status": 200,
+ "content_type": "application/json; charset=utf-8",
+ "bytes": 1045668,
+ "sha256": "20256bd88fdbdb5bceb937f2c4be307738cd8bbbca525bb5b4bc5566d774e8b7",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "re-archived: the provider's current document replaced a stale archive (roadmap#793); the old files are in openapi/_superseded/2026-10-19-stale"
+}

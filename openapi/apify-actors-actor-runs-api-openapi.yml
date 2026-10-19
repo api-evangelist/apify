@@ -1,0 +1,3644 @@
+openapi: 3.2.0
+info:
+  title: Apify Actors/Actor runs API
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  description: 'The Apify API (version 2) provides programmatic access to the Apify
+
+    platform. The API is organized
+
+    around RESTful
+
+    HTTP endpoints. You can download the complete OpenAPI schema of Apify API in the YAML or JSON formats. The source code is also available on GitHub. All requests and responses (including errors) are encoded in
+
+    JSON format with UTF-8 encoding,
+
+    with a few exceptions that are explicitly described in the reference. To access the API, we recommend using one of our API clients:
+
+
+    Stable API clients:
+
+    - For Node.js, we recommend the `apify-client` NPM
+
+    package. - For Python, we recommend the `apify-client` PyPI
+
+    package. Experimental API clients:
+
+    - For Java, we recommend the `apify-client` Maven central component. - For Rust, we recommend the `apify-client` crate. - For .NET, we recommend the `apify-client` Nuget package. - For PHP, we recommend the `apify-client` Packagist package. - For Go, we recommend the `apify-client` package. The clients'' functions correspond to the API endpoints and have the same
+
+    parameters. This simplifies development of apps that depend on the Apify
+
+    platform. :::note Important Request Details
+
+
+    - `Content-Type` header: For requests with a JSON body, you must include the `Content-Type: application/json` header. - Method override: You can override the HTTP method using the `method` query parameter. This is useful for clients that can only send `GET` requests. For example, to call a `POST` endpoint, append `?method=POST` to the URL of your `GET` request. :::
+
+
+    ## Authentication
+
+
+    **You can find your API token on the
+
+    Integrations page in the
+
+    Apify Console.**
+
+
+    To use your token in a request, either:
+
+
+    - Add the token to your request''s `Authorization` header as `Bearer `. E.g., `Authorization: Bearer xxxxxxx`. More info. (Recommended). - Add it as the `token` parameter to your request URL. (Less secure). Using your token in the request header is more secure than using it as a URL
+
+    parameter because URLs are often stored
+
+    in browser history and server logs. This creates a chance for someone
+
+    unauthorized to access your API token. **Never share your API token or password with untrusted parties!**
+
+
+    For more information, see our
+
+    integrations documentation. ### Agentic payments
+
+
+    AI agents can authenticate and pay for Actor runs without an Apify account
+
+    using agentic payments. Instead of an API token, the request carries a
+
+    payment credential that both authorizes and pays for the call. Apify supports
+
+    the x402 protocol
+
+    (`PAYMENT-SIGNATURE` header) and
+
+    Skyfire
+
+    (`skyfire-pay-id` header). ## Basic usage
+
+
+    To run an Actor, send a POST request to the Run
+
+    Actor endpoint using either the
+
+    Actor ID code (e.g. `vKg4IjxZbEYTYeW8T`) or its name (e.g. `janedoe~my-actor`):
+
+
+    `https://api.apify.com/v2/actors/[actor_id]/runs`
+
+
+    If the Actor is not runnable anonymously, you will receive a 401 or 403
+
+    response code. This means you need to add your secret API
+
+    token to the request''s
+
+    `Authorization` header (recommended) or as a
+
+    URL query parameter `?token=[your_token]` (less secure). Optionally, you can include the query parameters described in the Run
+
+    Actor section to customize your
+
+    run. If you''re using Node.js, the best way to run an Actor is using the
+
+    `Apify.call()` method from the Apify
+
+    SDK. It
+
+    runs the Actor using the account you are currently logged into (determined
+
+    by the secret API token). The result is an Actor run
+
+    object and its output (if
+
+    any). A typical workflow is as follows:
+
+
+    1. Run an Actor or task using the Run
+
+    Actor or Run
+
+    task API endpoints. 2. Monitor the Actor run by periodically polling its progress using the Get
+
+    run API
+
+    endpoint. 3. Fetch the results from the Get
+
+    items API endpoint using the
+
+    `defaultDatasetId`, which you receive in the Run request response. Additional data may be stored in a key-value store. You can fetch them from
+
+    the Get record API endpoint
+
+    using the `defaultKeyValueStoreId` and the store''s `key`. **Note**: Instead of periodic polling, you can also run your
+
+    Actor or
+
+    task
+
+    synchronously.'
+  contact: {}
+  version: v2-2026-10-08T073338Z
+servers:
+- url: https://api.apify.com
+  variables: {}
+security:
+- httpBearer: []
+- apiKey: []
+tags:
+- name: Actors/Actor runs
+  x-displayName: Actor runs
+  x-parent-tag-name: Actors
+  x-legacy-doc-urls:
+  - '#/reference/actors/run-collection'
+  - '#tag/ActorsRun-collection'
+  - '#tag/ActorsResurrect-run'
+  - '#tag/ActorsMetamorph-run'
+  - '#tag/ActorsAbort-run'
+  - '#/reference/actors/run-object'
+  - '#tag/ActorsRun-object'
+  - '#/reference/actors/run-actor-synchronously'
+  - '#tag/ActorsRun-actor-synchronously'
+  - '#/reference/actors/run-actor-synchronously-and-get-dataset-items'
+  - '#tag/ActorsRun-Actor-synchronously-and-get-dataset-items'
+  - '#/reference/actors/last-run-object-and-its-storages'
+  - '#tag/ActorsLast-run-object-and-its-storages'
+  description: 'The API endpoints in this section allow you to manage your Apify Actors runs.
+
+
+    Some API endpoints return run objects. If a run object includes usage costs in dollars, note that these values are calculated based on your effective unit pricing at the time of the query. As a result, the dollar amounts should be treated as informational only and not as exact figures.
+
+
+    For completed runs, aggregated fields such as `stats` or dollar usage totals are eventually consistent and update within a few seconds. For values that must match finalized totals, wait about 10 seconds after the run completed, then fetch the run again.
+
+
+    For more information about platform usage and resource calculations, see the Usage and Resources documentation.'
+  x-trait: 'true'
+paths:
+  /v2/actors/{actorId}/runs:
+    get:
+      tags:
+      - Actors/Actor runs
+      summary: Get list of runs
+      description: 'Gets the list of runs of a specific Actor. The response is a list of
+
+        objects, where each object contains basic information about a single Actor run.
+
+
+        The endpoint supports pagination using the `limit` and `offset` parameters
+
+        and it will not return more than 1000 array elements.
+
+
+        By default, the records are sorted by the `startedAt` field in ascending
+
+        order, therefore you can use pagination to incrementally fetch all records while
+
+        new ones are still being created. To sort the records in descending order, use
+
+        `desc=1` parameter. You can also filter runs by status (available
+
+        statuses).'
+      operationId: actors_runs_get
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/descStartedAt'
+      - $ref: '#/components/parameters/status'
+      - $ref: '#/components/parameters/startedAfter'
+      - $ref: '#/components/parameters/startedBefore'
+      responses:
+        '200':
+          description: ''
+          headers:
+            X-Apify-Pagination-Offset:
+              description: The offset of the first item in the current page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '0'
+            X-Apify-Pagination-Limit:
+              description: The maximum number of items returned per page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '100'
+            X-Apify-Pagination-Count:
+              description: The number of items returned in the current page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '100'
+            X-Apify-Pagination-Total:
+              description: The total number of items available.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '10204'
+            X-Apify-Pagination-Desc:
+              description: Whether the items are sorted in descending order.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: 'false'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfRunsResponse'
+              examples:
+                example:
+                  $ref: '#/components/examples/ListOfRunsResponseExample'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/run-collection/get-list-of-runs
+      - https://docs.apify.com/api/v2#/reference/actors/get-list-of-runs
+      - https://docs.apify.com/api/v2#tag/ActorsRun-collection/operation/act_runs_get
+      x-js-parent: RunCollectionClient
+      x-js-name: list
+      x-js-doc-url: https://docs.apify.com/api/client/js/reference/class/RunCollectionClient#list
+      x-py-parent: RunCollectionClientAsync
+      x-py-name: list
+      x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/RunCollectionClientAsync#list
+    post:
+      tags:
+      - Actors/Actor runs
+      summary: Run Actor
+      description: 'Runs an Actor and immediately returns without waiting for the run to finish.
+
+
+        The POST payload including its `Content-Type` header is passed as `INPUT` to
+
+        the Actor (usually `application/json`).
+
+
+        The Actor is started with the default options; you can override them using
+
+        various URL query parameters.
+
+
+        The response is the Run object as returned by the Get
+
+        run API
+
+        endpoint.
+
+
+        If you want to wait for the run to finish and receive the actual output of
+
+        the Actor as the response, please use one of the Run Actor
+
+        synchronously API endpoints
+
+        instead.
+
+
+        To fetch the Actor run results that are typically stored in the default
+
+        dataset, you''ll need to pass the ID received in the `defaultDatasetId` field
+
+        received in the response JSON to the Get dataset items
+
+        API endpoint.'
+      operationId: actors_runs_post
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - $ref: '#/components/parameters/timeout'
+      - $ref: '#/components/parameters/memory'
+      - $ref: '#/components/parameters/maxItems'
+      - $ref: '#/components/parameters/maxTotalChargeUsd'
+      - $ref: '#/components/parameters/restartOnError'
+      - $ref: '#/components/parameters/build'
+      - $ref: '#/components/parameters/waitForFinishRun'
+      - $ref: '#/components/parameters/webhooks'
+      - name: forcePermissionLevel
+        in: query
+        description: 'Overrides the Actor''s permission level for this specific run. Use to test restricted permissions
+
+          before deploying changes to your Actor or to temporarily elevate or restrict access. If you don''t specify this
+
+          parameter, the Actor uses its configured default permission level. For more information on permissions, see the
+
+          [documentation](https://docs.apify.com/platform/actors/development/permissions).
+
+          '
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - LIMITED_PERMISSIONS
+          - FULL_PERMISSIONS
+          example: LIMITED_PERMISSIONS
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              foo: bar
+          '*/*':
+            schema: {}
+        required: true
+      responses:
+        '201':
+          description: ''
+          headers:
+            Location:
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: https://api.apify.com/v2/actors/zdc3Pyhyz3m8vjDeM/runs/HG7ML7M8z78YcAPEB
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '402':
+          $ref: '#/components/responses/PaymentRequired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/run-collection/run-actor
+      - https://docs.apify.com/api/v2#/reference/actors/run-actor
+      - https://docs.apify.com/api/v2#tag/ActorsRun-collection/operation/act_runs_post
+      x-js-parent: ActorClient
+      x-js-name: start
+      x-js-doc-url: https://docs.apify.com/api/client/js/reference/class/ActorClient#start
+      x-py-parent: ActorClientAsync
+      x-py-name: call
+      x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/ActorClientAsync#call
+  /v2/actors/{actorId}/run-sync:
+    post:
+      tags:
+      - Actors/Actor runs
+      summary: Run Actor synchronously and return key-value store record
+      description: 'Runs a specific Actor and returns a key-value store record.
+
+
+        The POST payload including its `Content-Type` header is passed as `INPUT` to
+
+        the Actor (usually application/json).
+
+
+        The response contains the record stored under the `OUTPUT` key in the run''s
+
+        default key-value store. This is a legacy approach that has been replaced by
+
+        the Actor output object;
+
+        Actors aren''t required to store a record under this key, so the response may
+
+        not contain any data. Use the `outputRecordKey` query parameter to return a
+
+        different record.
+
+
+        The Actor is started with the default options; you can override them using
+
+        various URL query parameters.
+
+        If the Actor run exceeds 300 seconds,
+
+        the HTTP response will have status 408 (Request Timeout).
+
+
+        Beware that it might be impossible to maintain an idle HTTP connection for a
+
+        long period of time, due to client timeout or network conditions. Make sure your HTTP client is
+
+        configured to have a long enough connection timeout.
+
+        If the connection breaks, you will not receive any information about the run
+
+        and its status.
+
+
+        To run the Actor asynchronously, use the Run
+
+        Actor API endpoint instead.'
+      operationId: actor_runSync_post
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - $ref: '#/components/parameters/outputRecordKey'
+      - $ref: '#/components/parameters/timeout'
+      - $ref: '#/components/parameters/memory'
+      - $ref: '#/components/parameters/maxItems'
+      - $ref: '#/components/parameters/maxTotalChargeUsd'
+      - $ref: '#/components/parameters/restartOnError'
+      - $ref: '#/components/parameters/build'
+      - $ref: '#/components/parameters/webhooks'
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              foo: bar
+          '*/*':
+            schema: {}
+        required: true
+      responses:
+        '201':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                bar: foo
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '402':
+          $ref: '#/components/responses/PaymentRequired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/run-actor-synchronously/with-input
+      - https://docs.apify.com/api/v2#/reference/actors/with-input
+      - https://docs.apify.com/api/v2#tag/ActorsRun-actor-synchronously/operation/act_runSync_post
+    get:
+      tags:
+      - Actors/Actor runs
+      summary: Run Actor synchronously without input
+      description: 'Runs a specific Actor and returns a key-value store record. The response contains the
+
+        record stored under the `OUTPUT` key in the run''s default key-value store.
+
+        This is a legacy approach that has been replaced by the Actor
+
+        output object;
+
+        the record may not exist, in which case the response contains no data. Use the
+
+        `outputRecordKey` query parameter to return a different record.
+
+        The run must finish in 300 seconds
+
+        otherwise the API endpoint returns a timeout error.
+
+        The Actor is not passed any input.
+
+
+        Beware that it might be impossible to maintain an idle HTTP connection for a
+
+        long period of time,
+
+        due to client timeout or network conditions. Make sure your HTTP client is
+
+        configured to have a long enough connection timeout.
+
+        If the connection breaks, you will not receive any information about the run
+
+        and its status.
+
+
+        To run the Actor asynchronously, use the Run
+
+        Actor API endpoint instead.'
+      operationId: actor_runSync_get
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - $ref: '#/components/parameters/outputRecordKey'
+      - $ref: '#/components/parameters/timeout'
+      - $ref: '#/components/parameters/memory'
+      - $ref: '#/components/parameters/maxItems'
+      - $ref: '#/components/parameters/maxTotalChargeUsd'
+      - $ref: '#/components/parameters/restartOnError'
+      - $ref: '#/components/parameters/build'
+      - $ref: '#/components/parameters/webhooks'
+      responses:
+        '201':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                foo: bar
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/run-actor-synchronously/without-input
+      - https://docs.apify.com/api/v2#/reference/actors/without-input
+      - https://docs.apify.com/api/v2#tag/ActorsRun-actor-synchronously/operation/act_runSync_get
+  /v2/actors/{actorId}/run-sync-get-dataset-items:
+    post:
+      tags:
+      - Actors/Actor runs
+      summary: Run Actor synchronously and get dataset items
+      description: 'Runs a specific Actor and returns its dataset items.
+
+
+        The POST payload including its `Content-Type` header is passed as `INPUT` to
+
+        the Actor (usually `application/json`).
+
+        The HTTP response contains the Actors dataset items, while the format of
+
+        items depends on specifying dataset items'' `format` parameter.
+
+
+        You can send all the same options in parameters as the Get Dataset
+
+        Items API endpoint.
+
+
+        The Actor is started with the default options; you can override them using
+
+        URL query parameters.
+
+        If the Actor run exceeds 300 seconds,
+
+        the HTTP response will return the 408 status code (Request Timeout).
+
+
+        Beware that it might be impossible to maintain an idle HTTP connection for a
+
+        long period of time,
+
+        due to client timeout or network conditions. Make sure your HTTP client is
+
+        configured to have a long enough connection timeout.
+
+        If the connection breaks, you will not receive any information about the run
+
+        and its status.
+
+
+        To run the Actor asynchronously, use the Run
+
+        Actor API endpoint instead.'
+      operationId: actor_runSyncGetDatasetItems_post
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - $ref: '#/components/parameters/timeout'
+      - $ref: '#/components/parameters/memory'
+      - $ref: '#/components/parameters/maxItems'
+      - $ref: '#/components/parameters/maxTotalChargeUsd'
+      - $ref: '#/components/parameters/restartOnError'
+      - $ref: '#/components/parameters/build'
+      - $ref: '#/components/parameters/webhooks'
+      - $ref: '#/components/parameters/format'
+      - $ref: '#/components/parameters/clean'
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/limit-2'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/outputFields'
+      - $ref: '#/components/parameters/omit'
+      - $ref: '#/components/parameters/unwind'
+      - $ref: '#/components/parameters/flatten'
+      - $ref: '#/components/parameters/descDataset'
+      - $ref: '#/components/parameters/attachment'
+      - $ref: '#/components/parameters/delimiter'
+      - $ref: '#/components/parameters/bom'
+      - $ref: '#/components/parameters/xmlRoot'
+      - $ref: '#/components/parameters/xmlRow'
+      - $ref: '#/components/parameters/skipHeaderRow'
+      - $ref: '#/components/parameters/skipHidden'
+      - $ref: '#/components/parameters/skipEmpty'
+      - $ref: '#/components/parameters/simplified'
+      - $ref: '#/components/parameters/view'
+      - $ref: '#/components/parameters/skipFailedPages'
+      - $ref: '#/components/parameters/feedTitle'
+      - $ref: '#/components/parameters/feedDescription'
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              foo: bar
+          '*/*':
+            schema: {}
+        required: true
+      responses:
+        '201':
+          description: ''
+          headers:
+            X-Apify-Pagination-Offset:
+              description: The offset of the first item in the current page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '0'
+            X-Apify-Pagination-Limit:
+              description: The maximum number of items returned per page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '100'
+            X-Apify-Pagination-Count:
+              description: The number of items returned in the current page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '100'
+            X-Apify-Pagination-Total:
+              description: The total number of items available.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '10204'
+            X-Apify-Pagination-Desc:
+              description: Whether the items are sorted in descending order.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: 'false'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+              example:
+              - myValue: some value
+                myOtherValue: some other value
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '402':
+          $ref: '#/components/responses/PaymentRequired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/run-actor-synchronously-and-get-dataset-items/run-actor-synchronously-with-input-and-get-dataset-items
+      - https://docs.apify.com/api/v2#/reference/actors/run-actor-synchronously-with-input-and-get-dataset-items
+      - https://docs.apify.com/api/v2#tag/ActorsRun-Actor-synchronously-and-get-dataset-items/operation/act_runSyncGetDatasetItems_post
+    get:
+      tags:
+      - Actors/Actor runs
+      summary: Run Actor synchronously without input and get dataset items
+      description: 'Runs a specific Actor and returns its dataset items.
+
+        The run must finish in 300 seconds
+
+        otherwise the API endpoint returns a timeout error.
+
+        The Actor is not passed any input.
+
+
+        It allows to send all possible options in parameters from Get Dataset
+
+        Items API endpoint.
+
+
+        Beware that it might be impossible to maintain an idle HTTP connection for a
+
+        long period of time,
+
+        due to client timeout or network conditions. Make sure your HTTP client is
+
+        configured to have a long enough connection timeout.
+
+        If the connection breaks, you will not receive any information about the run
+
+        and its status.
+
+
+        To run the Actor asynchronously, use the Run
+
+        Actor API endpoint instead.'
+      operationId: actor_runSyncGetDatasetItems_get
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - $ref: '#/components/parameters/timeout'
+      - $ref: '#/components/parameters/memory'
+      - $ref: '#/components/parameters/maxItems'
+      - $ref: '#/components/parameters/maxTotalChargeUsd'
+      - $ref: '#/components/parameters/restartOnError'
+      - $ref: '#/components/parameters/build'
+      - $ref: '#/components/parameters/webhooks'
+      - $ref: '#/components/parameters/format'
+      - $ref: '#/components/parameters/clean'
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/limit-2'
+      - $ref: '#/components/parameters/fields'
+      - $ref: '#/components/parameters/outputFields'
+      - $ref: '#/components/parameters/omit'
+      - $ref: '#/components/parameters/unwind'
+      - $ref: '#/components/parameters/flatten'
+      - $ref: '#/components/parameters/descDataset'
+      - $ref: '#/components/parameters/attachment'
+      - $ref: '#/components/parameters/delimiter'
+      - $ref: '#/components/parameters/bom'
+      - $ref: '#/components/parameters/xmlRoot'
+      - $ref: '#/components/parameters/xmlRow'
+      - $ref: '#/components/parameters/skipHeaderRow'
+      - $ref: '#/components/parameters/skipHidden'
+      - $ref: '#/components/parameters/skipEmpty'
+      - $ref: '#/components/parameters/simplified'
+      - $ref: '#/components/parameters/view'
+      - $ref: '#/components/parameters/skipFailedPages'
+      - $ref: '#/components/parameters/feedTitle'
+      - $ref: '#/components/parameters/feedDescription'
+      responses:
+        '201':
+          description: ''
+          headers:
+            X-Apify-Pagination-Offset:
+              description: The offset of the first item in the current page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '0'
+            X-Apify-Pagination-Limit:
+              description: The maximum number of items returned per page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '100'
+            X-Apify-Pagination-Count:
+              description: The number of items returned in the current page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '100'
+            X-Apify-Pagination-Total:
+              description: The total number of items available.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '10204'
+            X-Apify-Pagination-Desc:
+              description: Whether the items are sorted in descending order.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: 'false'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+              example:
+              - myValue: some value
+                myOtherValue: some other value
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '402':
+          $ref: '#/components/responses/PaymentRequired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '408':
+          $ref: '#/components/responses/Timeout'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/run-actor-synchronously-and-get-dataset-items/run-actor-synchronously-without-input-and-get-dataset-items
+      - https://docs.apify.com/api/v2#/reference/actors/run-actor-synchronously-without-input-and-get-dataset-items
+      - https://docs.apify.com/api/v2#tag/ActorsRun-Actor-synchronously-and-get-dataset-items/operation/act_runSyncGetDatasetItems_get
+  /v2/actors/{actorId}/runs/{runId}/resurrect:
+    post:
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/RunResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '402':
+          $ref: '#/components/responses/PaymentRequired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      tags:
+      - Actors/Actor runs
+      summary: Resurrect run
+      description: '**[DEPRECATED]** API endpoints related to run of the Actor were moved under
+
+        new namespace `actor-runs`.Resurrects a finished
+
+        Actor run and returns an object that contains all the details about the
+
+        resurrected run.
+
+
+        Only finished runs, i.e. runs with status `FINISHED`, `FAILED`, `ABORTED`
+
+        and `TIMED-OUT` can be resurrected.
+
+        Run status will be updated to RUNNING and its container will be restarted
+
+        with the same storages
+
+        (the same behaviour as when the run gets migrated to the new server).
+
+
+        For more information, see the Actor
+
+        docs.'
+      operationId: actor_run_resurrect_post
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - $ref: '#/components/parameters/runId'
+      - $ref: '#/components/parameters/buildResurrect'
+      - $ref: '#/components/parameters/timeoutResurrect'
+      - $ref: '#/components/parameters/memoryResurrect'
+      - $ref: '#/components/parameters/restartOnErrorResurrect'
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/resurrect-run/resurrect-run
+      - https://docs.apify.com/api/v2#/reference/actors/resurrect-run
+      - https://docs.apify.com/api/v2#tag/ActorsResurrect-run/operation/act_run_resurrect_post
+  /v2/actors/{actorId}/runs/last:
+    get:
+      tags:
+      - Actors/Actor runs
+      summary: Get last run
+      description: 'This is not a single endpoint, but an entire group of endpoints that lets you to
+
+        retrieve and manage the last run of given Actor or any of its default storages.
+
+        All the endpoints require an authentication token.
+
+
+        The base path represents the last Actor run object is:
+
+
+        `/v2/actors/{actorId}/runs/last{?token,status,origin}`
+
+
+        Using the `status` query parameter you can ensure to only get a run with a certain status
+
+        (e.g. `status=SUCCEEDED`). Similarly, the `origin` query parameter filters runs by the means
+
+        by which they were started (e.g. `origin=API`). The output of this endpoint and other query
+
+        parameters are the same as in the Run object endpoint.
+
+
+        ##### Convenience endpoints for last Actor run
+
+
+        * Dataset
+
+
+        * Key-value store
+
+
+        * Request queue
+
+
+        * Log'
+      operationId: actor_runs_last_get
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - $ref: '#/components/parameters/status-2'
+      - $ref: '#/components/parameters/origin'
+      - $ref: '#/components/parameters/waitForFinishRun'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/last-run-object-and-its-storages/get-last-run
+      - https://docs.apify.com/api/v2#tag/ActorsLast-run-object-and-its-storages/operation/act_runs_last_get
+  /v2/actors/{actorId}/runs/{runId}:
+    get:
+      tags:
+      - Actors/Actor runs
+      summary: Get run
+      description: '**[DEPRECATED]** API endpoints related to run of the Actor were moved under
+
+        new namespace `actor-runs`.
+
+
+        Gets an object that contains all the details about a specific run of an Actor.
+
+
+        By passing the optional `waitForFinish` parameter the API endpoint will
+
+        synchronously wait for the run to finish.
+
+        This is useful to avoid periodic polling when waiting for Actor run to
+
+        complete.
+
+
+        This endpoint does not require the authentication token. Instead, calls are authenticated using a hard-to-guess ID of the run. However,
+
+        if you access the endpoint without the token, certain attributes, such as `usageUsd` and `usageTotalUsd`, will be hidden.'
+      operationId: actors_run_get
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - $ref: '#/components/parameters/runId'
+      - $ref: '#/components/parameters/waitForFinishRun'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: true
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/run-object/get-run
+      - https://docs.apify.com/api/v2#/reference/actors/get-run
+      - https://docs.apify.com/api/v2#tag/ActorsRun-object/operation/act_run_get
+  /v2/actors/{actorId}/runs/{runId}/abort:
+    post:
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunResponse'
+              example:
+                data:
+                  id: HG7ML7M8z78YcAPEB
+                  actId: janedoe~my-actor
+                  userId: BPWZBd7Z9c746JAng
+                  actorTaskId: rANaydYhUxjsnA3oz
+                  startedAt: '2019-11-30T07:34:24.202Z'
+                  finishedAt: '2019-12-12T09:30:12.202Z'
+                  status: ABORTED
+                  statusMessage: Actor was aborted
+                  isStatusMessageTerminal: true
+                  meta:
+                    origin: WEB
+                    clientIp: 172.234.12.34
+                    userAgent: Mozilla/5.0 (iPad)
+                  stats:
+                    inputBodyLen: 240
+                    migrationCount: 0
+                    restartCount: 0
+                    resurrectCount: 1
+                    memAvgBytes: 35914228.4
+                    memMaxBytes: 38244352
+                    memCurrentBytes: 0
+                    cpuAvgUsage: 0.00955965
+                    cpuMaxUsage: 3.1546
+                    cpuCurrentUsage: 0
+                    netRxBytes: 2652
+                    netTxBytes: 1338
+                    durationMillis: 26239
+                    runTimeSecs: 26.239
+                    metamorph: 0
+                    computeUnits: 0.0072886
+                  options:
+                    build: latest
+                    timeoutSecs: 300
+                    memoryMbytes: 1024
+                    diskMbytes: 2048
+                  buildId: 7sT5jcggjjA9fNcxF
+                  exitCode: 0
+                  generalAccess: RESTRICTED
+                  defaultKeyValueStoreId: eJNzqsbPiopwJcgGQ
+                  defaultDatasetId: wmKPijuyDnPZAPRMk
+                  defaultRequestQueueId: FL35cSF7jrxr3BY39
+                  storageIds:
+                    datasets:
+                      default: wmKPijuyDnPZAPRMk
+                    keyValueStores:
+                      default: eJNzqsbPiopwJcgGQ
+                    requestQueues:
+                      default: FL35cSF7jrxr3BY39
+                  isContainerServerReady: false
+                  gitBranchName: master
+                  usage:
+                    ACTOR_COMPUTE_UNITS: 3
+                    DATASET_READS: 4
+                    DATASET_WRITES: 4
+                    KEY_VALUE_STORE_READS: 5
+                    KEY_VALUE_STORE_WRITES: 3
+                    KEY_VALUE_STORE_LISTS: 5
+                    REQUEST_QUEUE_READS: 2
+                    REQUEST_QUEUE_WRITES: 1
+                    DATA_TRANSFER_INTERNAL_GBYTES: 1
+                    DATA_TRANSFER_EXTERNAL_GBYTES: 3
+                    PROXY_RESIDENTIAL_TRANSFER_GBYTES: 34
+                    PROXY_SERPS: 3
+                  usageTotalUsd: 0.2654
+                  usageUsd:
+                    ACTOR_COMPUTE_UNITS: 0.072
+                    DATASET_READS: 0.0004
+                    DATASET_WRITES: 0.0002
+                    KEY_VALUE_STORE_READS: 0.0006
+                    KEY_VALUE_STORE_WRITES: 0.002
+                    KEY_VALUE_STORE_LISTS: 0.004
+                    REQUEST_QUEUE_READS: 0.005
+                    REQUEST_QUEUE_WRITES: 0.02
+                    DATA_TRANSFER_INTERNAL_GBYTES: 0.0004
+                    DATA_TRANSFER_EXTERNAL_GBYTES: 0.0002
+                    PROXY_RESIDENTIAL_TRANSFER_GBYTES: 0.16
+                    PROXY_SERPS: 0.0006
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: true
+      tags:
+      - Actors/Actor runs
+      summary: Abort run
+      description: '**[DEPRECATED]** API endpoints related to run of the Actor were moved under
+
+        new namespace `actor-runs`. Aborts an Actor run and
+
+        returns an object that contains all the details about the run.
+
+
+        Only runs that are starting or running are aborted. For runs with status
+
+        `FINISHED`, `FAILED`, `ABORTING` and `TIMED-OUT` this call does nothing.'
+      operationId: actors_run_abort_post
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - $ref: '#/components/parameters/runId'
+      - $ref: '#/components/parameters/gracefully'
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/abort-run/abort-run
+      - https://docs.apify.com/api/v2#/reference/actors/abort-run
+      - https://docs.apify.com/api/v2#tag/ActorsAbort-run/operation/act_run_abort_post
+  /v2/actors/{actorId}/runs/{runId}/metamorph:
+    post:
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: true
+      tags:
+      - Actors/Actor runs
+      summary: Metamorph run
+      description: '**[DEPRECATED]** API endpoints related to run of the Actor were moved under
+
+        new namespace `actor-runs`. Transforms an Actor run
+
+        into a run of another Actor with a new input.
+
+
+        This is useful if you want to use another Actor to finish the work
+
+        of your current Actor run, without the need to create a completely new run
+
+        and waiting for its finish.
+
+        For the users of your Actors, the metamorph operation is transparent, they
+
+        will just see your Actor got the work done.
+
+
+        There is a limit on how many times you can metamorph a single run. You can
+
+        check the limit in the Actor runtime limits.
+
+
+        Internally, the system stops the Docker container corresponding to the Actor
+
+        run and starts a new container using a different Docker image.
+
+        All the default storages are preserved and the new input is stored under the
+
+        `INPUT-METAMORPH-1` key in the same default key-value store.
+
+
+        For more information, see the Actor docs.'
+      operationId: actors_run_metamorph_post
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - $ref: '#/components/parameters/runId'
+      - $ref: '#/components/parameters/targetActorId'
+      - name: build
+        in: query
+        description: 'Optional build of the target Actor.
+
+
+          It can be either a build tag or build number. By default, the run uses
+
+          the build specified in the default run configuration for the target
+
+          Actor (typically `latest`).
+
+          '
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: beta
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/metamorph-run/metamorph-run
+      - https://docs.apify.com/api/v2#/reference/actors/metamorph-run
+      - https://docs.apify.com/api/v2#tag/ActorsMetamorph-run/operation/act_run_metamorph_post
+components:
+  parameters:
+    timeoutResurrect:
+      name: timeout
+      in: query
+      description: 'Optional timeout for the run, in seconds. By default, the run uses the timeout
+
+        specified in the run that is being resurrected.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 60
+    actorId:
+      name: actorId
+      in: path
+      description: Actor ID or the username of the Actor owner and the Actor name, separated by a tilde (`~`).
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: compass~google-maps-extractor
+    status-2:
+      name: status
+      in: query
+      description: Filter for the run status.
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: SUCCEEDED
+    targetActorId:
+      name: targetActorId
+      in: query
+      description: ID of a target Actor that the run should be transformed into.
+      required: true
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: HDSasDasz78YcAPEB
+    omit:
+      name: omit
+      in: query
+      description: A comma-separated list of fields which should be omitted from the items.
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: myValue,myOtherValue
+    timeout:
+      name: timeout
+      in: query
+      description: 'Optional timeout for the run, in seconds. By default, the run uses the timeout from its configuration.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 60
+    offset:
+      name: offset
+      in: query
+      description: 'Number of items that should be skipped at the start. The default value is `0`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 0
+    memory:
+      name: memory
+      in: query
+      description: 'Memory limit for the run, in megabytes. You can set the amount of memory to a power of 2 with a minimum of 128.
+
+        By default, the run uses the memory limit from its configuration. Don''t change this value unless the Actor''s
+
+        documentation recommends it or you''re aware of the consequences.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 256
+    restartOnError:
+      name: restartOnError
+      in: query
+      description: 'Determines whether the run will be restarted if it fails.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    build:
+      name: build
+      in: query
+      description: 'Specifies the Actor build to run. It can be either a build tag or build number.
+
+        By default, the run uses the build from its configuration (typically `latest`).
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0.1.234
+    feedDescription:
+      name: feedDescription
+      in: query
+      description: 'Overrides the auto-generated RSS channel `<description>` element.
+
+        Only used when `format=rss`. If not provided, the description defaults to `Items in dataset with id "<datasetId>".`
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: Scraped forum posts
+    bom:
+      name: bom
+      in: query
+      description: 'All text responses are encoded in UTF-8 encoding. By default, the
+
+        `format=csv` files are prefixed with the UTF-8 Byte Order Mark (BOM), while `json`, `jsonl`, `xml`, `html` and `rss` files are not.
+
+
+        If you want to override this default behavior, specify `bom=1` query parameter to include the BOM or `bom=0` to skip it.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    origin:
+      name: origin
+      in: query
+      description: Filter for the run origin, i.e. the means by which the run was started.
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/RunOrigin'
+    runId:
+      name: runId
+      in: path
+      description: Actor run ID.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 3KH8gEpp4d8uQSe8T
+    startedBefore:
+      name: startedBefore
+      in: query
+      description: 'Filter runs that started before the specified date and time (inclusive).
+
+        The value must be a valid ISO 8601 datetime string (UTC).
+
+        '
+      style: form
+      explode: true
+      allowReserved: true
+      schema:
+        type: string
+        format: date-time
+        example: '2025-09-17T23:59:59.000Z'
+    outputFields:
+      name: outputFields
+      in: query
+      description: 'A comma-separated list of output field names that positionally rename the fields specified in the `fields` parameter.
+
+        For example, `?fields=headline,url&outputFields=title,link` renames `headline` to `title` and `url` to `link` in the output.
+
+        The number of names in `outputFields` must match the number of names in `fields`.
+
+        Requires the `fields` parameter to be specified as well.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: title,link
+    fields:
+      name: fields
+      in: query
+      description: 'A comma-separated list of fields which should be picked from the items, only these fields will remain in the resulting record objects.
+
+        Note that the fields in the outputted items are sorted the same way as they are specified in the `fields` query parameter.
+
+        You can use this feature to effectively fix the output format.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: myValue,myOtherValue
+    descDataset:
+      name: desc
+      in: query
+      description: 'By default, results are returned in the same order as they were stored.
+
+        To reverse the order, set this parameter to `true` or `1`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    xmlRoot:
+      name: xmlRoot
+      in: query
+      description: 'Overrides default root element name of `xml` output. By default the root element is `items`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: items
+    memoryResurrect:
+      name: memory
+      in: query
+      description: 'Memory limit for the run, in megabytes. The amount of memory can be set to a power of 2
+
+        with a minimum of 128. By default, the run uses the memory limit specified in the run
+
+        that is being resurrected.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 256
+    skipFailedPages:
+      name: skipFailedPages
+      in: query
+      description: 'If `true` or `1` then, the all the items with errorInfo property will be skipped from the output.
+
+
+        This feature is here to emulate functionality of API version 1 used for the legacy Apify Crawler product and it''s not recommended to use it in new integrations.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    waitForFinishRun:
+      name: waitForFinish
+      in: query
+      description: 'The maximum number of seconds the server waits for the run to finish. By
+
+        default it is `0`, the maximum value is `60`. <!-- MAX_ACTOR_JOB_ASYNC_WAIT_SECS -->
+
+        If the run finishes in time then the returned run object will have a terminal status (e.g. `SUCCEEDED`),
+
+        otherwise it will have a transitional status (e.g. `RUNNING`).
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 60
+    unwind:
+      name: unwind
+      in: query
+      description: 'A comma-separated list of fields which should be unwound, in order which they should be processed. Each field should be either an array or an object.
+
+        If the field is an array then every element of the array will become a separate record and merged with parent object.
+
+        If the unwound field is an object then it is merged with the parent object.
+
+        If the unwound field is missing or its value is neither an array nor an object and therefore cannot be merged with a parent object then the item gets preserved as it is.
+
+        Note that the unwound items ignore the `desc` parameter.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: myValue,myOtherValue
+    xmlRow:
+      name: xmlRow
+      in: query
+      description: 'Overrides default element name that wraps each page or page function result object in `xml` output. By default the element name is `item`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: item
+    skipHeaderRow:
+      name: skipHeaderRow
+      in: query
+      description: If `true` or `1` then header row in the `csv` format is skipped.
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    maxItems:
+      name: maxItems
+      in: query
+      required: false
+      description: 'Specifies the maximum number of dataset items that will be charged for pay-per-result Actors.
+
+        This does NOT guarantee that the Actor will return only this many items.
+
+        It only ensures you won''t be charged for more than this number of items.
+
+        Only works for pay-per-result Actors.
+
+        Value can be accessed in the actor run using `ACTOR_MAX_PAID_DATASET_ITEMS` environment variable.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 1000
+    descStartedAt:
+      name: desc
+      in: query
+      description: 'If `true` or `1` then the objects are sorted by the `startedAt` field in
+
+        descending order. By default, they are sorted in ascending order.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    status:
+      name: status
+      in: query
+      description: 'Single status or comma-separated list of statuses, see ([available
+
+        statuses](https://docs.apify.com/platform/actors/running/runs-and-builds#lifecycle)). Used to filter runs by the specified statuses only.
+
+        '
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        example:
+        - SUCCEEDED
+    simplified:
+      name: simplified
+      in: query
+      description: 'If `true` or `1` then, the endpoint applies the `fields=url,pageFunctionResult,errorInfo`
+
+        and `unwind=pageFunctionResult` query parameters. This feature is used to emulate simplified results provided by the
+
+        legacy Apify Crawler product and it''s not recommended to use it in new integrations.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    limit-2:
+      name: limit
+      in: query
+      description: Maximum number of items to return. By default there is no limit.
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+    webhooks:
+      name: webhooks
+      in: query
+      description: 'Specifies optional webhooks associated with the Actor run, which can be used to receive a notification
+
+        e.g. when the Actor finished or failed. The value is a Base64-encoded JSON array whose items follow
+
+        the WebhookRepresentation schema. For more information, see
+
+        [Webhooks documentation](https://docs.apify.com/platform/integrations/webhooks).
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        contentEncoding: base64
+        contentMediaType: application/json
+        contentSchema:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookRepresentation'
+        example: dGhpcyBpcyBqdXN0IGV4YW1wbGUK...
+    startedAfter:
+      name: startedAfter
+      in: query
+      description: 'Filter runs that started after the specified date and time (inclusive).
+
+        The value must be a valid ISO 8601 datetime string (UTC).
+
+        '
+      style: form
+      explode: true
+      allowReserved: true
+      schema:
+        type: string
+        format: date-time
+        example: '2025-09-01T00:00:00.000Z'
+    attachment:
+      name: attachment
+      in: query
+      description: 'If `true` or `1` then the response will define the `Content-Disposition:
+
+        attachment` header, forcing a web browser to download the file rather
+
+        than to display it. By default this header is not present.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    gracefully:
+      name: gracefully
+      in: query
+      description: 'If true passed, the Actor run will abort gracefully.
+
+        It will send `aborting` and `persistState` event into run and force-stop the run after 30 seconds.
+
+        It is helpful in cases where you plan to resurrect the run later.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    skipEmpty:
+      name: skipEmpty
+      in: query
+      description: 'If `true` or `1` then empty items are skipped from the output.
+
+
+        Note that if used, the results might contain less items than the limit value.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    format:
+      name: format
+      in: query
+      description: 'Format of the results, possible values are: `json`, `jsonl`, `csv`, `html`, `xlsx`, `xml` and `rss`. The default value is `json`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: json
+    outputRecordKey:
+      name: outputRecordKey
+      in: query
+      description: 'Key of the record from the run''s default key-value store to return in the
+
+        response. Defaults to `OUTPUT`. Actors aren''t required to store a record
+
+        under this key, so if it doesn''t exist the response contains no data.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: OUTPUT
+    clean:
+      name: clean
+      in: query
+      description: 'If `true` or `1` then the API endpoint returns only non-empty items and skips hidden fields (i.e. fields starting with the # character).
+
+        The `clean` parameter is just a shortcut for `skipHidden=true` and `skipEmpty=true` parameters.
+
+        Note that since some objects might be skipped from the output, that the result might contain less items than the `limit` value.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    limit:
+      name: limit
+      in: query
+      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 1000
+    view:
+      name: view
+      in: query
+      description: 'Defines the view configuration for dataset items based on the schema definition.
+
+        This parameter determines how the data will be filtered and presented.
+
+        For complete specification details, see the [dataset schema documentation](/storage/dataset-schema).
+
+        '
+      schema:
+        type: string
+        example: overview
+    feedTitle:
+      name: feedTitle
+      in: query
+      description: 'Overrides the auto-generated RSS channel `<title>` element.
+
+        Only used when `format=rss`. If not provided, the title defaults to `Dataset <label>`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: Latest posts from r/pasta
+    skipHidden:
+      name: skipHidden
+      in: query
+      description: 'If `true` or `1` then hidden fields are skipped from the output, i.e. fields starting with the `#` character.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    buildResurrect:
+      name: build
+      in: query
+      description: 'Specifies the Actor build to run. It can be either a build tag or build number.
+
+        By default, the run is resurrected with the same build it originally used. Specifically,
+
+        if a run was first started with the `latest` tag, which resolves to version `0.0.3` at the
+
+        time, a run resurrected without this parameter will continue running with `0.0.3`, even if
+
+        `latest` already points to a newer build.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0.1.234
+    maxTotalChargeUsd:
+      name: maxTotalChargeUsd
+      in: query
+      required: false
+      description: 'Specifies the maximum total cost of the run.
+
+        Use it to cap the total amount charged for all pricing models.
+
+        You can access the maximum cost in your Actor
+
+        by using the `ACTOR_MAX_TOTAL_CHARGE_USD` environment variable.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 5
+    flatten:
+      name: flatten
+      in: query
+      description: 'A comma-separated list of fields which should transform nested objects into flat structures.
+
+
+        For example, with `flatten="foo"` the object `{"foo":{"bar": "hello"}}` is turned into `{"foo.bar": "hello"}`.
+
+
+        The original object with properties is replaced with the flattened object.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: myValue
+    restartOnErrorResurrect:
+      name: restartOnError
+      in: query
+      description: 'Determines whether the resurrected run will be restarted if it fails.
+
+        By default, the resurrected run uses the same setting as before.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    delimiter:
+      name: delimiter
+      in: query
+      description: 'A delimiter character for CSV files, only used if `format=csv`. You
+
+        might need to URL-encode the character (e.g. use `%09` for tab or `%3B`
+
+        for semicolon). The default delimiter is a simple comma (`,`).
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: ;
+  schemas:
+    TieredPricingPerEventEntry:
+      title: TieredPricingPerEventEntry
+      description: A single tier's price-per-event entry.
+      type: object
+      required:
+      - tieredEventPriceUsd
+      properties:
+        tieredEventPriceUsd:
+          type: number
+          description: Price per event in USD for this tier.
+    RunMetamorphEvent:
+      title: RunMetamorphEvent
+      description: Information about a metamorph event that occurred during the run.
+      type: object
+      required:
+      - createdAt
+      - actorId
+      - buildId
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          description: Time when the metamorph occurred.
+          examples:
+          - '2019-11-30T07:39:24.202Z'
+        actorId:
+          type: string
+          description: ID of the Actor that the run was metamorphed to.
+          examples:
+          - nspoEjklmnsF2oosD
+        buildId:
+          type: string
+          description: ID of the build used for the metamorphed Actor.
+          examples:
+          - ME6oKecqy5kXDS4KQ
+        inputKey:
+          type:
+          - string
+          - 'null'
+          description: Key of the input record in the key-value store.
+          examples:
+          - INPUT-METAMORPH-1
+    PricePerDatasetItemActorPricingInfo:
+      title: PricePerDatasetItemActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - unitName
+        properties:
+          pricingModel:
+            type: string
+            const: PRICE_PER_DATASET_ITEM
+          unitName:
+            type: string
+            description: Name of the unit that is being charged
+          pricePerUnitUsd:
+            type: number
+            description: 'Price per unit in USD. Mutually exclusive with `tieredPricing` - exactly one of the two is present
+
+              on a pricing record.
+
+              '
+          tieredPricing:
+            $ref: '#/components/schemas/TieredPricingPerDatasetItem'
+    Run:
+      title: Run
+      description: Represents an Actor run and its associated data.
+      required:
+      - id
+      - actId
+      - userId
+      - startedAt
+      - status
+      - meta
+      - stats
+      - options
+      - buildId
+      - defaultKeyValueStoreId
+      - defaultDatasetId
+      - defaultRequestQueueId
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - HG7ML7M8z78YcAPEB
+          description: Unique identifier of the Actor run.
+        actId:
+          type: string
+          examples:
+          - HDSasDasz78YcAPEB
+          description: ID of the Actor that was run.
+        userId:
+          type: string
+          examples:
+          - 7sT5jcggjjA9fNcxF
+          description: ID of the user who started the run.
+        actorTaskId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - KJHSKHausidyaJKHs
+          description: ID of the Actor task, if the run was started from a task.
+        startedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-11-30T07:34:24.202Z'
+          description: Time when the Actor run started.
+        finishedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - '2019-12-12T09:30:12.202Z'
+          description: Time when the Actor run finished.
+        status:
+          description: Current status of the Actor run.
+          $ref: '#/components/schemas/ActorJobStatus'
+        statusMessage:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Actor is running
+          description: Detailed message about the run status.
+        isStatusMessageTerminal:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+          description: Whether the status message is terminal (final).
+        meta:
+          description: Metadata about the Actor run.
+          $ref: '#/components/schemas/RunMeta'
+        pricingInfo:
+          description: Pricing information for the Actor.
+          $ref: '#/components/schemas/ActorRunPricingInfo'
+        stats:
+          description: Statistics of the Actor run.
+          $ref: '#/components/schemas/RunStats'
+        chargedEventCounts:
+          description: A map of charged event types to their counts. The keys are event type identifiers defined by the Actor's pricing model (pay-per-event), and the values are the number of times each event was charged during this run.
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            actor-start: 1
+            page-crawled: 150
+            data-extracted: 75
+        options:
+          description: Configuration options for the Actor run.
+          $ref: '#/components/schemas/RunOptions'
+        buildId:
+          type: string
+          examples:
+          - 7sT5jcggjjA9fNcxF
+          description: ID of the Actor build used for this run.
+        exitCode:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 0
+          description: Exit code of the Actor run process.
+        generalAccess:
+          description: General access level for the Actor run.
+          anyOf:
+          - $ref: '#/components/schemas/GeneralAccess'
+          - type: 'null'
+        defaultKeyValueStoreId:
+          type: string
+          examples:
+          - eJNzqsbPiopwJcgGQ
+          description: ID of the default key-value store for this run.
+        defaultDatasetId:
+          type: string
+          examples:
+          - wmKPijuyDnPZAPRMk
+          description: ID of the default dataset for this run.
+        defaultRequestQueueId:
+          type: string
+          examples:
+          - FL35cSF7jrxr3BY39
+          description: ID of the default request queue for this run.
+        storageIds:
+          type: object
+          description: A map of aliased storage IDs associated with this run, grouped by storage type.
+          properties:
+            datasets:
+              type: object
+              description: Aliased dataset IDs for this run.
+              properties:
+                default:
+                  type: string
+                  description: ID of the default dataset for this run.
+                  example: wmKPijuyDnPZAPRMk
+              additionalProperties:
+                type: string
+            keyValueStores:
+              type: object
+              description: Aliased key-value store IDs for this run.
+              properties:
+                default:
+                  type: string
+                  description: ID of the default key-value store for this run.
+                  example: eJNzqsbPiopwJcgGQ
+              additionalProperties:
+                type: string
+            requestQueues:
+              type: object
+              description: Aliased request queue IDs for this run.
+              properties:
+                default:
+                  type: string
+                  description: ID of the default request queue for this run.
+                  example: FL35cSF7jrxr3BY39
+              additionalProperties:
+                type: string
+        buildNumber:
+          type:
+          - string
+          - 'null'
+          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
+          examples:
+          - 0.0.36
+          description: Build number of the Actor build used for this run.
+        containerUrl:
+          type: string
+          format: uri
+          examples:
+          - https://g8kd8kbc5ge8.runs.apify.net
+          description: URL of the container running the Actor.
+        isContainerServerReady:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - true
+          description: Whether the container's HTTP server is ready to accept requests.
+        gitBranchName:
+          type:
+          - string
+          - 'null'
+          examples:
+          - master
+          description: Name of the git branch used for the Actor build.
+        usage:
+          description: Resource usage statistics for the run.
+          anyOf:
+          - $ref: '#/components/schemas/RunUsage'
+          - type: 'null'
+        usageTotalUsd:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.2654
+          description: 'Total cost in USD for this run. Represents what you actually pay. For run owners: includes platform usage (compute units) and/or event costs depending on the Actor''s pricing model. For run non-owners: only available for Pay-Per-Event Actors (event costs only). Requires authentication token to access.'
+        usageUsd:
+          description: Platform usage costs breakdown in USD. Only present if you own the run AND are paying for platform usage (Pay-Per-Usage, Rental, or Pay-Per-Event with usage costs like standby Actors). Not available for standard Pay-Per-Event Actors. Requires authentication token to access.
+          anyOf:
+          - $ref: '#/components/schemas/RunUsageUsd'
+          - type: 'null'
+        metamorphs:
+          description: List of metamorph events that occurred during the run.
+          anyOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/RunMetamorphEvent'
+          - type: 'null'
+        platformUsageBillingModel:
+          type: string
+          description: Indicates which party covers platform usage costs for this run.
+          examples:
+          - USER
+    PaginationResponse:
+      title: PaginationResponse
+      description: Common pagination fields for list responses.
+      required:
+      - total
+      - offset
+      - limit
+      - desc
+      - count
+      type: object
+      properties:
+        total:
+          type: integer
+          description: The total number of items available across all pages.
+          minimum: 0
+          examples:
+          - 1
+        offset:
+          type: integer
+          description: The starting position for this page of results.
+          minimum: 0
+          examples:
+          - 0
+        limit:
+          type: integer
+          description: The maximum number of items returned per page.
+          minimum: 1
+          examples:
+          - 1000
+        desc:
+          type: boolean
+          description: Whether the results are sorted in descending order.
+          examples:
+          - false
+        count:
+          type: integer
+          description: The number of items returned in this response.
+          minimum: 0
+          examples:
+          - 1
+    CommonActorPricingInfo:
+      title: CommonActorPricingInfo
+      type: object
+      required:
+      - apifyMarginPercentage
+      - createdAt
+      - startedAt
+      properties:
+        apifyMarginPercentage:
+          type: number
+          examples:
+          - 0.2
+          description: 'Apify''s share of the revenue generated under this pricing info record, as a fraction between 0 and 1. Set by the Apify platform.
+
+            '
+        createdAt:
+          type: string
+          format: date-time
+          description: When this pricing info record has been created
+        startedAt:
+          type: string
+          format: date-time
+          description: Since when is this pricing info record effective for a given Actor
+        notifiedAboutFutureChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-internal: true
+        notifiedAboutChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-internal: true
+        reasonForChange:
+          type:
+          - string
+          - 'null'
+          x-internal: true
+        isPriceChangeNotificationSuppressed:
+          type: boolean
+          x-internal: true
+        forceContainsSignificantPriceChange:
+          type: boolean
+          x-internal: true
+    ErrorType:
+      title: ErrorType
+      type: string
+      description: Machine-processable error type identifier.
+      enum:
+      - 3d-secure-auth-failed
+      - access-right-already-exists
+      - action-not-found
+      - actor-already-rented
+      - actor-can-not-be-rented
+      - actor-disabled
+      - actor-is-not-rented
+      - actor-memory-limit-exceeded
+      - actor-name-exists-new-owner
+      - actor-name-not-unique
+      - actor-not-found
+      - actor-not-github-actor
+      - actor-not-public
+      - actor-permission-level-not-supported-for-agentic-payments
+      - actor-review-already-exists
+      - actor-run-failed
+      - actor-standby-not-supported-for-agentic-payments
+      - actor-task-name-not-unique
+      - agentic-payment-info-retrieval-error
+      - agentic-payment-information-missing
+      - agentic-payment-insufficient-amount
+      - agentic-payment-provider-internal-error
+      - agentic-payment-provider-unauthorized
+      - airtable-webhook-deprecated
+      - already-subscribed-to-paid-actor
+      - apify-plan-required-to-use-paid-actor
+      - apify-signup-not-allowed
+      - auth-method-not-supported
+      - authorization-server-not-found
+      - auto-issue-date-invalid
+      - background-check-required
+      - billing-system-error
+      - black-friday-plan-expired
+      - braintree-error
+      - braintree-not-linked
+      - braintree-operation-timed-out
+      - braintree-unsupported-currency
+      - build-not-found
+      - build-outdated
+      - cannot-add-apify-events-to-ppe-actor
+      - cannot-add-multiple-pricing-infos
+      - cannot-add-pricing-info-that-alters-past
+      - cannot-add-second-future-pricing-info
+      - cannot-build-actor-from-webhook
+      - cannot-change-billing-interval
+      - cannot-change-owner
+      - cannot-charge-apify-event
+      - cannot-charge-non-pay-per-event-actor
+      - cannot-comment-as-other-user
+      - cannot-copy-actor-task
+      - cannot-create-payout
+      - cannot-create-public-actor
+      - cannot-create-tax-transaction
+      - cannot-delete-critical-actor
+      - cannot-delete-invoice
+      - cannot-delete-paid-actor
+      - cannot-disable-one-time-event-for-apify-start-event
+      - cannot-disable-organization-with-enabled-members
+      - cannot-disable-user-with-subscription
+      - cannot-link-oauth-to-unverified-email
+      - cannot-metamorph-to-pay-per-result-actor
+      - cannot-modify-actor-pricing-too-frequently
+      - cannot-modify-actor-pricing-with-immediate-effect
+      - cannot-monetize-without-payout-billing-info
+      - cannot-override-paid-actor-trial
+      - cannot-permanently-delete-subscription
+      - cannot-publish-actor
+      - cannot-publish-actor-task
+      - cannot-reduce-last-full-token
+      - cannot-reimburse-more-than-original-charge
+      - cannot-reimburse-non-rental-charge
+      - cannot-remove-own-actor-from-recently-used
+      - cannot-remove-payment-method
+      - cannot-remove-pricing-info
+      - cannot-remove-running-run
+      - cannot-remove-user-with-public-actors
+      - cannot-remove-user-with-subscription
+      - cannot-remove-user-with-unpaid-invoice
+      - cannot-rename-env-var
+      - cannot-rent-paid-actor
+      - cannot-review-own-actor
+      - cannot-set-access-rights-for-owner
+      - cannot-set-is-status-message-terminal
+      - cannot-unpublish-critical-actor
+      - cannot-unpublish-paid-actor
+      - cannot-unpublish-profile
+      - cannot-update-invoice-field
+      - concurrent-runs-limit-exceeded
+      - concurrent-update-detected
+      - conference-token-not-found
+      - content-encoding-forbidden-for-html
+      - coupon-already-redeemed
+      - coupon-expired
+      - coupon-for-new-customers
+      - coupon-for-subscribed-users
+      - coupon-limits-are-in-conflict-with-current-limits
+      - coupon-max-number-of-redemptions-reached
+      - coupon-not-found
+      - coupon-not-unique
+      - coupons-disabled
+      - create-github-issue-not-allowed
+      - creator-plan-not-available
+      - cron-expression-invalid
+      - daily-ai-token-limit-exceeded
+      - daily-publication-limit-exceeded
+      - dataset-does-not-have-fields-schema
+      - dataset-does-not-have-schema
+      - dataset-locked
+      - dataset-schema-invalid
+      - dcr-not-supported
+      - default-dataset-not-found
+      - deleting-default-build
+      - deleting-unfinished-build
+      - email-already-taken
+      - email-already-taken-removed-user
+      - email-domain-not-allowed-for-coupon
+      - email-invalid
+      - email-not-allowed
+      - email-not-valid
+      - email-update-too-soon
+      - elevated-permissions-needed
+      - env-var-already-exists
+      - exchange-rate-fetch-failed
+      - expired-conference-token
+      - failed-to-charge-user
+      - final-invoice-negative
+      - full-permission-actor-blocked-for-admin
+      - full-permission-actor-not-approved
+      - github-branch-empty
+      - github-issue-already-exists
+      - github-public-key-not-found
+      - github-repository-not-found
+      - github-signature-does-not-match-payload
+      - github-user-not-authorized-for-issues
+      - gmail-not-allowed
+      - id-does-not-match
+      - incompatible-billing-interval
+      - incomplete-payout-billing-info
+      - inconsistent-currencies
+      - incorrect-pricing-modifier-prefix
+      - input-json-invalid-characters
+      - input-json-not-object
+      - input-json-too-long
+      - input-update-collision
+      - insufficient-permissions
+      - insufficient-permissions-to-change-field
+      - insufficient-security-measures
+      - insufficient-tax-country-evidence
+      - integration-auth-error
+      - internal-server-error
+      - invalid-billing-info
+      - invalid-billing-period-for-payout
+      - invalid-build
+      - invalid-client-key
+      - invalid-collection
+      - invalid-conference-login-password
+      - invalid-content-type-header
+      - invalid-credentials
+      - invalid-git-auth-token
+      - invalid-github-issue-url
+      - invalid-header
+      - invalid-id
+      - invalid-idempotency-key
+      - invalid-input
+      - invalid-input-schema
+      - invalid-invoice
+      - invalid-invoice-type
+      - invalid-issue-date
+      - invalid-label-params
+      - invalid-main-account-user-id
+      - invalid-oauth-app
+      - invalid-oauth-scope
+      - invalid-one-time-invoice
+      - invalid-parameter
+      - invalid-payout-status
+      - invalid-picture-url
+      - invalid-record-key
+      - invalid-request
+      - invalid-resource-type
+      - invalid-signature
+      - invalid-subscription-plan
+      - invalid-tax-number
+      - invalid-tax-number-format
+      - invalid-token
+      - invalid-token-type
+      - invalid-two-factor-code
+      - invalid-two-factor-code-or-recovery-code
+      - invalid-two-factor-recovery-code
+      - invalid-username
+      - invalid-value
+      - invitation-invalid-resource-type
+      - invitation-no-longer-valid
+      - invoice-canceled
+      - invoice-cannot-be-refunded-due-to-too-high-amount
+      - invoice-incomplete
+      - invoice-is-draft
+      - invoice-locked
+      - invoice-must-be-buffer
+      - invoice-not-canceled
+      - invoice-not-draft
+      - invoice-not-found
+      - invoice-outdated
+      - invoice-paid-already
+      - issue-already-connected-to-github
+      - issue-not-found
+      - issues-bad-request
+      - issuer-not-registered
+      - job-finished
+      - label-already-linked
+      - last-api-token
+      - limit-reached
+      - max-items-must-be-greater-than-zero
+      - max-metamorphs-exceeded
+      - max-total-charge-usd-below-minimum
+      - max-total-charge-usd-must-be-greater-than-zero
+      - method-not-allowed
+      - migration-disabled
+      - missing-actor-rights
+      - missing-api-token
+      - missing-billing-info
+      - missing-line-items
+      - missing-payment-date
+      - missing-payout-billing-info
+      - missing-proxy-password
+      - missing-reporting-fields
+      - missing-resource-name
+      - missing-settings
+      - missing-username
+      - monthly-usage-limit-too-low
+      - more-than-one-update-not-allowed
+      - multiple-records-found
+      - must-be-admin
+      - name-not-unique
+      - next-runtime-computation-failed
+      - no-columns-in-exported-dataset
+      - no-payment-attempt-for-refund-found
+      - no-payment-method-available
+      - no-team-account-seats-available
+      - non-temporary-email
+      - not-enough-usage-to-run-paid-actor
+      - not-implemented
+      - not-supported-currencies
+      - o-auth-service-already-connected
+      - o-auth-service-not-connected
+      - oauth-resource-access-failed
+      - one-time-invoice-already-marked-paid
+      - only-drafts-can-be-deleted
+      - operation-canceled
+      - operation-not-allowed
+      - operation-timed-out
+      - organization-cannot-own-itself
+      - organization-role-not-found
+      - overlapping-payout-billing-periods
+      - own-token-required
+      - page-not-found
+      - param-not-one-of
+      - parameter-required
+      - parameters-mismatched
+      - password-reset-email-already-sent
+      - password-reset-token-expired
+      - pay-as-you-go-without-monthly-interval
+      - payment-attempt-status-message-required
+      - payout-already-paid
+      - payout-canceled
+      - payout-invalid-state
+      - payout-must-be-approved-to-be-marked-paid
+      - payout-not-found
+      - payout-number-already-exists
+      - phone-number-invalid
+      - phone-number-landline
+      - phone-number-opted-out
+      - phone-verification-disabled
+      - platform-feature-disabled
+      - price-overrides-validation-failed
+      - pricing-model-not-supported
+      - promotional-plan-not-available
+      - proxy-auth-ip-not-unique
+      - public-actor-disabled
+      - query-timeout
+      - quoted-price-outdated
+      - rate-limit-exceeded
+      - recaptcha-invalid
+      - recaptcha-required
+      - record-not-found
+      - record-not-public
+      - record-or-token-not-found
+      - record-too-large
+      - redirect-uri-mismatch
+      - reduced-plan-not-available
+      - rental-charge-already-reimbursed
+      - rental-not-allowed
+      - request-aborted-prematurely
+      - request-handled-or-locked
+      - request-id-invalid
+      - request-queue-duplicate-requests
+      - request-too-large
+      - requested-dataset-view-does-not-exist
+      - resume-token-expired
+      - run-failed
+      - run-input-body-not-valid-json
+      - run-timeout-exceeded
+      - russia-is-evil
+      - same-user
+      - schedule-actor-not-found
+      - schedule-actor-task-not-found
+      - schedule-name-not-unique
+      - schema-validation
+      - schema-validation-error
+      - schema-validation-failed
+      - service-worker-registration-not-allowed
+      - sign-up-method-not-allowed
+      - slack-integration-not-custom
+      - socket-closed
+      - socket-destroyed
+      - store-schema-invalid
+      - store-terms-not-accepted
+      - stripe-enabled
+      - stripe-generic-decline
+      - stripe-not-enabled
+      - stripe-not-enabled-for-user
+      - tagged-build-required
+      - tax-country-invalid
+      - tax-number-invalid
+      - tax-number-validation-failed
+      - taxamo-call-failed
+      - taxamo-request-failed
+      - testing-error
+      - token-not-provided
+      - too-few-versions
+      - too-many-actor-tasks
+      - too-many-actors
+      - too-many-labels-on-resource
+      - too-many-mcp-connectors
+      - too-many-o-auth-apps
+      - too-many-organizations
+      - too-many-requests
+      - too-many-schedules
+      - too-many-ui-access-keys
+      - too-many-user-labels
+      - too-many-values
+      - too-many-versions
+      - too-many-webhooks
+      - unexpected-route
+      - unknown-build-tag
+      - unknown-payment-provider
+      - unsubscribe-token-invalid
+      - unsupported-actor-pricing-model-for-agentic-payments
+      - unsupported-content-encoding
+      - unsupported-file-type-for-issue
+      - unsupported-file-type-image-expected
+      - unsupported-file-type-text-or-json-expected
+      - unsupported-permission
+      - upcoming-subscription-bill-not-up-to-date
+      - user-already-exists
+      - user-already-verified
+      - user-creates-organizations-too-fast
+      - user-disabled
+      - user-email-is-disposable
+      - user-email-not-set
+      - user-email-not-verified
+      - user-has-no-subscription
+      - user-integration-not-found
+      - user-is-already-invited
+      - user-is-already-organization-member
+      - user-is-not-member-of-organization
+      - user-is-not-organization
+      - user-is-organization
+      - user-is-organization-owner
+      - user-is-removed
+      - user-not-found
+      - user-not-logged-in
+      - user-not-verified
+      - user-or-token-not-found
+      - user-plan-not-allowed-for-coupon
+      - user-problem-with-card
+      - user-record-not-found
+      - username-already-taken
+      - username-missing
+      - username-not-allowed
+      - username-removal-forbidden
+      - username-required
+      - verification-email-already-sent
+      - verification-token-expired
+      - version-already-exists
+      - versions-size-exceeded
+      - weak-password
+      - x402-agentic-payment-already-finalized
+      - x402-agentic-payment-insufficient-amount
+      - x402-agentic-payment-malformed-token
+      - x402-agentic-payment-settlement-failed
+      - x402-agentic-payment-settlement-in-progress
+      - x402-agentic-payment-settlement-stuck
+      - x402-agentic-payment-unauthorized
+      - x402-payment-required
+      - zero-invoice
+    WebhookRepresentation:
+      title: WebhookRepresentation
+      description: 'Minimal representation of an ad-hoc webhook attached to a single Actor run or build via the
+
+        `webhooks` query parameter. The query parameter value is a Base64-encoded JSON array whose
+
+        items match this schema. Persistent webhook fields (e.g. `condition`) are not used here.
+
+        '
+      required:
+      - eventTypes
+      - requestUrl
+      type: object
+      properties:
+        eventTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookEventType'
+          examples:
+          - - ACTOR.RUN.SUCCEEDED
+        requestUrl:
+          type: string
+          description: The URL to which the webhook sends its payload.
+          examples:
+          - http://example.com/
+        payloadTemplate:
+          type:
+          - string
+          - 'null'
+          description: Optional template for the JSON payload sent by the webhook.
+          examples:
+          - '{\n "userId": {{userId}}...'
+        headersTemplate:
+          type:
+          - string
+          - 'null'
+          description: Optional template for the HTTP headers sent by the webhook.
+          examples:
+          - '{\n "Authorization": "Bearer ..."}'
+        shouldInterpolateStrings:
+          type:
+          - boolean
+          - 'null'
+          description: Flag to also interpolate `{{...}}` variables inside string values of the payload and headers templates.
+          examples:
+          - false
+        idempotencyKey:
+          type:
+          - string
+          - 'null'
+          description: Key that prevents creating duplicate webhooks, e.g. when the run-starting request is retried.
+          examples:
+          - fdSJmdP3nfs7sfk3y
+        ignoreSslErrors:
+          type:
+          - boolean
+          - 'null'
+          description: Flag to ignore SSL errors when the webhook sends the request.
+          examples:
+          - false
+        doNotRetry:
+          type:
+          - boolean
+          - 'null'
+          description: Flag to skip retrying the webhook request on failure.
+          examples:
+          - false
+    RunResponse:
+      title: RunResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Run'
+    ListOfRunsResponse:
+      title: ListOfRunsResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfRuns'
+    FreeActorPricingInfo:
+      title: FreeActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        properties:
+          pricingModel:
+            type: string
+            const: FREE
+    TieredPricingPerDatasetItemEntry:
+      title: TieredPricingPerDatasetItemEntry
+      description: A single tier's price-per-dataset-item entry.
+      type: object
+      required:
+      - tieredPricePerUnitUsd
+      properties:
+        tieredPricePerUnitUsd:
+          type: number
+          description: Price per unit in USD for this tier.
+    PayPerEventActorPricingInfo:
+      title: PayPerEventActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - pricingPerEvent
+        properties:
+          pricingModel:
+            type: string
+            const: PAY_PER_EVENT
+          pricingPerEvent:
+            type: object
+            properties:
+              actorChargeEvents:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/ActorChargeEvent'
+          minimalMaxTotalChargeUsd:
+            type:
+            - number
+            - 'null'
+    RunUsage:
+      title: RunUsage
+      type: object
+      properties:
+        ACTOR_COMPUTE_UNITS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 3
+        DATASET_READS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 4
+        DATASET_WRITES:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 4
+        KEY_VALUE_STORE_READS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 5
+        KEY_VALUE_STORE_WRITES:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 3
+        KEY_VALUE_STORE_LISTS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 5
+        REQUEST_QUEUE_READS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 2
+        REQUEST_QUEUE_WRITES:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 1
+        DATA_TRANSFER_INTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 1
+        DATA_TRANSFER_EXTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 3
+        PROXY_RESIDENTIAL_TRANSFER_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 34
+        PROXY_SERPS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 3
+    ActorJobStatus:
+      title: ActorJobStatus
+      type: string
+      enum:
+      - READY
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+      - TIMING-OUT
+      - TIMED-OUT
+      - ABORTING
+      - ABORTED
+      description: Status of an Actor job (run or build).
+    RunStats:
+      title: RunStats
+      type: object
+      properties:
+        inputBodyLen:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          examples:
+          - 240
+        migrationCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        rebootCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        restartCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        resurrectCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 2
+        memAvgBytes:
+          type: number
+          examples:
+          - 267874071.9
+        memMaxBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 404713472
+        memCurrentBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        cpuAvgUsage:
+          type: number
+          examples:
+          - 33.7532101107538
+        cpuMaxUsage:
+          type: number
+          examples:
+          - 169.650735534941
+        cpuCurrentUsage:
+          type: number
+          examples:
+          - 0
+        netRxBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 103508042
+        netTxBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 4854600
+        durationMillis:
+          type: integer
+          minimum: 0
+          examples:
+          - 248472
+        runTimeSecs:
+          type: number
+          minimum: 0
+          examples:
+          - 248.472
+        metamorph:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        computeUnits:
+          type: number
+          minimum: 0
+          examples:
+          - 0.13804
+    RunUsageUsd:
+      title: RunUsageUsd
+      description: Resource usage costs in USD. All values are monetary amounts in US dollars.
+      type: object
+      properties:
+        ACTOR_COMPUTE_UNITS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0003
+        DATASET_READS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        DATASET_WRITES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        KEY_VALUE_STORE_READS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        KEY_VALUE_STORE_WRITES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 5.0e-05
+        KEY_VALUE_STORE_LISTS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        REQUEST_QUEUE_READS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        REQUEST_QUEUE_WRITES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        DATA_TRANSFER_INTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.001
+        DATA_TRANSFER_EXTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.003
+        PROXY_RESIDENTIAL_TRANSFER_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.034
+        PROXY_SERPS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.003
+    WebhookEventType:
+      title: WebhookEventType
+      type: string
+      enum:
+      - ACTOR.BUILD.ABORTED
+      - ACTOR.BUILD.CREATED
+      - ACTOR.BUILD.FAILED
+      - ACTOR.BUILD.SUCCEEDED
+      - ACTOR.BUILD.TIMED_OUT
+      - ACTOR.RUN.ABORTED
+      - ACTOR.RUN.CREATED
+      - ACTOR.RUN.FAILED
+      - ACTOR.RUN.RESURRECTED
+      - ACTOR.RUN.SUCCEEDED
+      - ACTOR.RUN.TIMED_OUT
+      - TEST
+      description: Type of event that triggers the webhook.
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    TieredPricingPerDatasetItem:
+      title: TieredPricingPerDatasetItem
+      description: 'Tiered price-per-dataset-item pricing, keyed by subscription tier (e.g. `FREE`, `BRONZE`, `SILVER`, `GOLD`,
+
+        `PLATINUM`, `DIAMOND`). The actual price applied to a run is resolved from the user''s tier.
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/TieredPricingPerDatasetItemEntry'
+    ListOfRuns:
+      title: ListOfRuns
+      allOf:
+      - $ref: '#/components/schemas/PaginationResponse'
+      - type: object
+        required:
+        - items
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/RunListItem'
+    GeneralAccess:
+      title: GeneralAccess
+      type: string
+      enum:
+      - ANYONE_WITH_ID_CAN_READ
+      - ANYONE_WITH_NAME_CAN_READ
+      - FOLLOW_USER_SETTING
+      - RESTRICTED
+      examples:
+      - RESTRICTED
+      description: Defines the general access level for the resource.
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
+    RunMeta:
+      title: RunMeta
+      required:
+      - origin
+      type: object
+      properties:
+        origin:
+          $ref: '#/components/schemas/RunOrigin'
+        clientIp:
+          type:
+          - string
+          - 'null'
+          description: IP address of the client that started the run.
+        userAgent:
+          type:
+          - string
+          - 'null'
+          description: User agent of the client that started the run.
+        scheduleId:
+          type:
+          - string
+          - 'null'
+          description: ID of the schedule that triggered the run.
+        scheduledAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Time when the run was scheduled.
+    TieredPricingPerEvent:
+      title: TieredPricingPerEvent
+      description: 'Tiered price-per-event pricing for a single charge event, keyed by subscription tier (e.g. `FREE`, `BRONZE`,
+
+        `SILVER`, `GOLD`, `PLATINUM`, `DIAMOND`). The actual price applied is resolved from the user''s tier.
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/TieredPricingPerEventEntry'
+    RunOrigin:
+      title: RunOrigin
+      type: string
+      enum:
+      - DEVELOPMENT
+      - WEB
+      - API
+      - SCHEDULER
+      - TEST
+      - WEBHOOK
+      - ACTOR
+      - CLI
+      - CI
+      - STANDBY
+      - MCP
+    ActorChargeEvent:
+      title: ActorChargeEvent
+      description: 'Definition of a single chargeable event for a pay-per-event Actor. Each event is either flat-priced
+
+        (`eventPriceUsd` is set) or tier-priced (`eventTieredPricingUsd` is set); the two are mutually exclusive.
+
+        '
+      type: object
+      required:
+      - eventTitle
+      - eventDescription
+      properties:
+        eventTitle:
+          type: string
+          description: Human-readable title shown to users in the billing UI.
+        eventDescription:
+          type: string
+          description: Human-readable description of what triggers this event.
+        eventPriceUsd:
+          type: number
+          description: 'Flat price per event in USD. Present only for non-tiered events. Mutually exclusive with `eventTieredPricingUsd`.
+
+            '
+        eventTieredPricingUsd:
+          $ref: '#/components/schemas/TieredPricingPerEvent'
+        isPrimaryEvent:
+          type: boolean
+          description: Whether this event is the Actor's primary chargeable event.
+        isOneTimeEvent:
+          type: boolean
+          description: Whether this event can only be charged once per Actor run.
+    ActorRunPricingInfo:
+      title: ActorRunPricingInfo
+      discriminator:
+        propertyName: pricingModel
+        mapping:
+          PAY_PER_EVENT: '#/components/schemas/PayPerEventActorPricingInfo'
+          PRICE_PER_DATASET_ITEM: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
+          FLAT_PRICE_PER_MONTH: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
+          FREE: '#/components/schemas/FreeActorPricingInfo'
+      oneOf:
+      - $ref: '#/components/schemas/PayPerEventActorPricingInfo'
+      - $ref: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
+      - $ref: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
+      - $ref: '#/components/schemas/FreeActorPricingInfo'
+    RunOptions:
+      title: RunOptions
+      required:
+      - build
+      - timeoutSecs
+      - memoryMbytes
+      - diskMbytes
+      type: object
+      properties:
+        build:
+          type: string
+          examples:
+          - latest
+        timeoutSecs:
+          type: integer
+          minimum: 0
+          examples:
+          - 300
+        memoryMbytes:
+          type: integer
+          minimum: 128
+          maximum: 32768
+          examples:
+          - 1024
+        diskMbytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 2048
+        maxItems:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          examples:
+          - 1000
+        maxTotalChargeUsd:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          examples:
+          - 5
+    FlatPricePerMonthActorPricingInfo:
+      title: FlatPricePerMonthActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - pricePerUnitUsd
+        - trialMinutes
+        properties:
+          pricingModel:
+            type: string
+            const: FLAT_PRICE_PER_MONTH
+          trialMinutes:
+            type: integer
+            description: For how long this Actor can be used for free in trial period
+          pricePerUnitUsd:
+            type: number
+            description: Monthly flat price in USD
+    RunListItem:
+      title: RunListItem
+      required:
+      - id
+      - actId
+      - status
+      - startedAt
+      - buildId
+      - meta
+      - usageTotalUsd
+      - defaultKeyValueStoreId
+      - defaultDatasetId
+      - defaultRequestQueueId
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - HG7ML7M8z78YcAPEB
+        actId:
+          type: string
+          examples:
+          - HDSasDasz78YcAPEB
+        userId:
+          type: string
+          examples:
+          - 7sT5jcggjjA9fNcxF
+        actorTaskId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - KJHSKHausidyaJKHs
+        status:
+          $ref: '#/components/schemas/ActorJobStatus'
+        startedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-11-30T07:34:24.202Z'
+        finishedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - '2019-12-12T09:30:12.202Z'
+        buildId:
+          type: string
+          examples:
+          - HG7ML7M8z78YcAPEB
+        buildNumber:
+          type: string
+          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
+          examples:
+          - 0.0.2
+        buildNumberInt:
+          type: integer
+          examples:
+          - 10000
+        meta:
+          $ref: '#/components/schemas/RunMeta'
+        usageTotalUsd:
+          type: number
+          examples:
+          - 0.2
+        defaultKeyValueStoreId:
+          type: string
+          examples:
+          - sfAjeR4QmeJCQzTfe
+        defaultDatasetId:
+          type: string
+          examples:
+          - 3ZojQDdFTsyE7Moy4
+        defaultRequestQueueId:
+          type: string
+          examples:
+          - so93g2shcDzK3pA85
+  responses:
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    Timeout:
+      description: The HTTP request exceeded the timeout limit
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: run-timeout-exceeded
+              message: Actor run exceeded the timeout of 300 seconds for this API endpoint
+    PaymentRequired:
+      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: x402-payment-required
+              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+  examples:
+    ListOfRunsResponseExample:
+      value:
+        data:
+          total: 2
+          offset: 0
+          limit: 1000
+          desc: false
+          count: 2
+          items:
+          - id: HG7ML7M8z78YcAPEB
+            actId: HDSasDasz78YcAPEB
+            actorTaskId: KJHSKHausidyaJKHs
+            status: SUCCEEDED
+            startedAt: '2019-11-30T07:34:24.202Z'
+            finishedAt: '2019-12-12T09:30:12.202Z'
+            buildId: HG7ML7M8z78YcAPEB
+            buildNumber: 0.0.2
+            meta:
+              origin: WEB
+            usageTotalUsd: 0.2
+            defaultKeyValueStoreId: sfAjeR4QmeJCQzTfe
+            defaultDatasetId: 3ZojQDdFTsyE7Moy4
+            defaultRequestQueueId: so93g2shcDzK3pA85
+          - id: HG7ML7M8z78YcAPEB
+            actId: HDSasDasz78YcAPEB
+            actorTaskId: KJHSKHausidyaJKHs
+            status: FAILED
+            startedAt: '2019-12-12T07:34:14.202Z'
+            finishedAt: '2019-12-13T08:36:13.202Z'
+            buildId: u78dML7M8z78YcAPEB
+            buildNumber: 0.2.2
+            meta:
+              origin: DEVELOPMENT
+            usageTotalUsd: 0.6
+            defaultKeyValueStoreId: sffsouqlseJCQzTfe
+            defaultDatasetId: CFGggdjQDsyE7Moyw
+            defaultRequestQueueId: soowucklrmDzKpA8x
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      description: 'Bearer token provided in the `Authorization` header (e.g., `Authorization: Bearer your_token`—recommended). [More info](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization).
+
+
+        Use your API token to authenticate requests. You can find it on the [Integrations page](https://console.apify.com/account#/integrations) in Apify Console. This method is more secure than query parameters, as headers are not logged in browser history or server logs.
+
+
+        :::danger Security
+
+
+        Do not share your API token (or account password) with untrusted parties.
+
+
+        :::
+
+
+        _When is authentication required?_
+
+        - _Required_ for private Actors, tasks, or resources (e.g., builds of private Actors).
+
+        - _Required_ when using named formats for IDs (e.g., `username~store-name` for stores or `username~queue-name` for queues).
+
+        - _Optional_ for public Actors or resources (e.g., builds of public Actors can be queried without a token).
+
+
+        For more information, see our [integrations documentation](https://docs.apify.com/platform/integrations).'
+    apiKey:
+      type: apiKey
+      name: token
+      in: query
+      description: 'API token provided as a query parameter (e.g., `?token=your_token`—less secure).
+
+
+        Use your API token to authenticate requests. You can find it on the [Integrations page](https://console.apify.com/account#/integrations) in Apify Console.
+
+
+        :::danger Security
+
+
+        Do not share your API token (or account password) with untrusted parties.
+
+
+        :::
+
+
+        _When is authentication required?_
+
+        - _Required_ for private Actors, tasks, or resources (e.g., builds of private Actors).
+
+        - _Required_ when using named formats for IDs (e.g., `username~store-name` for stores or `username~queue-name` for queues).
+
+        - _Optional_ for public Actors or resources (e.g., builds of public Actors can be queried without a token).
+
+
+        For more information, see our [integrations documentation](https://docs.apify.com/platform/integrations).'
+x-tagGroups:
+- name: Actor management
+  tags:
+  - Actors
+  - Actors/Actor versions
+  - Actors/Actor builds
+  - Actors/Actor runs
+  - Actors/Webhook collection
+  - Actors/Last run object and its storages
+- name: Actor builds
+  tags:
+  - Actor builds
+- name: Actor runs
+  tags:
+  - Actor runs
+- name: Actor tasks
+  tags:
+  - Actor tasks
+- name: Storage
+  tags:
+  - Storage/Datasets
+  - Storage/Key-value stores
+  - Storage/Request queues
+  - Storage/Request queues/Requests
+  - Storage/Request queues/Requests locks
+- name: Webhook management
+  tags:
+  - Webhooks/Webhooks
+  - Webhooks/Webhook dispatches
+- name: Schedules
+  tags:
+  - Schedules
+- name: Apify Store
+  tags:
+  - Store
+- name: Logs
+  tags:
+  - Logs
+- name: Users
+  tags:
+  - Users
+  - Users/Usage
+- name: Utility tools
+  tags:
+  - Tools
+  - Tools/Encoding
+- name: Convenience endpoints
+  tags:
+  - Default dataset
+  - Default key-value store
+  - Default request queue
+  - Last Actor run's default dataset
+  - Last Actor run's default key-value store
+  - Last Actor run's default request queue
+  - Last Actor run's log
+  - Last Actor run's abort
+  - Last Actor run's metamorph
+  - Last Actor run's reboot
+  - Last Actor task run's default dataset
+  - Last Actor task run's default key-value store
+  - Last Actor task run's default request queue
+  - Last Actor task run's log
+  - Last Actor task run's abort
+  - Last Actor task run's metamorph
+  - Last Actor task run's reboot

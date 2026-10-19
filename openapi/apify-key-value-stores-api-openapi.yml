@@ -134,6 +134,18 @@ paths:
         dispatcher: FALLBACK
 components:
   schemas:
+    KeyValueStoreList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/KeyValueStore'
+            total:
+              type: integer
     Error:
       type: object
       properties:
@@ -154,18 +166,6 @@ components:
         name:
           type: string
           example: my-store
-    KeyValueStoreList:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/KeyValueStore'
-            total:
-              type: integer
   responses:
     NotFound:
       description: Resource not found.

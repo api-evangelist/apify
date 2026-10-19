@@ -1,21 +1,128 @@
 openapi: 3.2.0
 info:
   title: Apify Users API
-  description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.'
-  version: v2
-  contact:
-    name: Apify
-    url: https://apify.com
-  x-generated-from: documentation
+  x-refined-note:
+  - x-generated-from differs across the merged source definitions and was not carried
+  version: '1.0'
+  description: 'Operations tagged Users across 2 of this provider''s published API definitions: apify-openapi.json, apify-api.yaml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.apify.com
+  variables: {}
 - url: https://api.apify.com/v2
   description: Apify Production API
-security:
-- bearerAuth: []
 tags:
 - name: Users
-  description: User and account management.
+  x-displayName: Get user data
+  x-legacy-doc-urls:
+  - '#/reference/users'
+  - '#tag/Users'
+  - '#/reference/users/public-data'
+  - '#tag/UsersPublic-data'
+  - '#/reference/users/private-data'
+  - '#tag/UsersPrivate-data'
+  - '#/reference/users/monthly-usage'
+  - '#tag/UsersMonthly-usage'
+  - '#/reference/users/account-and-usage-limits'
+  - '#tag/UsersAccount-and-usage-limits'
+  description: 'The API endpoints described in this section return information about
+
+    user accounts.'
+  x-trait: true
 paths:
+  /v2/users/{userId}:
+    get:
+      tags:
+      - Users
+      summary: Get public user data
+      description: 'Returns public information about a specific user account, similar to what
+
+        can be seen on public profile pages (e.g. https://apify.com/apify).
+
+
+        This operation requires no authentication token.'
+      operationId: user_get
+      parameters:
+      - name: userId
+        in: path
+        description: User ID or username.
+        required: true
+        style: simple
+        schema:
+          type: string
+          example: HGzIk8z78YcAPEB
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublicInfoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/users/public-data/get-public-user-data
+      - https://docs.apify.com/api/v2#/reference/users/get-public-user-data
+      - https://docs.apify.com/api/v2#tag/UsersPublic-data/operation/user_get
+      security:
+      - httpBearer: []
+      - apiKey: []
+    servers:
+    - url: https://api.apify.com
+      variables: {}
+  /v2/users/me:
+    get:
+      tags:
+      - Users
+      summary: Get private user data
+      description: 'Returns information about the current user account, including both public
+
+        and private information.
+
+
+        The user account is identified by the provided authentication token.
+
+
+        The fields `plan`, `email` and `profile` are omitted when this endpoint is accessed from Actor run.'
+      operationId: users_me_get
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPrivateInfoResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/users/private-data/get-private-user-data
+      - https://docs.apify.com/api/v2#/reference/users/get-private-user-data
+      - https://docs.apify.com/api/v2#tag/UsersPrivate-data/operation/users_me_get
+      security:
+      - httpBearer: []
+      - apiKey: []
+    servers:
+    - url: https://api.apify.com
+      variables: {}
   /users/me:
     get:
       operationId: getMe
@@ -41,12 +148,785 @@ paths:
                       email: jsmith@example.com
                       plan: STARTER
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/components/responses/Unauthorized_2'
       x-microcks-operation:
         delay: 0
         dispatcher: FALLBACK
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.apify.com/v2
+      description: Apify Production API
 components:
   schemas:
+    UserPlan:
+      title: UserPlan
+      required:
+      - availableProxyGroups
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - Personal
+        description:
+          type: string
+          examples:
+          - Cost-effective plan for freelancers, developers and students.
+        isEnabled:
+          type: boolean
+          examples:
+          - true
+        monthlyBasePriceUsd:
+          type: number
+          examples:
+          - 49
+        monthlyUsageCreditsUsd:
+          type: number
+          examples:
+          - 49
+        usageDiscountPercent:
+          type: number
+          examples:
+          - 0
+        enabledPlatformFeatures:
+          type: array
+          items:
+            type: string
+          example:
+          - ACTORS
+          - STORAGE
+          - PROXY_SERPS
+          - SCHEDULER
+          - WEBHOOKS
+        maxMonthlyUsageUsd:
+          type: number
+          examples:
+          - 9999
+        maxActorMemoryGbytes:
+          type: number
+          examples:
+          - 32
+        maxMonthlyActorComputeUnits:
+          type: number
+          examples:
+          - 1000
+        maxMonthlyResidentialProxyGbytes:
+          type: number
+          examples:
+          - 10
+        maxMonthlyProxySerps:
+          type: integer
+          examples:
+          - 30000
+        maxMonthlyExternalDataTransferGbytes:
+          type: number
+          examples:
+          - 1000
+        maxActorCount:
+          type: integer
+          examples:
+          - 100
+        maxActorTaskCount:
+          type: integer
+          examples:
+          - 1000
+        dataRetentionDays:
+          type: integer
+          examples:
+          - 14
+        availableProxyGroups:
+          $ref: '#/components/schemas/AvailableProxyGroups'
+        teamAccountSeatCount:
+          type: integer
+          examples:
+          - 1
+        supportLevel:
+          type: string
+          examples:
+          - COMMUNITY
+        availableAddOns:
+          type: array
+          items:
+            type: string
+          examples:
+          - []
+        tier:
+          type: string
+          examples:
+          - FREE
+        apiRateLimitBoosts:
+          type: integer
+          examples:
+          - 0
+        maxScheduleCount:
+          type: integer
+          examples:
+          - 100
+        maxConcurrentActorRuns:
+          type: integer
+          examples:
+          - 25
+        planPricing:
+          type: object
+          description: Pricing details for this plan.
+          additionalProperties: true
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    UserPublicInfo:
+      title: UserPublicInfo
+      required:
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          examples:
+          - d7b9MDYsbtX5L7XAj
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+    UserProfile:
+      title: UserProfile
+      type: object
+      properties:
+        bio:
+          type:
+          - string
+          - 'null'
+          examples:
+          - I started web scraping in 1985 using Altair BASIC.
+        readme:
+          type:
+          - string
+          - 'null'
+          description: Markdown README shown on the user's public profile page.
+          examples:
+          - '### Hello world 👋🏻
+
+            I build web scrapers.'
+        name:
+          type: string
+          examples:
+          - Jane Doe
+        pictureUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+          examples:
+          - https://apify.com/img/anonymous_user_picture.png
+        githubUsername:
+          type:
+          - string
+          - 'null'
+          examples:
+          - torvalds.
+        websiteUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+          examples:
+          - http://www.example.com
+        twitterUsername:
+          type:
+          - string
+          - 'null'
+          examples:
+          - '@BillGates'
+    EffectivePlatformFeatures:
+      title: EffectivePlatformFeatures
+      required:
+      - ACTORS
+      - STORAGE
+      - SCHEDULER
+      - PROXY
+      - PROXY_EXTERNAL_ACCESS
+      - PROXY_RESIDENTIAL
+      - PROXY_SERPS
+      - WEBHOOKS
+      - ACTORS_PUBLIC_ALL
+      - ACTORS_PUBLIC_DEVELOPER
+      type: object
+      properties:
+        ACTORS:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        STORAGE:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        SCHEDULER:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        PROXY:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        PROXY_EXTERNAL_ACCESS:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        PROXY_RESIDENTIAL:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        PROXY_SERPS:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        WEBHOOKS:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        ACTORS_PUBLIC_ALL:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        ACTORS_PUBLIC_DEVELOPER:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+    UserPrivateInfo:
+      title: UserPrivateInfo
+      required:
+      - username
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - YiKoxjkaS9gjGTqhF
+        username:
+          type: string
+          examples:
+          - myusername
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+        email:
+          type: string
+          format: email
+          examples:
+          - bob@example.com
+        proxy:
+          $ref: '#/components/schemas/ProxyResource'
+        plan:
+          $ref: '#/components/schemas/UserPlan'
+        effectivePlatformFeatures:
+          $ref: '#/components/schemas/EffectivePlatformFeatures'
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2022-11-29T14:48:29.381Z'
+        isPaying:
+          type: boolean
+          examples:
+          - true
+    ProxyResource:
+      title: ProxyResource
+      required:
+      - password
+      - groups
+      type: object
+      properties:
+        password:
+          type: string
+          examples:
+          - ad78knd9Jkjd86
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProxyGroup'
+    ErrorType:
+      title: ErrorType
+      type: string
+      description: Machine-processable error type identifier.
+      enum:
+      - 3d-secure-auth-failed
+      - access-right-already-exists
+      - action-not-found
+      - actor-already-rented
+      - actor-can-not-be-rented
+      - actor-disabled
+      - actor-is-not-rented
+      - actor-memory-limit-exceeded
+      - actor-name-exists-new-owner
+      - actor-name-not-unique
+      - actor-not-found
+      - actor-not-github-actor
+      - actor-not-public
+      - actor-permission-level-not-supported-for-agentic-payments
+      - actor-review-already-exists
+      - actor-run-failed
+      - actor-standby-not-supported-for-agentic-payments
+      - actor-task-name-not-unique
+      - agentic-payment-info-retrieval-error
+      - agentic-payment-information-missing
+      - agentic-payment-insufficient-amount
+      - agentic-payment-provider-internal-error
+      - agentic-payment-provider-unauthorized
+      - airtable-webhook-deprecated
+      - already-subscribed-to-paid-actor
+      - apify-plan-required-to-use-paid-actor
+      - apify-signup-not-allowed
+      - auth-method-not-supported
+      - authorization-server-not-found
+      - auto-issue-date-invalid
+      - background-check-required
+      - billing-system-error
+      - black-friday-plan-expired
+      - braintree-error
+      - braintree-not-linked
+      - braintree-operation-timed-out
+      - braintree-unsupported-currency
+      - build-not-found
+      - build-outdated
+      - cannot-add-apify-events-to-ppe-actor
+      - cannot-add-multiple-pricing-infos
+      - cannot-add-pricing-info-that-alters-past
+      - cannot-add-second-future-pricing-info
+      - cannot-build-actor-from-webhook
+      - cannot-change-billing-interval
+      - cannot-change-owner
+      - cannot-charge-apify-event
+      - cannot-charge-non-pay-per-event-actor
+      - cannot-comment-as-other-user
+      - cannot-copy-actor-task
+      - cannot-create-payout
+      - cannot-create-public-actor
+      - cannot-create-tax-transaction
+      - cannot-delete-critical-actor
+      - cannot-delete-invoice
+      - cannot-delete-paid-actor
+      - cannot-disable-one-time-event-for-apify-start-event
+      - cannot-disable-organization-with-enabled-members
+      - cannot-disable-user-with-subscription
+      - cannot-link-oauth-to-unverified-email
+      - cannot-metamorph-to-pay-per-result-actor
+      - cannot-modify-actor-pricing-too-frequently
+      - cannot-modify-actor-pricing-with-immediate-effect
+      - cannot-monetize-without-payout-billing-info
+      - cannot-override-paid-actor-trial
+      - cannot-permanently-delete-subscription
+      - cannot-publish-actor
+      - cannot-publish-actor-task
+      - cannot-reduce-last-full-token
+      - cannot-reimburse-more-than-original-charge
+      - cannot-reimburse-non-rental-charge
+      - cannot-remove-own-actor-from-recently-used
+      - cannot-remove-payment-method
+      - cannot-remove-pricing-info
+      - cannot-remove-running-run
+      - cannot-remove-user-with-public-actors
+      - cannot-remove-user-with-subscription
+      - cannot-remove-user-with-unpaid-invoice
+      - cannot-rename-env-var
+      - cannot-rent-paid-actor
+      - cannot-review-own-actor
+      - cannot-set-access-rights-for-owner
+      - cannot-set-is-status-message-terminal
+      - cannot-unpublish-critical-actor
+      - cannot-unpublish-paid-actor
+      - cannot-unpublish-profile
+      - cannot-update-invoice-field
+      - concurrent-runs-limit-exceeded
+      - concurrent-update-detected
+      - conference-token-not-found
+      - content-encoding-forbidden-for-html
+      - coupon-already-redeemed
+      - coupon-expired
+      - coupon-for-new-customers
+      - coupon-for-subscribed-users
+      - coupon-limits-are-in-conflict-with-current-limits
+      - coupon-max-number-of-redemptions-reached
+      - coupon-not-found
+      - coupon-not-unique
+      - coupons-disabled
+      - create-github-issue-not-allowed
+      - creator-plan-not-available
+      - cron-expression-invalid
+      - daily-ai-token-limit-exceeded
+      - daily-publication-limit-exceeded
+      - dataset-does-not-have-fields-schema
+      - dataset-does-not-have-schema
+      - dataset-locked
+      - dataset-schema-invalid
+      - dcr-not-supported
+      - default-dataset-not-found
+      - deleting-default-build
+      - deleting-unfinished-build
+      - email-already-taken
+      - email-already-taken-removed-user
+      - email-domain-not-allowed-for-coupon
+      - email-invalid
+      - email-not-allowed
+      - email-not-valid
+      - email-update-too-soon
+      - elevated-permissions-needed
+      - env-var-already-exists
+      - exchange-rate-fetch-failed
+      - expired-conference-token
+      - failed-to-charge-user
+      - final-invoice-negative
+      - full-permission-actor-blocked-for-admin
+      - full-permission-actor-not-approved
+      - github-branch-empty
+      - github-issue-already-exists
+      - github-public-key-not-found
+      - github-repository-not-found
+      - github-signature-does-not-match-payload
+      - github-user-not-authorized-for-issues
+      - gmail-not-allowed
+      - id-does-not-match
+      - incompatible-billing-interval
+      - incomplete-payout-billing-info
+      - inconsistent-currencies
+      - incorrect-pricing-modifier-prefix
+      - input-json-invalid-characters
+      - input-json-not-object
+      - input-json-too-long
+      - input-update-collision
+      - insufficient-permissions
+      - insufficient-permissions-to-change-field
+      - insufficient-security-measures
+      - insufficient-tax-country-evidence
+      - integration-auth-error
+      - internal-server-error
+      - invalid-billing-info
+      - invalid-billing-period-for-payout
+      - invalid-build
+      - invalid-client-key
+      - invalid-collection
+      - invalid-conference-login-password
+      - invalid-content-type-header
+      - invalid-credentials
+      - invalid-git-auth-token
+      - invalid-github-issue-url
+      - invalid-header
+      - invalid-id
+      - invalid-idempotency-key
+      - invalid-input
+      - invalid-input-schema
+      - invalid-invoice
+      - invalid-invoice-type
+      - invalid-issue-date
+      - invalid-label-params
+      - invalid-main-account-user-id
+      - invalid-oauth-app
+      - invalid-oauth-scope
+      - invalid-one-time-invoice
+      - invalid-parameter
+      - invalid-payout-status
+      - invalid-picture-url
+      - invalid-record-key
+      - invalid-request
+      - invalid-resource-type
+      - invalid-signature
+      - invalid-subscription-plan
+      - invalid-tax-number
+      - invalid-tax-number-format
+      - invalid-token
+      - invalid-token-type
+      - invalid-two-factor-code
+      - invalid-two-factor-code-or-recovery-code
+      - invalid-two-factor-recovery-code
+      - invalid-username
+      - invalid-value
+      - invitation-invalid-resource-type
+      - invitation-no-longer-valid
+      - invoice-canceled
+      - invoice-cannot-be-refunded-due-to-too-high-amount
+      - invoice-incomplete
+      - invoice-is-draft
+      - invoice-locked
+      - invoice-must-be-buffer
+      - invoice-not-canceled
+      - invoice-not-draft
+      - invoice-not-found
+      - invoice-outdated
+      - invoice-paid-already
+      - issue-already-connected-to-github
+      - issue-not-found
+      - issues-bad-request
+      - issuer-not-registered
+      - job-finished
+      - label-already-linked
+      - last-api-token
+      - limit-reached
+      - max-items-must-be-greater-than-zero
+      - max-metamorphs-exceeded
+      - max-total-charge-usd-below-minimum
+      - max-total-charge-usd-must-be-greater-than-zero
+      - method-not-allowed
+      - migration-disabled
+      - missing-actor-rights
+      - missing-api-token
+      - missing-billing-info
+      - missing-line-items
+      - missing-payment-date
+      - missing-payout-billing-info
+      - missing-proxy-password
+      - missing-reporting-fields
+      - missing-resource-name
+      - missing-settings
+      - missing-username
+      - monthly-usage-limit-too-low
+      - more-than-one-update-not-allowed
+      - multiple-records-found
+      - must-be-admin
+      - name-not-unique
+      - next-runtime-computation-failed
+      - no-columns-in-exported-dataset
+      - no-payment-attempt-for-refund-found
+      - no-payment-method-available
+      - no-team-account-seats-available
+      - non-temporary-email
+      - not-enough-usage-to-run-paid-actor
+      - not-implemented
+      - not-supported-currencies
+      - o-auth-service-already-connected
+      - o-auth-service-not-connected
+      - oauth-resource-access-failed
+      - one-time-invoice-already-marked-paid
+      - only-drafts-can-be-deleted
+      - operation-canceled
+      - operation-not-allowed
+      - operation-timed-out
+      - organization-cannot-own-itself
+      - organization-role-not-found
+      - overlapping-payout-billing-periods
+      - own-token-required
+      - page-not-found
+      - param-not-one-of
+      - parameter-required
+      - parameters-mismatched
+      - password-reset-email-already-sent
+      - password-reset-token-expired
+      - pay-as-you-go-without-monthly-interval
+      - payment-attempt-status-message-required
+      - payout-already-paid
+      - payout-canceled
+      - payout-invalid-state
+      - payout-must-be-approved-to-be-marked-paid
+      - payout-not-found
+      - payout-number-already-exists
+      - phone-number-invalid
+      - phone-number-landline
+      - phone-number-opted-out
+      - phone-verification-disabled
+      - platform-feature-disabled
+      - price-overrides-validation-failed
+      - pricing-model-not-supported
+      - promotional-plan-not-available
+      - proxy-auth-ip-not-unique
+      - public-actor-disabled
+      - query-timeout
+      - quoted-price-outdated
+      - rate-limit-exceeded
+      - recaptcha-invalid
+      - recaptcha-required
+      - record-not-found
+      - record-not-public
+      - record-or-token-not-found
+      - record-too-large
+      - redirect-uri-mismatch
+      - reduced-plan-not-available
+      - rental-charge-already-reimbursed
+      - rental-not-allowed
+      - request-aborted-prematurely
+      - request-handled-or-locked
+      - request-id-invalid
+      - request-queue-duplicate-requests
+      - request-too-large
+      - requested-dataset-view-does-not-exist
+      - resume-token-expired
+      - run-failed
+      - run-input-body-not-valid-json
+      - run-timeout-exceeded
+      - russia-is-evil
+      - same-user
+      - schedule-actor-not-found
+      - schedule-actor-task-not-found
+      - schedule-name-not-unique
+      - schema-validation
+      - schema-validation-error
+      - schema-validation-failed
+      - service-worker-registration-not-allowed
+      - sign-up-method-not-allowed
+      - slack-integration-not-custom
+      - socket-closed
+      - socket-destroyed
+      - store-schema-invalid
+      - store-terms-not-accepted
+      - stripe-enabled
+      - stripe-generic-decline
+      - stripe-not-enabled
+      - stripe-not-enabled-for-user
+      - tagged-build-required
+      - tax-country-invalid
+      - tax-number-invalid
+      - tax-number-validation-failed
+      - taxamo-call-failed
+      - taxamo-request-failed
+      - testing-error
+      - token-not-provided
+      - too-few-versions
+      - too-many-actor-tasks
+      - too-many-actors
+      - too-many-labels-on-resource
+      - too-many-mcp-connectors
+      - too-many-o-auth-apps
+      - too-many-organizations
+      - too-many-requests
+      - too-many-schedules
+      - too-many-ui-access-keys
+      - too-many-user-labels
+      - too-many-values
+      - too-many-versions
+      - too-many-webhooks
+      - unexpected-route
+      - unknown-build-tag
+      - unknown-payment-provider
+      - unsubscribe-token-invalid
+      - unsupported-actor-pricing-model-for-agentic-payments
+      - unsupported-content-encoding
+      - unsupported-file-type-for-issue
+      - unsupported-file-type-image-expected
+      - unsupported-file-type-text-or-json-expected
+      - unsupported-permission
+      - upcoming-subscription-bill-not-up-to-date
+      - user-already-exists
+      - user-already-verified
+      - user-creates-organizations-too-fast
+      - user-disabled
+      - user-email-is-disposable
+      - user-email-not-set
+      - user-email-not-verified
+      - user-has-no-subscription
+      - user-integration-not-found
+      - user-is-already-invited
+      - user-is-already-organization-member
+      - user-is-not-member-of-organization
+      - user-is-not-organization
+      - user-is-organization
+      - user-is-organization-owner
+      - user-is-removed
+      - user-not-found
+      - user-not-logged-in
+      - user-not-verified
+      - user-or-token-not-found
+      - user-plan-not-allowed-for-coupon
+      - user-problem-with-card
+      - user-record-not-found
+      - username-already-taken
+      - username-missing
+      - username-not-allowed
+      - username-removal-forbidden
+      - username-required
+      - verification-email-already-sent
+      - verification-token-expired
+      - version-already-exists
+      - versions-size-exceeded
+      - weak-password
+      - x402-agentic-payment-already-finalized
+      - x402-agentic-payment-insufficient-amount
+      - x402-agentic-payment-malformed-token
+      - x402-agentic-payment-settlement-failed
+      - x402-agentic-payment-settlement-in-progress
+      - x402-agentic-payment-settlement-stuck
+      - x402-agentic-payment-unauthorized
+      - x402-payment-required
+      - zero-invoice
+    UserPrivateInfoResponse:
+      title: UserPrivateInfoResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserPrivateInfo'
+    UserPublicInfoResponse:
+      title: UserPublicInfoResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserPublicInfo'
+    AvailableProxyGroups:
+      title: AvailableProxyGroups
+      description: 'A dictionary mapping proxy group names to the number of available proxies in each group.
+
+        The keys are proxy group names (e.g., "RESIDENTIAL", "DATACENTER") and values are
+
+        the count of available proxies.
+
+        '
+      type: object
+      additionalProperties:
+        type: integer
+        description: The number of available proxies in this group.
+      example:
+        RESIDENTIAL: 1000
+        DATACENTER: 500
+        GOOGLE_SERP: 200
+    ProxyGroup:
+      title: ProxyGroup
+      required:
+      - name
+      - description
+      - availableCount
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - Group1
+        description:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Group1 description
+        availableCount:
+          type: integer
+          examples:
+          - 10
+    EffectivePlatformFeature:
+      title: EffectivePlatformFeature
+      required:
+      - isEnabled
+      - disabledReason
+      - disabledReasonType
+      - isTrial
+      - trialExpirationAt
+      type: object
+      properties:
+        isEnabled:
+          type: boolean
+          examples:
+          - true
+        disabledReason:
+          type:
+          - string
+          - 'null'
+          examples:
+          - The "Selected public Actors for developers" feature is not enabled for your account. Please upgrade your plan or contact support@apify.com
+        disabledReasonType:
+          type:
+          - string
+          - 'null'
+          examples:
+          - DISABLED
+        isTrial:
+          type: boolean
+          examples:
+          - false
+        trialExpirationAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - '2025-01-01T14:00:00.000Z'
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
     Error:
       type: object
       properties:
@@ -84,14 +964,199 @@ components:
               - ENTERPRISE
               example: STARTER
   responses:
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
     Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    Unauthorized_2:
       description: Authentication failed.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
   securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      description: 'Bearer token provided in the `Authorization` header (e.g., `Authorization: Bearer your_token`—recommended). [More info](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization).
+
+
+        Use your API token to authenticate requests. You can find it on the [Integrations page](https://console.apify.com/account#/integrations) in Apify Console. This method is more secure than query parameters, as headers are not logged in browser history or server logs.
+
+
+        :::danger Security
+
+
+        Do not share your API token (or account password) with untrusted parties.
+
+
+        :::
+
+
+        _When is authentication required?_
+
+        - _Required_ for private Actors, tasks, or resources (e.g., builds of private Actors).
+
+        - _Required_ when using named formats for IDs (e.g., `username~store-name` for stores or `username~queue-name` for queues).
+
+        - _Optional_ for public Actors or resources (e.g., builds of public Actors can be queried without a token).
+
+
+        For more information, see our [integrations documentation](https://docs.apify.com/platform/integrations).'
+    apiKey:
+      type: apiKey
+      name: token
+      in: query
+      description: 'API token provided as a query parameter (e.g., `?token=your_token`—less secure).
+
+
+        Use your API token to authenticate requests. You can find it on the [Integrations page](https://console.apify.com/account#/integrations) in Apify Console.
+
+
+        :::danger Security
+
+
+        Do not share your API token (or account password) with untrusted parties.
+
+
+        :::
+
+
+        _When is authentication required?_
+
+        - _Required_ for private Actors, tasks, or resources (e.g., builds of private Actors).
+
+        - _Required_ when using named formats for IDs (e.g., `username~store-name` for stores or `username~queue-name` for queues).
+
+        - _Optional_ for public Actors or resources (e.g., builds of public Actors can be queried without a token).
+
+
+        For more information, see our [integrations documentation](https://docs.apify.com/platform/integrations).'
     bearerAuth:
       type: http
       scheme: bearer
       description: Bearer token from Apify console Settings > Integrations.
+x-refined-from:
+- apify-openapi.json
+- apify-api.yaml
+x-tagGroups:
+- name: Actor management
+  tags:
+  - Actors
+  - Actors/Actor versions
+  - Actors/Actor builds
+  - Actors/Actor runs
+  - Actors/Webhook collection
+  - Actors/Last run object and its storages
+- name: Actor builds
+  tags:
+  - Actor builds
+- name: Actor runs
+  tags:
+  - Actor runs
+- name: Actor tasks
+  tags:
+  - Actor tasks
+- name: Storage
+  tags:
+  - Storage/Datasets
+  - Storage/Key-value stores
+  - Storage/Request queues
+  - Storage/Request queues/Requests
+  - Storage/Request queues/Requests locks
+- name: Webhook management
+  tags:
+  - Webhooks/Webhooks
+  - Webhooks/Webhook dispatches
+- name: Schedules
+  tags:
+  - Schedules
+- name: Apify Store
+  tags:
+  - Store
+- name: Logs
+  tags:
+  - Logs
+- name: Users
+  tags:
+  - Users
+  - Users/Usage
+- name: Utility tools
+  tags:
+  - Tools
+  - Tools/Encoding
+- name: Convenience endpoints
+  tags:
+  - Default dataset
+  - Default key-value store
+  - Default request queue
+  - Last Actor run's default dataset
+  - Last Actor run's default key-value store
+  - Last Actor run's default request queue
+  - Last Actor run's log
+  - Last Actor run's abort
+  - Last Actor run's metamorph
+  - Last Actor run's reboot
+  - Last Actor task run's default dataset
+  - Last Actor task run's default key-value store
+  - Last Actor task run's default request queue
+  - Last Actor task run's log
+  - Last Actor task run's abort
+  - Last Actor task run's metamorph
+  - Last Actor task run's reboot

@@ -1,21 +1,827 @@
 openapi: 3.2.0
 info:
   title: Apify Actors API
-  description: 'The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues. Rate limits: 250,000 requests/minute globally, 60-400 requests/second per resource.'
-  version: v2
-  contact:
-    name: Apify
-    url: https://apify.com
-  x-generated-from: documentation
+  x-refined-note:
+  - x-generated-from differs across the merged source definitions and was not carried
+  version: '1.0'
+  description: 'Operations tagged Actors across 2 of this provider''s published API definitions: apify-openapi.json, apify-api.yaml. Each path carries the servers of the definition it was published in.'
 servers:
+- url: https://api.apify.com
+  variables: {}
 - url: https://api.apify.com/v2
   description: Apify Production API
-security:
-- bearerAuth: []
 tags:
 - name: Actors
-  description: Manage and run Apify Actors.
+  x-displayName: Actors
+  x-legacy-doc-urls:
+  - '#/reference/actors'
+  - '#tag/Actors'
+  - '#/reference/actors/actor-collection'
+  - '#tag/ActorsActor-collection'
+  - '#/reference/actors/actor-object'
+  - '#tag/ActorsActor-object'
+  description: 'The API endpoints in this section allow you to manage Apify Actors.
+
+
+    ## Identify an Actor
+
+
+    For API endpoints that require the `actorId` parameter, provide one of the following:
+
+    - The Actor ID. It''s part of the Actor''s URL in Apify Console: `https://console.apify.com/actors/`. For example, `reGe1ST3OBgYZSsZJ`.
+
+    - The username of the Actor owner plus the Actor name, separated by a tilde (`~`). For example, `apify~instagram-scraper`.'
 paths:
+  /v2/actors:
+    get:
+      tags:
+      - Actors
+      summary: Get list of Actors
+      description: 'Gets the list of all Actors that the user created or used. The response is a
+
+        list of objects, where each object contains a basic information about a single Actor.
+
+
+        To only get Actors created by the user, add the `my=1` query parameter.
+
+
+        The endpoint supports pagination using the `limit` and `offset` parameters
+
+        and it will not return more than 1000 records.
+
+
+        By default, the records are sorted by the `createdAt` field in ascending
+
+        order, therefore you can use pagination to incrementally fetch all Actors while new
+
+        ones are still being created. To sort the records in descending order, use the `desc=1` parameter.
+
+
+        You can also sort by your last run by using the `sortBy=stats.lastRunStartedAt` query parameter.
+
+        In this case, descending order means the most recently run Actor appears first.'
+      operationId: actors_get
+      parameters:
+      - name: my
+        in: query
+        description: 'If `true` or `1` then the returned list only contains Actors owned by the user. The default value is `false`.
+
+          '
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          example: true
+      - $ref: '#/components/parameters/offset'
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/descCreatedAt'
+      - name: sortBy
+        in: query
+        description: 'Field to sort the records by. The default is `createdAt`. You can also use `stats.lastRunStartedAt` to sort
+
+          by the most recently ran Actors.
+
+          '
+        schema:
+          type: string
+          enum:
+          - createdAt
+          - stats.lastRunStartedAt
+          example: createdAt
+      responses:
+        '200':
+          description: ''
+          headers:
+            X-Apify-Pagination-Offset:
+              description: The offset of the first item in the current page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '0'
+            X-Apify-Pagination-Limit:
+              description: The maximum number of items returned per page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '100'
+            X-Apify-Pagination-Count:
+              description: The number of items returned in the current page.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '100'
+            X-Apify-Pagination-Total:
+              description: The total number of items available.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: '10204'
+            X-Apify-Pagination-Desc:
+              description: Whether the items are sorted in descending order.
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: 'false'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfActorsResponse'
+              example:
+                data:
+                  total: 2
+                  count: 2
+                  offset: 0
+                  limit: 1000
+                  desc: false
+                  items:
+                  - id: br9CKmk457
+                    createdAt: '2019-10-29T07:34:24.202Z'
+                    modifiedAt: '2019-10-30T07:34:24.202Z'
+                    name: MyAct
+                    username: janedoe
+                  - id: ksiEKo23pz
+                    createdAt: '2019-11-30T07:34:24.202Z'
+                    modifiedAt: '2019-12-12T07:34:24.202Z'
+                    name: MySecondAct
+                    username: janedoe
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/actor-collection/get-list-of-actors
+      - https://docs.apify.com/api/v2#/reference/actors/get-list-of-actors
+      - https://docs.apify.com/api/v2#tag/ActorsActor-collection/operation/acts_get
+      x-js-parent: ActorCollectionClient
+      x-js-name: list
+      x-js-doc-url: https://docs.apify.com/api/client/js/reference/class/ActorCollectionClient#list
+      x-py-parent: ActorCollectionClientAsync
+      x-py-name: list
+      x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/ActorCollectionClientAsync#list
+      security:
+      - httpBearer: []
+      - apiKey: []
+    post:
+      tags:
+      - Actors
+      summary: Create Actor
+      description: 'Creates an Actor with the settings specified in an `Actor` object passed as
+
+        JSON in the POST payload.
+
+
+        Returns the created `Actor` object.
+
+
+        In the HTTP request, set the `Content-Type` header to `application/json`.
+
+
+        ### Define a source code version
+
+
+        An Actor must specify at least one version of the source code.
+
+        For details, see Actor versions.
+
+
+        ### Publish an Actor
+
+
+        To make your Actor public,
+
+        use the Update Actor endpoint.'
+      operationId: actors_post
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActorRequest'
+            example:
+              name: MyActor
+              description: My favourite Actor!
+              title: My Actor
+              isPublic: false
+              seoTitle: My Actor
+              seoDescription: My Actor is the best
+              versions:
+              - versionNumber: '0.0'
+                sourceType: SOURCE_FILES
+                envVars:
+                - name: DOMAIN
+                  value: http://example.com
+                  isSecret: false
+                - name: SECRET_PASSWORD
+                  value: MyTopSecretPassword123
+                  isSecret: true
+                applyEnvVarsToBuild: false
+                buildTag: latest
+                sourceFiles: []
+              categories: []
+              defaultRunOptions:
+                build: latest
+                timeoutSecs: 3600
+                memoryMbytes: 2048
+                restartOnError: false
+        required: true
+      responses:
+        '201':
+          description: ''
+          headers:
+            Location:
+              content:
+                text/plain:
+                  schema:
+                    type: string
+                  example: https://api.apify.com/v2/actors/zdc3Pyhyz3m8vjDeM
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActorResponse'
+              example:
+                data:
+                  id: zdc3Pyhyz3m8vjDeM
+                  userId: wRsJZtadYvn4mBZmm
+                  name: instagram-scraper
+                  username: jane35
+                  description: This scraper extracts posts and comments from Instagram.
+                  isPublic: false
+                  createdAt: '2019-07-08T11:27:57.401Z'
+                  modifiedAt: '2019-07-08T14:01:05.546Z'
+                  taggedBuilds: {}
+                  stats:
+                    totalBuilds: 9
+                    totalRuns: 16
+                    totalUsers: 6
+                    totalUsers7Days: 2
+                    totalUsers30Days: 6
+                    totalUsers90Days: 6
+                    totalMetamorphs: 2
+                  versions:
+                  - versionNumber: '0.0'
+                    envVars: null
+                    sourceType: SOURCE_FILES
+                    applyEnvVarsToBuild: false
+                    buildTag: latest
+                    sourceFiles: []
+                  defaultRunOptions:
+                    build: latest
+                    timeoutSecs: 3600
+                    memoryMbytes: 2048
+                    restartOnError: false
+                  exampleRunInput:
+                    body: '{ "helloWorld": 123 }'
+                    contentType: application/json; charset=utf-8
+                  categories: []
+                  isDeprecated: false
+                  title: My Actor
+                  notice: NONE
+                  isCritical: false
+                  isGeneric: false
+                  hasNoDataset: false
+                  isSourceCodeHidden: true
+                  standbyUrl: null
+                  actorPermissionLevel: LIMITED_PERMISSIONS
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/actor-collection/create-actor
+      - https://docs.apify.com/api/v2#/reference/actors/create-actor
+      - https://docs.apify.com/api/v2#tag/ActorsActor-collection/operation/acts_post
+      x-js-parent: ActorCollectionClient
+      x-js-name: create
+      x-js-doc-url: https://docs.apify.com/api/client/js/reference/class/ActorCollectionClient#create
+      x-py-parent: ActorCollectionClientAsync
+      x-py-name: create
+      x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/ActorCollectionClientAsync#create
+      security:
+      - httpBearer: []
+      - apiKey: []
+    servers:
+    - url: https://api.apify.com
+      variables: {}
+  /v2/actors/{actorId}:
+    get:
+      tags:
+      - Actors
+      summary: Get Actor
+      description: Gets an object that contains all the details about the Actor with the specified ID.
+      operationId: actor_get
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActorResponse'
+              example:
+                data:
+                  id: zdc3Pyhyz3m8vjDeM
+                  userId: wRsJZtadYvn4mBZmm
+                  name: instagram-scraper
+                  username: jane35
+                  description: Extract data from Instagram.
+                  isPublic: false
+                  createdAt: '2019-07-08T11:27:57.401Z'
+                  modifiedAt: '2019-07-08T14:01:05.546Z'
+                  stats:
+                    totalBuilds: 9
+                    totalRuns: 16
+                    totalUsers: 6
+                    totalUsers7Days: 2
+                    totalUsers30Days: 6
+                    totalUsers90Days: 6
+                    totalMetamorphs: 2
+                    lastRunStartedAt: '2019-07-08T14:01:05.546Z'
+                  versions:
+                  - versionNumber: '0.1'
+                    envVars: null
+                    sourceType: SOURCE_FILES
+                    applyEnvVarsToBuild: false
+                    buildTag: latest
+                    sourceFiles: []
+                  - versionNumber: '0.2'
+                    sourceType: GIT_REPO
+                    envVars: null
+                    applyEnvVarsToBuild: false
+                    buildTag: latest
+                    gitRepoUrl: https://github.com/jane35/my-actor
+                  - versionNumber: '0.3'
+                    sourceType: TARBALL
+                    envVars: null
+                    applyEnvVarsToBuild: false
+                    buildTag: latest
+                    tarballUrl: https://github.com/jane35/my-actor/archive/master.zip
+                  - versionNumber: '0.4'
+                    sourceType: GITHUB_GIST
+                    envVars: null
+                    applyEnvVarsToBuild: false
+                    buildTag: latest
+                    gitHubGistUrl: https://gist.github.com/jane35/e51feb784yu89
+                  defaultRunOptions:
+                    build: latest
+                    timeoutSecs: 3600
+                    memoryMbytes: 2048
+                    restartOnError: false
+                  exampleRunInput:
+                    body: '{ "helloWorld": 123 }'
+                    contentType: application/json; charset=utf-8
+                  isDeprecated: false
+                  deploymentKey: ssh-rsa AAAA ...
+                  title: Instagram Scraper
+                  taggedBuilds:
+                    latest:
+                      buildId: z2EryhbfhgSyqj6Hn
+                      buildNumber: 0.0.2
+                      finishedAt: '2019-06-10T11:15:49.286Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/actor-object/get-actor
+      - https://docs.apify.com/api/v2#/reference/actors/get-actor
+      - https://docs.apify.com/api/v2#tag/ActorsActor-object/operation/act_get
+      x-js-parent: ActorClient
+      x-js-name: get
+      x-js-doc-url: https://docs.apify.com/api/client/js/reference/class/ActorClient#get
+      x-py-parent: ActorClientAsync
+      x-py-name: get
+      x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/ActorClientAsync#get
+      security:
+      - httpBearer: []
+      - apiKey: []
+    put:
+      tags:
+      - Actors
+      summary: Update Actor
+      description: 'Updates an Actor''s settings with the values specified in an `Actor` object
+
+        passed as JSON in the POST payload. Only the fields specified in the request body are updated.
+
+
+        Returns the full `Actor` object, the same as the
+
+        Get Actor endpoint.
+
+
+        In the HTTP request, set the `Content-Type` header to `application/json`.
+
+
+        ### Authentication
+
+
+        To provide the authentication token, we recommend using the request''s
+
+        `Authorization` header, rather than the URL. For details,
+
+        see Authentication.
+
+
+        ### Make an Actor public
+
+
+        To make your Actor public:
+
+        - Set `isPublic` to `true`.
+
+        - Provide `title` and `categories`. For reference, see constants from the `apify-shared-js`
+
+        package
+
+
+        ### Update build tags
+
+
+        To change tags assigned to Actor builds, use the `taggedBuilds` object. It''s a dictionary that maps tag names
+
+        to specific builds, where:
+
+        - the key is the tag name, for example `latest` or `beta`
+
+        - the value is either `null` or an object with a build ID
+
+
+        Changing tags is a patch operation. Only the tags that you provide in this object are updated.
+
+
+        Note that you can assign multiple tags to a single build, but you can''t assign the same tag to multiple builds.
+
+
+        - To create or reassign a tag, provide the tag name with a build ID. For example, to assign
+
+        the `latest` tag to a build, use:
+
+
+        ```json
+
+        {
+
+        "latest": { "buildId": "z2EryhbfhgSyqj6Hn" }
+
+        }
+
+        ```
+
+
+        - To remove a tag from a build, provide the tag name with a `null` value. For example, to remove the `beta` tag, use:
+
+
+        ```json
+
+        {
+
+        "beta": null
+
+        }
+
+        ```
+
+
+        - You can perform multiple actions at once. The following example reassigns `latest`
+
+        and removes `beta`, while preserving other existing tags:
+
+
+        ```json
+
+        {
+
+        "latest": { "buildId": "z2EryhbfhgSyqj6Hn" },
+
+        "beta": null
+
+        }
+
+        ```'
+      operationId: actor_put
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateActorRequest'
+            examples:
+              common:
+                summary: Common example
+                value:
+                  name: MyActor
+                  description: My favourite Actor!
+                  isPublic: false
+                  actorPermissionLevel: LIMITED_PERMISSIONS
+                  seoTitle: My Actor
+                  seoDescription: My Actor is the best
+                  title: My Actor
+                  versions:
+                  - versionNumber: '0.0'
+                    sourceType: SOURCE_FILES
+                    envVars:
+                    - name: DOMAIN
+                      value: http://example.com
+                      isSecret: false
+                    - name: SECRET_PASSWORD
+                      value: MyTopSecretPassword123
+                      isSecret: true
+                    applyEnvVarsToBuild: false
+                    buildTag: latest
+                    sourceFiles: []
+                  categories: []
+                  defaultRunOptions:
+                    build: latest
+                    timeoutSecs: 3600
+                    memoryMbytes: 2048
+                    restartOnError: false
+              taggedBuildsCreateOrReassignTag:
+                summary: Create or reassign a build tag
+                value:
+                  name: MyActor
+                  isPublic: false
+                  taggedBuilds:
+                    latest:
+                      buildId: z2EryhbfhgSyqj6Hn
+              taggedBuildsRemoveTag:
+                summary: Remove a build tag
+                value:
+                  name: MyActor
+                  isPublic: false
+                  taggedBuilds:
+                    latest: null
+              taggedBuildsMultipleOperations:
+                summary: Update multiple build tags at once
+                value:
+                  name: MyActor
+                  isPublic: false
+                  taggedBuilds:
+                    latest:
+                      buildId: z2EryhbfhgSyqj6Hn
+                    beta: null
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActorResponse'
+              example:
+                data:
+                  id: zdc3Pyhyz3m8vjDeM
+                  userId: wRsJZtadYvn4mBZmm
+                  name: MyActor
+                  username: jane35
+                  description: My favourite Actor!
+                  isPublic: false
+                  actorPermissionLevel: LIMITED_PERMISSIONS
+                  createdAt: '2019-07-08T11:27:57.401Z'
+                  modifiedAt: '2019-07-08T14:01:05.546Z'
+                  stats:
+                    totalBuilds: 9
+                    totalRuns: 16
+                    totalUsers: 6
+                    totalUsers7Days: 2
+                    totalUsers30Days: 6
+                    totalUsers90Days: 6
+                    totalMetamorphs: 2
+                    lastRunStartedAt: '2019-07-08T14:01:05.546Z'
+                  versions:
+                  - versionNumber: '0.1'
+                    envVars: null
+                    sourceType: SOURCE_FILES
+                    applyEnvVarsToBuild: false
+                    buildTag: latest
+                    sourceFiles: []
+                  - versionNumber: '0.2'
+                    sourceType: GIT_REPO
+                    envVars: null
+                    applyEnvVarsToBuild: false
+                    buildTag: latest
+                    gitRepoUrl: https://github.com/jane35/my-actor
+                  - versionNumber: '0.3'
+                    sourceType: TARBALL
+                    envVars: null
+                    applyEnvVarsToBuild: false
+                    buildTag: latest
+                    tarballUrl: https://github.com/jane35/my-actor/archive/master.zip
+                  - versionNumber: '0.4'
+                    sourceType: GITHUB_GIST
+                    envVars: null
+                    applyEnvVarsToBuild: false
+                    buildTag: latest
+                    gitHubGistUrl: https://gist.github.com/jane35/e51feb784yu89
+                  defaultRunOptions:
+                    build: latest
+                    timeoutSecs: 3600
+                    memoryMbytes: 2048
+                    restartOnError: false
+                  exampleRunInput:
+                    body: '{ "helloWorld": 123 }'
+                    contentType: application/json; charset=utf-8
+                  isDeprecated: false
+                  deploymentKey: ssh-rsa AAAA ...
+                  title: My Actor
+                  taggedBuilds:
+                    latest:
+                      buildId: z2EryhbfhgSyqj6Hn
+                      buildNumber: 0.0.2
+                      finishedAt: '2019-06-10T11:15:49.286Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/actor-object/update-actor
+      - https://docs.apify.com/api/v2#/reference/actors/update-actor
+      - https://docs.apify.com/api/v2#tag/ActorsActor-object/operation/act_put
+      x-js-parent: ActorClient
+      x-js-name: update
+      x-js-doc-url: https://docs.apify.com/api/client/js/reference/class/ActorClient#update
+      x-py-parent: ActorClientAsync
+      x-py-name: update
+      x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/ActorClientAsync#update
+      security:
+      - httpBearer: []
+      - apiKey: []
+    delete:
+      tags:
+      - Actors
+      summary: Delete Actor
+      description: Deletes an Actor with the specified ID.
+      operationId: actor_delete
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      responses:
+        '204':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {}
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      x-legacy-doc-urls:
+      - https://docs.apify.com/api/v2#/reference/actors/actor-object/delete-actor
+      - https://docs.apify.com/api/v2#/reference/actors/delete-actor
+      - https://docs.apify.com/api/v2#tag/ActorsActor-object/operation/act_delete
+      x-js-parent: ActorClient
+      x-js-name: delete
+      x-js-doc-url: https://docs.apify.com/api/client/js/reference/class/ActorClient#delete
+      security:
+      - httpBearer: []
+      - apiKey: []
+    servers:
+    - url: https://api.apify.com
+      variables: {}
+  /v2/actors/{actorId}/validate-input:
+    post:
+      tags:
+      - Actors
+      summary: Validate Actor input
+      description: 'Validates the JSON payload against the Actor''s
+
+        input schema
+
+        defined in the specified build.
+
+
+        If the specified build has no input schema, any input is considered valid.'
+      operationId: actor_validateInput_post
+      parameters:
+      - $ref: '#/components/parameters/actorId'
+      - name: build
+        in: query
+        description: 'Actor build whose input schema is used for validation. Can be a build tag or build number.
+
+          Defaults to the `latest` build tag.
+
+          '
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 0.1.234
+      requestBody:
+        description: 'The Actor input as a JSON object.
+
+
+          You can omit fields that have a `default` in the input schema. They''re
+
+          filled in before validation.
+
+          '
+        content:
+          application/json:
+            schema:
+              type: object
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - valid
+                properties:
+                  valid:
+                    type: boolean
+                    description: 'Always `true`. The endpoint responds with `200` only when the input
+
+                      passes validation. Invalid input returns a `400` error.
+
+                      '
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+      deprecated: false
+      security:
+      - httpBearer: []
+      - apiKey: []
+    servers:
+    - url: https://api.apify.com
+      variables: {}
   /acts:
     get:
       operationId: listActors
@@ -67,10 +873,15 @@ paths:
                       offset: 0
                       limit: 10
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/components/responses/Unauthorized_2'
       x-microcks-operation:
         delay: 0
         dispatcher: FALLBACK
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.apify.com/v2
+      description: Apify Production API
   /acts/{actorId}:
     get:
       operationId: getActor
@@ -104,12 +915,17 @@ paths:
                       title: Web Scraper
                       description: Crawls websites and extracts data using JavaScript.
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/components/responses/Unauthorized_2'
         '404':
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/NotFound_2'
       x-microcks-operation:
         delay: 0
         dispatcher: FALLBACK
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.apify.com/v2
+      description: Apify Production API
   /acts/{actorId}/runs:
     post:
       operationId: runActor
@@ -171,24 +987,1667 @@ paths:
                       status: RUNNING
                       startedAt: '2026-04-19T10:00:00Z'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          $ref: '#/components/responses/Unauthorized_2'
         '404':
-          $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/NotFound_2'
       x-microcks-operation:
         delay: 0
         dispatcher: FALLBACK
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://api.apify.com/v2
+      description: Apify Production API
 components:
+  parameters:
+    actorId:
+      name: actorId
+      in: path
+      description: Actor ID or the username of the Actor owner and the Actor name, separated by a tilde (`~`).
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: compass~google-maps-extractor
+    descCreatedAt:
+      name: desc
+      in: query
+      description: 'If `true` or `1` then the objects are sorted by the `createdAt` field in
+
+        descending order. By default, they are sorted in ascending order.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    limit:
+      name: limit
+      in: query
+      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 1000
+    offset:
+      name: offset
+      in: query
+      description: 'Number of items that should be skipped at the start. The default value is `0`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 0
   schemas:
-    Error:
+    EnvVarRequest:
+      title: EnvVarRequest
+      required:
+      - name
+      - value
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - MY_ENV_VAR
+          description: The name of the environment variable. Can't contain `=`.
+        value:
+          type: string
+          examples:
+          - my-value
+          description: The value of the environment variable.
+        isSecret:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+          description: Whether the environment variable is encrypted. Secret values aren't returned by the API.
+    TieredPricingPerEvent:
+      title: TieredPricingPerEvent
+      description: 'Tiered price-per-event pricing for a single charge event, keyed by subscription tier (e.g. `FREE`, `BRONZE`,
+
+        `SILVER`, `GOLD`, `PLATINUM`, `DIAMOND`). The actual price applied is resolved from the user''s tier.
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/TieredPricingPerEventEntry'
+    TieredPricingPerEventEntry:
+      title: TieredPricingPerEventEntry
+      description: A single tier's price-per-event entry.
+      type: object
+      required:
+      - tieredEventPriceUsd
+      properties:
+        tieredEventPriceUsd:
+          type: number
+          description: Price per event in USD for this tier.
+    ActorStandby:
+      title: ActorStandby
+      type: object
+      properties:
+        isEnabled:
+          type:
+          - boolean
+          - 'null'
+          description: Whether standby mode is enabled for the Actor.
+        desiredRequestsPerActorRun:
+          type:
+          - integer
+          - 'null'
+          description: Target number of concurrent HTTP requests a single run is configured to handle.
+        maxRequestsPerActorRun:
+          type:
+          - integer
+          - 'null'
+          description: Maximum number of concurrent HTTP requests that can be routed to a single run.
+        idleTimeoutSecs:
+          type:
+          - integer
+          - 'null'
+          description: In seconds, how long a run can stay idle without incoming requests before it's terminated.
+        build:
+          type:
+          - string
+          - 'null'
+          description: Which build to run in standby mode. Either a build tag or a version number.
+        memoryMbytes:
+          type:
+          - integer
+          - 'null'
+          description: In MB, the amount of memory allocated to the run.
+        disableStandbyFieldsOverride:
+          type:
+          - boolean
+          - 'null'
+          description: If `true`, prevents the standby mode configuration from being overridden elsewhere.
+        shouldPassActorInput:
+          type:
+          - boolean
+          - 'null'
+          description: Whether to pass the Actor's input to the standby run. If `false`, the standby runs start with no input.
+    UpdatedBuildProperty:
+      title: UpdatedBuildProperty
+      type:
+      - object
+      - 'null'
+      description: The name of the build tag.
+      required:
+      - buildId
+      properties:
+        buildId:
+          type: string
+          description: The ID of the build to assign to the tag.
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
       type: object
       properties:
         error:
+          $ref: '#/components/schemas/ErrorDetail'
+    PricePerDatasetItemActorPricingInfo:
+      title: PricePerDatasetItemActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - unitName
+        properties:
+          pricingModel:
+            type: string
+            const: PRICE_PER_DATASET_ITEM
+          unitName:
+            type: string
+            description: Name of the unit that is being charged
+          pricePerUnitUsd:
+            type: number
+            description: 'Price per unit in USD. Mutually exclusive with `tieredPricing` - exactly one of the two is present
+
+              on a pricing record.
+
+              '
+          tieredPricing:
+            $ref: '#/components/schemas/TieredPricingPerDatasetItem'
+    VersionSourceFiles:
+      title: VersionSourceFiles
+      type: array
+      items:
+        anyOf:
+        - $ref: '#/components/schemas/SourceCodeFile'
+        - $ref: '#/components/schemas/SourceCodeFolder'
+    EnvVar:
+      title: EnvVar
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - MY_ENV_VAR
+          description: The name of the environment variable.
+        value:
+          type: string
+          examples:
+          - my-value
+          description: The value of the environment variable. If `isSecret` is `true`, this value isn't returned by the API.
+        isSecret:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+          description: Whether the environment variable is encrypted. Secret values aren't returned by the API.
+    VersionSourceType:
+      title: VersionSourceType
+      enum:
+      - SOURCE_FILES
+      - GIT_REPO
+      - TARBALL
+      - GITHUB_GIST
+      - SOURCE_CODE
+      type: string
+    SourceCodeFolder:
+      title: SourceCodeFolder
+      description: 'Represents a folder in the Actor''s source code structure. Distinguished from
+
+        SourceCodeFile by the presence of the `folder` property set to `true`.
+
+        '
+      type: object
+      required:
+      - name
+      - folder
+      properties:
+        name:
+          type: string
+          description: The path of the folder relative to the Actor's root directory.
+          examples:
+          - src/utils
+        folder:
+          type: boolean
+          description: Whether it's a folder. Distinguishes folders from files.
+          examples:
+          - true
+    SourceCodeFile:
+      title: SourceCodeFile
+      type: object
+      description: Represents a single file in the Actor's source code.
+      required:
+      - name
+      properties:
+        format:
+          $ref: '#/components/schemas/SourceCodeFileFormat'
+          description: Format of the file's content, `TEXT` for plain text and `BASE64` for encoded content.
+        content:
+          type: string
+          examples:
+          - console.log('This is the main.js file');
+          description: The contents of the file. Interpreted based on the value of `format`.
+        name:
+          type: string
+          examples:
+          - src/main.js
+          description: The path of the file relative to the Actor's root directory.
+    ActorChargeEvent:
+      title: ActorChargeEvent
+      description: 'Definition of a single chargeable event for a pay-per-event Actor. Each event is either flat-priced
+
+        (`eventPriceUsd` is set) or tier-priced (`eventTieredPricingUsd` is set); the two are mutually exclusive.
+
+        '
+      type: object
+      required:
+      - eventTitle
+      - eventDescription
+      properties:
+        eventTitle:
+          type: string
+          description: Human-readable title shown to users in the billing UI.
+        eventDescription:
+          type: string
+          description: Human-readable description of what triggers this event.
+        eventPriceUsd:
+          type: number
+          description: 'Flat price per event in USD. Present only for non-tiered events. Mutually exclusive with `eventTieredPricingUsd`.
+
+            '
+        eventTieredPricingUsd:
+          $ref: '#/components/schemas/TieredPricingPerEvent'
+        isPrimaryEvent:
+          type: boolean
+          description: Whether this event is the Actor's primary chargeable event.
+        isOneTimeEvent:
+          type: boolean
+          description: Whether this event can only be charged once per Actor run.
+    TieredPricingPerDatasetItem:
+      title: TieredPricingPerDatasetItem
+      description: 'Tiered price-per-dataset-item pricing, keyed by subscription tier (e.g. `FREE`, `BRONZE`, `SILVER`, `GOLD`,
+
+        `PLATINUM`, `DIAMOND`). The actual price applied to a run is resolved from the user''s tier.
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/TieredPricingPerDatasetItemEntry'
+    ExampleRunInput:
+      title: ExampleRunInput
+      type: object
+      properties:
+        body:
+          type: string
+          example: '{ "helloWorld": 123 }'
+          description: Sample input, serialized as a string.
+        contentType:
+          type: string
+          examples:
+          - application/json; charset=utf-8
+          description: MIME type of `body`.
+    CreateVersionRequest:
+      title: CreateVersionRequest
+      required:
+      - versionNumber
+      - sourceType
+      type: object
+      properties:
+        versionNumber:
+          type: string
+          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])$
+          examples:
+          - '1.6'
+          description: The version number of the Actor. Two numbers separated by a dot, that represent the `MAJOR.MINOR` part of the semantic versioning.
+        sourceType:
+          $ref: '#/components/schemas/WritableVersionSourceType'
+          description: Where the source code of the version lives.
+        envVars:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvVarRequest'
+          description: Environment variables for the version.
+        applyEnvVarsToBuild:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+          description: Whether to inject the environment variables at build time.
+        buildTag:
+          type:
+          - string
+          - 'null'
+          examples:
+          - latest
+          description: The tag name to apply to a successful build of this version. Can be `null` when the version has no build tag.
+        sourceFiles:
+          $ref: '#/components/schemas/VersionSourceFiles'
+          description: Applies when the `sourceType` is `SOURCE_FILES`. Represents the Actor's file structure as an array of files and folders.
+        gitRepoUrl:
+          type: string
+          description: URL of the Git repository to clone the source code from. Applies when the `sourceType` is `GIT_REPO`.
+        tarballUrl:
+          type: string
+          description: URL of the tarball to download the source code from. Applies when the `sourceType` is `TARBALL`.
+        gitHubGistUrl:
+          type: string
+          description: URL of the GitHub Gist to clone the source code from. Applies when the `sourceType` is `GITHUB_GIST`.
+    ActorRunPricingInfo:
+      title: ActorRunPricingInfo
+      discriminator:
+        propertyName: pricingModel
+        mapping:
+          PAY_PER_EVENT: '#/components/schemas/PayPerEventActorPricingInfo'
+          PRICE_PER_DATASET_ITEM: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
+          FLAT_PRICE_PER_MONTH: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
+          FREE: '#/components/schemas/FreeActorPricingInfo'
+      oneOf:
+      - $ref: '#/components/schemas/PayPerEventActorPricingInfo'
+      - $ref: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
+      - $ref: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
+      - $ref: '#/components/schemas/FreeActorPricingInfo'
+    ActorPermissionLevel:
+      type: string
+      description: 'Determines the permission level that the Actor requires to run. For details, see [Actor permissions](https://docs.apify.com/platform/actors/development/permissions).
+
+        '
+      enum:
+      - LIMITED_PERMISSIONS
+      - FULL_PERMISSIONS
+      examples:
+      - LIMITED_PERMISSIONS
+    ActorResponse:
+      title: ActorResponse
+      description: Response containing Actor data.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ActorResource'
+    FreeActorPricingInfo:
+      title: FreeActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        properties:
+          pricingModel:
+            type: string
+            const: FREE
+    ActorNotice:
+      title: ActorNotice
+      type:
+      - string
+      - 'null'
+      description: A warning displayed on the Actor's page in Apify Store and Console. Can be set by the Actor's developer or automatically by Apify's quality checks.
+      enum:
+      - NONE
+      - RESIDENTIAL_PROXY_REQUIRED
+      - UNDER_MAINTENANCE
+      - null
+      examples:
+      - UNDER_MAINTENANCE
+    UpdateActorRequest:
+      title: UpdateActorRequest
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - instagram-scraper
+          description: The identifier of the Actor. Use lowercase letters, numbers, and hyphens. Spaces or special characters aren't allowed. Must be unique across your account.
+        description:
+          type:
+          - string
+          - 'null'
+          examples:
+          - This scraper extracts posts and comments from Instagram.
+          description: Short description of the Actor, displayed in Apify Store and Console.
+        isPublic:
+          type: boolean
+          examples:
+          - false
+          description: Whether the Actor is available to users in Apify Store. If `false`, the Actor is private and only visible to you.
+        actorPermissionLevel:
+          $ref: '#/components/schemas/ActorPermissionLevel'
+        seoTitle:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Free Instagram scraper
+          description: Name of the Actor to display by search engines such as Google. Can be different from the Actor's name displayed in Apify Store and Console. Recommended length is 40-50 characters.
+        seoDescription:
+          type:
+          - string
+          - 'null'
+          examples:
+          - The best scraper for Instagram
+          description: Description of the Actor to display by search engines such as Google. Recommended length is 140-156 characters.
+        title:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Instagram scraper
+          description: Human-readable name of the Actor, displayed in Apify Store and Console. Can contain spaces and capital letters. Recommended length is 40-50 characters. You can change this title without affecting the Actor's URL or SEO.
+        restartOnError:
+          type: boolean
+          examples:
+          - false
+          deprecated: true
+        versions:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/CreateVersionRequest'
+          description: 'An array of `Version` objects. Each object represents a specific version of the Actor''s source code: its location, builds, and environment configuration.'
+        pricingInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActorRunPricingInfo'
+        categories:
+          type:
+          - array
+          - 'null'
+          examples:
+          - - SOCIAL_MEDIA
+          items:
+            type: string
+          description: A list of categories that best define the Actor. Reflected in Apify Store's search and filtering options.
+        defaultRunOptions:
+          anyOf:
+          - $ref: '#/components/schemas/DefaultRunOptions'
+          - type: 'null'
+          description: The default settings applied to an Actor run. Can be overridden by the user.
+        taggedBuilds:
+          type:
+          - object
+          - 'null'
+          description: A dictionary that maps tag names to specific builds. For details, see [Update build tags](#update-build-tags).
+          additionalProperties:
+            $ref: '#/components/schemas/UpdatedBuildProperty'
+          example:
+            latest:
+              buildId: z2EryhbfhgSyqj6Hn
+            beta: null
+        actorStandby:
+          anyOf:
+          - $ref: '#/components/schemas/ActorStandby'
+          - type: 'null'
+          description: The configuration of the Actor's standby mode. For details, see [Standby mode](https://docs.apify.com/platform/actors/development/programming-interface/standby).
+        exampleRunInput:
+          anyOf:
+          - $ref: '#/components/schemas/ExampleRunInput'
+          - type: 'null'
+          description: Sample input payload that demonstrates what a typical run input for an Actor looks like. Used when no explicit input for a run is provided.
+        isDeprecated:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the Actor is deprecated.
+    TieredPricingPerDatasetItemEntry:
+      title: TieredPricingPerDatasetItemEntry
+      description: A single tier's price-per-dataset-item entry.
+      type: object
+      required:
+      - tieredPricePerUnitUsd
+      properties:
+        tieredPricePerUnitUsd:
+          type: number
+          description: Price per unit in USD for this tier.
+    ListOfActors:
+      title: ListOfActors
+      allOf:
+      - $ref: '#/components/schemas/PaginationResponse'
+      - type: object
+        required:
+        - items
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/ActorListItem'
+    FlatPricePerMonthActorPricingInfo:
+      title: FlatPricePerMonthActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - pricePerUnitUsd
+        - trialMinutes
+        properties:
+          pricingModel:
+            type: string
+            const: FLAT_PRICE_PER_MONTH
+          trialMinutes:
+            type: integer
+            description: For how long this Actor can be used for free in trial period
+          pricePerUnitUsd:
+            type: number
+            description: Monthly flat price in USD
+    PayPerEventActorPricingInfo:
+      title: PayPerEventActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - pricingPerEvent
+        properties:
+          pricingModel:
+            type: string
+            const: PAY_PER_EVENT
+          pricingPerEvent:
+            type: object
+            properties:
+              actorChargeEvents:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/ActorChargeEvent'
+          minimalMaxTotalChargeUsd:
+            type:
+            - number
+            - 'null'
+    ListOfActorsResponse:
+      title: ListOfActorsResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfActors'
+    PaginationResponse:
+      title: PaginationResponse
+      description: Common pagination fields for list responses.
+      required:
+      - total
+      - offset
+      - limit
+      - desc
+      - count
+      type: object
+      properties:
+        total:
+          type: integer
+          description: The total number of items available across all pages.
+          minimum: 0
+          examples:
+          - 1
+        offset:
+          type: integer
+          description: The starting position for this page of results.
+          minimum: 0
+          examples:
+          - 0
+        limit:
+          type: integer
+          description: The maximum number of items returned per page.
+          minimum: 1
+          examples:
+          - 1000
+        desc:
+          type: boolean
+          description: Whether the results are sorted in descending order.
+          examples:
+          - false
+        count:
+          type: integer
+          description: The number of items returned in this response.
+          minimum: 0
+          examples:
+          - 1
+    TaggedBuilds:
+      title: TaggedBuilds
+      description: A dictionary mapping build tag names (e.g., "latest", "beta") to their build information.
+      type: object
+      additionalProperties:
+        anyOf:
+        - $ref: '#/components/schemas/TaggedBuildInfo'
+        - type: 'null'
+      example:
+        latest:
+          buildId: z2EryhbfhgSyqj6Hn
+          buildNumber: 0.0.2
+          finishedAt: '2019-06-10T11:15:49.286Z'
+        beta:
+          buildId: abc123def456
+          buildNumber: 1.0.5
+          finishedAt: '2019-07-15T14:30:00.000Z'
+    TaggedBuildInfo:
+      title: TaggedBuildInfo
+      description: Information about a tagged build.
+      type: object
+      properties:
+        buildId:
+          type: string
+          description: The ID of the build associated with this tag.
+          examples:
+          - z2EryhbfhgSyqj6Hn
+        buildNumber:
+          type:
+          - string
+          - 'null'
+          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
+          description: The build number/version string. Can be `null` for legacy builds that lack a valid build number.
+          examples:
+          - 0.0.2
+        buildNumberInt:
+          type: integer
+          description: The build number encoded as a single integer.
+          examples:
+          - 42
+        finishedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The timestamp when the build finished.
+          examples:
+          - '2019-06-10T11:15:49.286Z'
+    ActorResource:
+      title: ActorResource
+      required:
+      - id
+      - userId
+      - name
+      - username
+      - isPublic
+      - createdAt
+      - modifiedAt
+      - stats
+      - versions
+      - defaultRunOptions
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - zdc3Pyhyz3m8vjDeM
+          description: The ID of the Actor.
+        userId:
+          type: string
+          examples:
+          - wRsJZtadYvn4mBZmm
+          description: The ID of the user who owns the Actor.
+        name:
+          type: string
+          examples:
+          - google-search-extractor
+          description: The name of the Actor.
+        username:
+          type: string
+          examples:
+          - compass
+          description: The username of the Actor owner.
+        description:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Extract data from hundreds of places fast.
+          description: Short description of the Actor, displayed in Apify Store and Console.
+        restartOnError:
+          type: boolean
+          examples:
+          - false
+          deprecated: true
+        isPublic:
+          type: boolean
+          examples:
+          - false
+          description: Whether the Actor is available to users in Apify Store.
+        actorPermissionLevel:
+          $ref: '#/components/schemas/ActorPermissionLevel'
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-07-08T11:27:57.401Z'
+          description: The date and time the Actor was created. Follows the ISO 8601 format.
+        modifiedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-07-08T14:01:05.546Z'
+          description: The date and time the Actor was last modified. Follows the ISO 8601 format.
+        stats:
+          $ref: '#/components/schemas/ActorStats'
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Version'
+          description: 'An array of `Version` objects. Each object represents a specific version of the Actor''s source code: its location, builds, and environment configuration.'
+        pricingInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActorRunPricingInfo'
+        defaultRunOptions:
+          $ref: '#/components/schemas/DefaultRunOptions'
+        exampleRunInput:
+          anyOf:
+          - $ref: '#/components/schemas/ExampleRunInput'
+          - type: 'null'
+        isDeprecated:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+          description: Whether the Actor is deprecated.
+        deploymentKey:
+          type: string
+          examples:
+          - ssh-rsa AAAA ...
+          description: The Actor's public SSH key, used as a deployment key for private Git repositories.
+        title:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Google Search Extractor
+          description: Human-readable name of the Actor, displayed in Apify Store and Console.
+        taggedBuilds:
+          anyOf:
+          - $ref: '#/components/schemas/TaggedBuilds'
+          - type: 'null'
+        actorStandby:
+          anyOf:
+          - $ref: '#/components/schemas/ActorStandby'
+          - type: 'null'
+        readmeSummary:
+          type: string
+          description: An AI-generated Markdown summary of the Actor's README, optimized for search and AI agents. Contains an overview and a list of use cases. Generated only for public Actors.
+        seoTitle:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Web Scraper
+          description: Name of the Actor to display by search engines such as Google. Can be different from the Actor's name displayed in Apify Store and Console.
+        seoDescription:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Crawls websites using Chrome and extracts data from pages using JavaScript.
+          description: Description of the Actor to display by search engines such as Google.
+        pictureUrl:
+          type:
+          - string
+          - 'null'
+          examples:
+          - https://apify-image-uploads-prod.s3.amazonaws.com/.../actor-picture.png
+          description: URL of the Actor's icon, displayed on the Actor's page in Apify Store and Console.
+        standbyUrl:
+          type:
+          - string
+          - 'null'
+          examples:
+          - https://jane35--my-actor.apify.actor
+          description: 'URL for sending requests to the Actor in Standby mode.
+
+            `null` if the Standby mode isn''t enabled.
+
+            '
+        notice:
+          $ref: '#/components/schemas/ActorNotice'
+        categories:
+          type: array
+          items:
+            type: string
+          examples:
+          - - DEVELOPER_TOOLS
+            - OPEN_SOURCE
+          description: A list of categories that best define the Actor. Reflected in Apify Store's search and filtering options.
+        isCritical:
+          type: boolean
+          examples:
+          - false
+          description: Whether the Actor is maintained by Apify.
+        isGeneric:
+          type: boolean
+          examples:
+          - false
+          description: Whether the Actor is intended for developers. Set by Apify.
+        isSourceCodeHidden:
+          type: boolean
+          default: true
+          examples:
+          - true
+          description: Whether the Actor's source files are hidden on its detail page.
+        hasNoDataset:
+          type: boolean
+          examples:
+          - false
+          description: Whether the Actor stores results in a dataset. Set by Apify.
+    ActorStats:
+      title: ActorStats
+      type: object
+      description: Usage statistics and Apify Store metrics for the Actor.
+      properties:
+        totalBuilds:
+          type: integer
+          examples:
+          - 9
+          description: The total number of builds of the Actor.
+        totalRuns:
+          type: integer
+          examples:
+          - 16
+          description: The total number of runs of the Actor.
+        totalUsers:
+          type: integer
+          examples:
+          - 6
+          description: The total number of Actor users, including its owner.
+        totalUsers7Days:
+          type: integer
+          examples:
+          - 2
+          description: The number of active users of the Actor in the last 7 days.
+        totalUsers30Days:
+          type: integer
+          examples:
+          - 6
+          description: The number of active users of the Actor in the last 30 days.
+        totalUsers90Days:
+          type: integer
+          examples:
+          - 6
+          description: The number of active users of the Actor in the last 90 days.
+        totalMetamorphs:
+          type: integer
+          examples:
+          - 2
+          description: The total number of times a run of another Actor was [metamorphed](https://docs.apify.com/platform/actors/development/programming-interface/metamorph) into this Actor.
+        lastRunStartedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-07-08T14:01:05.546Z'
+          description: The date and time the most recent run of the Actor started.
+        actorReviewCount:
+          type: integer
+          examples:
+          - 69
+          description: The number of reviews the Actor has received in Apify Store.
+        actorReviewRating:
+          type: number
+          examples:
+          - 4.7
+          description: The average rating of the Actor in Apify Store.
+        bookmarkCount:
+          type: integer
+          examples:
+          - 1269
+          description: The number of users who bookmarked the Actor in Apify Store.
+        publicActorRunStats30Days:
+          type: object
+          description: 'Run status counts from the last 30 days. Only for public Actors.
+
+            Excludes runs started by the Actor''s owner.
+
+            '
+          properties:
+            ABORTED:
+              type: integer
+              examples:
+              - 2542
+              description: The number of runs that were aborted.
+            FAILED:
+              type: integer
+              examples:
+              - 1234
+              description: The number of runs that failed.
+            SUCCEEDED:
+              type: integer
+              examples:
+              - 732805
+              description: The number of runs that succeeded.
+            TIMED-OUT:
+              type: integer
+              examples:
+              - 12556
+              description: The number of runs that timed out.
+            TOTAL:
+              type: integer
+              examples:
+              - 749137
+              description: The total number of runs.
+    Version:
+      title: Version
+      type: object
+      required:
+      - versionNumber
+      - sourceType
+      properties:
+        versionNumber:
+          type: string
+          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])$
+          examples:
+          - '0.0'
+          description: The version number of the Actor. Two numbers separated by a dot, that represent the `MAJOR.MINOR` part of the semantic versioning.
+        sourceType:
+          anyOf:
+          - $ref: '#/components/schemas/VersionSourceType'
+          - type: 'null'
+          description: Where the source code of the version lives.
+        envVars:
+          anyOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/EnvVar'
+          - type: 'null'
+          description: Environment variables for the version.
+        applyEnvVarsToBuild:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+          description: Whether to inject the environment variables at build time.
+        buildTag:
+          type:
+          - string
+          - 'null'
+          examples:
+          - latest
+          description: The tag name to apply to a successful build of this version. Can be `null` when the version has no build tag.
+        sourceFiles:
+          $ref: '#/components/schemas/VersionSourceFiles'
+          description: Applies when the `sourceType` is `SOURCE_FILES`. Represents the Actor's file structure as an array of files and folders.
+        gitRepoUrl:
+          type:
+          - string
+          - 'null'
+          description: URL of the Git repository to clone the source code from. Applies when the `sourceType` is `GIT_REPO`.
+        tarballUrl:
+          type:
+          - string
+          - 'null'
+          description: URL to download the source code from as a tarball or ZIP file. Applies when the `sourceType` is `TARBALL`.
+        gitHubGistUrl:
+          type:
+          - string
+          - 'null'
+          description: URL of the GitHub Gist to clone the source code from. Applies when the `sourceType` is `GITHUB_GIST`.
+    CommonActorPricingInfo:
+      title: CommonActorPricingInfo
+      type: object
+      required:
+      - apifyMarginPercentage
+      - createdAt
+      - startedAt
+      properties:
+        apifyMarginPercentage:
+          type: number
+          examples:
+          - 0.2
+          description: 'Apify''s share of the revenue generated under this pricing info record, as a fraction between 0 and 1. Set by the Apify platform.
+
+            '
+        createdAt:
+          type: string
+          format: date-time
+          description: When this pricing info record has been created
+        startedAt:
+          type: string
+          format: date-time
+          description: Since when is this pricing info record effective for a given Actor
+        notifiedAboutFutureChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-internal: true
+        notifiedAboutChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-internal: true
+        reasonForChange:
+          type:
+          - string
+          - 'null'
+          x-internal: true
+        isPriceChangeNotificationSuppressed:
+          type: boolean
+          x-internal: true
+        forceContainsSignificantPriceChange:
+          type: boolean
+          x-internal: true
+    ErrorType:
+      title: ErrorType
+      type: string
+      description: Machine-processable error type identifier.
+      enum:
+      - 3d-secure-auth-failed
+      - access-right-already-exists
+      - action-not-found
+      - actor-already-rented
+      - actor-can-not-be-rented
+      - actor-disabled
+      - actor-is-not-rented
+      - actor-memory-limit-exceeded
+      - actor-name-exists-new-owner
+      - actor-name-not-unique
+      - actor-not-found
+      - actor-not-github-actor
+      - actor-not-public
+      - actor-permission-level-not-supported-for-agentic-payments
+      - actor-review-already-exists
+      - actor-run-failed
+      - actor-standby-not-supported-for-agentic-payments
+      - actor-task-name-not-unique
+      - agentic-payment-info-retrieval-error
+      - agentic-payment-information-missing
+      - agentic-payment-insufficient-amount
+      - agentic-payment-provider-internal-error
+      - agentic-payment-provider-unauthorized
+      - airtable-webhook-deprecated
+      - already-subscribed-to-paid-actor
+      - apify-plan-required-to-use-paid-actor
+      - apify-signup-not-allowed
+      - auth-method-not-supported
+      - authorization-server-not-found
+      - auto-issue-date-invalid
+      - background-check-required
+      - billing-system-error
+      - black-friday-plan-expired
+      - braintree-error
+      - braintree-not-linked
+      - braintree-operation-timed-out
+      - braintree-unsupported-currency
+      - build-not-found
+      - build-outdated
+      - cannot-add-apify-events-to-ppe-actor
+      - cannot-add-multiple-pricing-infos
+      - cannot-add-pricing-info-that-alters-past
+      - cannot-add-second-future-pricing-info
+      - cannot-build-actor-from-webhook
+      - cannot-change-billing-interval
+      - cannot-change-owner
+      - cannot-charge-apify-event
+      - cannot-charge-non-pay-per-event-actor
+      - cannot-comment-as-other-user
+      - cannot-copy-actor-task
+      - cannot-create-payout
+      - cannot-create-public-actor
+      - cannot-create-tax-transaction
+      - cannot-delete-critical-actor
+      - cannot-delete-invoice
+      - cannot-delete-paid-actor
+      - cannot-disable-one-time-event-for-apify-start-event
+      - cannot-disable-organization-with-enabled-members
+      - cannot-disable-user-with-subscription
+      - cannot-link-oauth-to-unverified-email
+      - cannot-metamorph-to-pay-per-result-actor
+      - cannot-modify-actor-pricing-too-frequently
+      - cannot-modify-actor-pricing-with-immediate-effect
+      - cannot-monetize-without-payout-billing-info
+      - cannot-override-paid-actor-trial
+      - cannot-permanently-delete-subscription
+      - cannot-publish-actor
+      - cannot-publish-actor-task
+      - cannot-reduce-last-full-token
+      - cannot-reimburse-more-than-original-charge
+      - cannot-reimburse-non-rental-charge
+      - cannot-remove-own-actor-from-recently-used
+      - cannot-remove-payment-method
+      - cannot-remove-pricing-info
+      - cannot-remove-running-run
+      - cannot-remove-user-with-public-actors
+      - cannot-remove-user-with-subscription
+      - cannot-remove-user-with-unpaid-invoice
+      - cannot-rename-env-var
+      - cannot-rent-paid-actor
+      - cannot-review-own-actor
+      - cannot-set-access-rights-for-owner
+      - cannot-set-is-status-message-terminal
+      - cannot-unpublish-critical-actor
+      - cannot-unpublish-paid-actor
+      - cannot-unpublish-profile
+      - cannot-update-invoice-field
+      - concurrent-runs-limit-exceeded
+      - concurrent-update-detected
+      - conference-token-not-found
+      - content-encoding-forbidden-for-html
+      - coupon-already-redeemed
+      - coupon-expired
+      - coupon-for-new-customers
+      - coupon-for-subscribed-users
+      - coupon-limits-are-in-conflict-with-current-limits
+      - coupon-max-number-of-redemptions-reached
+      - coupon-not-found
+      - coupon-not-unique
+      - coupons-disabled
+      - create-github-issue-not-allowed
+      - creator-plan-not-available
+      - cron-expression-invalid
+      - daily-ai-token-limit-exceeded
+      - daily-publication-limit-exceeded
+      - dataset-does-not-have-fields-schema
+      - dataset-does-not-have-schema
+      - dataset-locked
+      - dataset-schema-invalid
+      - dcr-not-supported
+      - default-dataset-not-found
+      - deleting-default-build
+      - deleting-unfinished-build
+      - email-already-taken
+      - email-already-taken-removed-user
+      - email-domain-not-allowed-for-coupon
+      - email-invalid
+      - email-not-allowed
+      - email-not-valid
+      - email-update-too-soon
+      - elevated-permissions-needed
+      - env-var-already-exists
+      - exchange-rate-fetch-failed
+      - expired-conference-token
+      - failed-to-charge-user
+      - final-invoice-negative
+      - full-permission-actor-blocked-for-admin
+      - full-permission-actor-not-approved
+      - github-branch-empty
+      - github-issue-already-exists
+      - github-public-key-not-found
+      - github-repository-not-found
+      - github-signature-does-not-match-payload
+      - github-user-not-authorized-for-issues
+      - gmail-not-allowed
+      - id-does-not-match
+      - incompatible-billing-interval
+      - incomplete-payout-billing-info
+      - inconsistent-currencies
+      - incorrect-pricing-modifier-prefix
+      - input-json-invalid-characters
+      - input-json-not-object
+      - input-json-too-long
+      - input-update-collision
+      - insufficient-permissions
+      - insufficient-permissions-to-change-field
+      - insufficient-security-measures
+      - insufficient-tax-country-evidence
+      - integration-auth-error
+      - internal-server-error
+      - invalid-billing-info
+      - invalid-billing-period-for-payout
+      - invalid-build
+      - invalid-client-key
+      - invalid-collection
+      - invalid-conference-login-password
+      - invalid-content-type-header
+      - invalid-credentials
+      - invalid-git-auth-token
+      - invalid-github-issue-url
+      - invalid-header
+      - invalid-id
+      - invalid-idempotency-key
+      - invalid-input
+      - invalid-input-schema
+      - invalid-invoice
+      - invalid-invoice-type
+      - invalid-issue-date
+      - invalid-label-params
+      - invalid-main-account-user-id
+      - invalid-oauth-app
+      - invalid-oauth-scope
+      - invalid-one-time-invoice
+      - invalid-parameter
+      - invalid-payout-status
+      - invalid-picture-url
+      - invalid-record-key
+      - invalid-request
+      - invalid-resource-type
+      - invalid-signature
+      - invalid-subscription-plan
+      - invalid-tax-number
+      - invalid-tax-number-format
+      - invalid-token
+      - invalid-token-type
+      - invalid-two-factor-code
+      - invalid-two-factor-code-or-recovery-code
+      - invalid-two-factor-recovery-code
+      - invalid-username
+      - invalid-value
+      - invitation-invalid-resource-type
+      - invitation-no-longer-valid
+      - invoice-canceled
+      - invoice-cannot-be-refunded-due-to-too-high-amount
+      - invoice-incomplete
+      - invoice-is-draft
+      - invoice-locked
+      - invoice-must-be-buffer
+      - invoice-not-canceled
+      - invoice-not-draft
+      - invoice-not-found
+      - invoice-outdated
+      - invoice-paid-already
+      - issue-already-connected-to-github
+      - issue-not-found
+      - issues-bad-request
+      - issuer-not-registered
+      - job-finished
+      - label-already-linked
+      - last-api-token
+      - limit-reached
+      - max-items-must-be-greater-than-zero
+      - max-metamorphs-exceeded
+      - max-total-charge-usd-below-minimum
+      - max-total-charge-usd-must-be-greater-than-zero
+      - method-not-allowed
+      - migration-disabled
+      - missing-actor-rights
+      - missing-api-token
+      - missing-billing-info
+      - missing-line-items
+      - missing-payment-date
+      - missing-payout-billing-info
+      - missing-proxy-password
+      - missing-reporting-fields
+      - missing-resource-name
+      - missing-settings
+      - missing-username
+      - monthly-usage-limit-too-low
+      - more-than-one-update-not-allowed
+      - multiple-records-found
+      - must-be-admin
+      - name-not-unique
+      - next-runtime-computation-failed
+      - no-columns-in-exported-dataset
+      - no-payment-attempt-for-refund-found
+      - no-payment-method-available
+      - no-team-account-seats-available
+      - non-temporary-email
+      - not-enough-usage-to-run-paid-actor
+      - not-implemented
+      - not-supported-currencies
+      - o-auth-service-already-connected
+      - o-auth-service-not-connected
+      - oauth-resource-access-failed
+      - one-time-invoice-already-marked-paid
+      - only-drafts-can-be-deleted
+      - operation-canceled
+      - operation-not-allowed
+      - operation-timed-out
+      - organization-cannot-own-itself
+      - organization-role-not-found
+      - overlapping-payout-billing-periods
+      - own-token-required
+      - page-not-found
+      - param-not-one-of
+      - parameter-required
+      - parameters-mismatched
+      - password-reset-email-already-sent
+      - password-reset-token-expired
+      - pay-as-you-go-without-monthly-interval
+      - payment-attempt-status-message-required
+      - payout-already-paid
+      - payout-canceled
+      - payout-invalid-state
+      - payout-must-be-approved-to-be-marked-paid
+      - payout-not-found
+      - payout-number-already-exists
+      - phone-number-invalid
+      - phone-number-landline
+      - phone-number-opted-out
+      - phone-verification-disabled
+      - platform-feature-disabled
+      - price-overrides-validation-failed
+      - pricing-model-not-supported
+      - promotional-plan-not-available
+      - proxy-auth-ip-not-unique
+      - public-actor-disabled
+      - query-timeout
+      - quoted-price-outdated
+      - rate-limit-exceeded
+      - recaptcha-invalid
+      - recaptcha-required
+      - record-not-found
+      - record-not-public
+      - record-or-token-not-found
+      - record-too-large
+      - redirect-uri-mismatch
+      - reduced-plan-not-available
+      - rental-charge-already-reimbursed
+      - rental-not-allowed
+      - request-aborted-prematurely
+      - request-handled-or-locked
+      - request-id-invalid
+      - request-queue-duplicate-requests
+      - request-too-large
+      - requested-dataset-view-does-not-exist
+      - resume-token-expired
+      - run-failed
+      - run-input-body-not-valid-json
+      - run-timeout-exceeded
+      - russia-is-evil
+      - same-user
+      - schedule-actor-not-found
+      - schedule-actor-task-not-found
+      - schedule-name-not-unique
+      - schema-validation
+      - schema-validation-error
+      - schema-validation-failed
+      - service-worker-registration-not-allowed
+      - sign-up-method-not-allowed
+      - slack-integration-not-custom
+      - socket-closed
+      - socket-destroyed
+      - store-schema-invalid
+      - store-terms-not-accepted
+      - stripe-enabled
+      - stripe-generic-decline
+      - stripe-not-enabled
+      - stripe-not-enabled-for-user
+      - tagged-build-required
+      - tax-country-invalid
+      - tax-number-invalid
+      - tax-number-validation-failed
+      - taxamo-call-failed
+      - taxamo-request-failed
+      - testing-error
+      - token-not-provided
+      - too-few-versions
+      - too-many-actor-tasks
+      - too-many-actors
+      - too-many-labels-on-resource
+      - too-many-mcp-connectors
+      - too-many-o-auth-apps
+      - too-many-organizations
+      - too-many-requests
+      - too-many-schedules
+      - too-many-ui-access-keys
+      - too-many-user-labels
+      - too-many-values
+      - too-many-versions
+      - too-many-webhooks
+      - unexpected-route
+      - unknown-build-tag
+      - unknown-payment-provider
+      - unsubscribe-token-invalid
+      - unsupported-actor-pricing-model-for-agentic-payments
+      - unsupported-content-encoding
+      - unsupported-file-type-for-issue
+      - unsupported-file-type-image-expected
+      - unsupported-file-type-text-or-json-expected
+      - unsupported-permission
+      - upcoming-subscription-bill-not-up-to-date
+      - user-already-exists
+      - user-already-verified
+      - user-creates-organizations-too-fast
+      - user-disabled
+      - user-email-is-disposable
+      - user-email-not-set
+      - user-email-not-verified
+      - user-has-no-subscription
+      - user-integration-not-found
+      - user-is-already-invited
+      - user-is-already-organization-member
+      - user-is-not-member-of-organization
+      - user-is-not-organization
+      - user-is-organization
+      - user-is-organization-owner
+      - user-is-removed
+      - user-not-found
+      - user-not-logged-in
+      - user-not-verified
+      - user-or-token-not-found
+      - user-plan-not-allowed-for-coupon
+      - user-problem-with-card
+      - user-record-not-found
+      - username-already-taken
+      - username-missing
+      - username-not-allowed
+      - username-removal-forbidden
+      - username-required
+      - verification-email-already-sent
+      - verification-token-expired
+      - version-already-exists
+      - versions-size-exceeded
+      - weak-password
+      - x402-agentic-payment-already-finalized
+      - x402-agentic-payment-insufficient-amount
+      - x402-agentic-payment-malformed-token
+      - x402-agentic-payment-settlement-failed
+      - x402-agentic-payment-settlement-in-progress
+      - x402-agentic-payment-settlement-stuck
+      - x402-agentic-payment-unauthorized
+      - x402-payment-required
+      - zero-invoice
+    ActorListItem:
+      title: ActorListItem
+      required:
+      - id
+      - createdAt
+      - modifiedAt
+      - name
+      - username
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - br9CKmk457
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-10-29T07:34:24.202Z'
+        modifiedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-10-30T07:34:24.202Z'
+        name:
+          type: string
+          examples:
+          - MyAct
+        username:
+          type: string
+          examples:
+          - janedoe
+        title:
+          type: string
+          examples:
+          - Hello World Example
+        stats:
+          anyOf:
+          - $ref: '#/components/schemas/ActorStats'
+          - type: 'null'
+    WritableVersionSourceType:
+      title: WritableVersionSourceType
+      description: The version source types accepted in request bodies. Same as `VersionSourceType`, without `SOURCE_CODE`.
+      enum:
+      - SOURCE_FILES
+      - GIT_REPO
+      - TARBALL
+      - GITHUB_GIST
+      type: string
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
+    DefaultRunOptions:
+      title: DefaultRunOptions
+      type: object
+      description: The default settings applied to an Actor run. Can be overridden elsewhere.
+      properties:
+        build:
+          type: string
+          examples:
+          - latest
+          description: Which build to run. Either a build tag or a version number.
+        timeoutSecs:
+          type: integer
+          examples:
+          - 3600
+          description: Timeout in seconds. 0 if no timeout.
+        memoryMbytes:
+          type: integer
+          examples:
+          - 2048
+          description: In MB, the amount of memory allocated to the run.
+        restartOnError:
+          type: boolean
+          examples:
+          - false
+          description: Whether to automatically restart the run if it fails.
+        maxItems:
+          type:
+          - integer
+          - 'null'
+          description: Maximum number of items the run might produce.
+        forcePermissionLevel:
+          anyOf:
+          - $ref: '#/components/schemas/ActorPermissionLevel'
+          - type: 'null'
+    CreateActorRequest:
+      title: CreateActorRequest
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+          examples:
+          - instagram-scraper
+          description: The identifier of the Actor. Use lowercase letters, numbers, and hyphens. Spaces or special characters aren't allowed. Must be unique across your account.
+        description:
+          type:
+          - string
+          - 'null'
+          examples:
+          - This scraper extracts posts and comments from Instagram.
+          description: Short description of the Actor, displayed in Apify Store and Console.
+        title:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Instagram scraper
+          description: Human-readable name of the Actor, displayed in Apify Store and Console. Can contain spaces and capital letters. Recommended length is 40-50 characters. You can change this title without affecting the Actor's URL or SEO.
+        isPublic:
+          type: boolean
+          examples:
+          - false
+          description: Whether the Actor is available to users in Apify Store. A new Actor is always private. To publish it, build it first, then update it with `isPublic` set to `true`.
+        actorPermissionLevel:
+          $ref: '#/components/schemas/ActorPermissionLevel'
+        seoTitle:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Free Instagram scraper
+          description: Name of the Actor to display by search engines such as Google. Can be different from the Actor's name displayed in Apify Store and Console. Recommended length is 40-50 characters.
+        seoDescription:
+          type:
+          - string
+          - 'null'
+          examples:
+          - The best scraper for Instagram
+          description: Description of the Actor to display by search engines such as Google. Recommended length is 140-156 characters.
+        restartOnError:
+          type: boolean
+          examples:
+          - false
+          deprecated: true
+        versions:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/CreateVersionRequest'
+          description: 'An array of `Version` objects. Each object represents a specific version of the Actor''s source code: its location, builds, and environment configuration.'
+        categories:
+          type:
+          - array
+          - 'null'
+          examples:
+          - - SOCIAL_MEDIA
+          items:
+            type: string
+          description: A list of categories that best define the Actor. Reflected in Apify Store's search and filtering options.
+        defaultRunOptions:
+          $ref: '#/components/schemas/DefaultRunOptions'
+        actorStandby:
+          anyOf:
+          - $ref: '#/components/schemas/ActorStandby'
+          - type: 'null'
+          description: The configuration of the Actor's standby mode. For details, see [Standby mode](https://docs.apify.com/platform/actors/development/programming-interface/standby).
+        exampleRunInput:
+          anyOf:
+          - $ref: '#/components/schemas/ExampleRunInput'
+          - type: 'null'
+          description: Sample input payload that demonstrates what a typical run input for an Actor looks like. Used when no explicit input for a run is provided.
+        isDeprecated:
+          type:
+          - boolean
+          - 'null'
+          description: Whether the Actor is deprecated.
+    SourceCodeFileFormat:
+      type: string
+      enum:
+      - BASE64
+      - TEXT
+      examples:
+      - TEXT
+    ActorList:
+      type: object
+      properties:
+        data:
           type: object
           properties:
-            type:
-              type: string
-            message:
-              type: string
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Actor'
+            total:
+              type: integer
+            offset:
+              type: integer
+            limit:
+              type: integer
     Actor:
       type: object
       description: An Apify Actor.
@@ -212,22 +2671,21 @@ components:
         description:
           type: string
           description: Actor description.
-    ActorList:
+    ActorDetail:
       type: object
       properties:
         data:
+          $ref: '#/components/schemas/Actor'
+    Error:
+      type: object
+      properties:
+        error:
           type: object
           properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/Actor'
-            total:
-              type: integer
-            offset:
-              type: integer
-            limit:
-              type: integer
+            type:
+              type: string
+            message:
+              type: string
     Run:
       type: object
       description: An Apify Actor run.
@@ -261,26 +2719,226 @@ components:
               format: date-time
             defaultDatasetId:
               type: string
-    ActorDetail:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Actor'
   responses:
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
     NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    NotFound_2:
       description: Resource not found.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized:
+    Unauthorized_2:
       description: Authentication failed.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
   securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+      description: 'Bearer token provided in the `Authorization` header (e.g., `Authorization: Bearer your_token`—recommended). [More info](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization).
+
+
+        Use your API token to authenticate requests. You can find it on the [Integrations page](https://console.apify.com/account#/integrations) in Apify Console. This method is more secure than query parameters, as headers are not logged in browser history or server logs.
+
+
+        :::danger Security
+
+
+        Do not share your API token (or account password) with untrusted parties.
+
+
+        :::
+
+
+        _When is authentication required?_
+
+        - _Required_ for private Actors, tasks, or resources (e.g., builds of private Actors).
+
+        - _Required_ when using named formats for IDs (e.g., `username~store-name` for stores or `username~queue-name` for queues).
+
+        - _Optional_ for public Actors or resources (e.g., builds of public Actors can be queried without a token).
+
+
+        For more information, see our [integrations documentation](https://docs.apify.com/platform/integrations).'
+    apiKey:
+      type: apiKey
+      name: token
+      in: query
+      description: 'API token provided as a query parameter (e.g., `?token=your_token`—less secure).
+
+
+        Use your API token to authenticate requests. You can find it on the [Integrations page](https://console.apify.com/account#/integrations) in Apify Console.
+
+
+        :::danger Security
+
+
+        Do not share your API token (or account password) with untrusted parties.
+
+
+        :::
+
+
+        _When is authentication required?_
+
+        - _Required_ for private Actors, tasks, or resources (e.g., builds of private Actors).
+
+        - _Required_ when using named formats for IDs (e.g., `username~store-name` for stores or `username~queue-name` for queues).
+
+        - _Optional_ for public Actors or resources (e.g., builds of public Actors can be queried without a token).
+
+
+        For more information, see our [integrations documentation](https://docs.apify.com/platform/integrations).'
     bearerAuth:
       type: http
       scheme: bearer
       description: Bearer token from Apify console Settings > Integrations.
+x-refined-from:
+- apify-openapi.json
+- apify-api.yaml
+x-tagGroups:
+- name: Actor management
+  tags:
+  - Actors
+  - Actors/Actor versions
+  - Actors/Actor builds
+  - Actors/Actor runs
+  - Actors/Webhook collection
+  - Actors/Last run object and its storages
+- name: Actor builds
+  tags:
+  - Actor builds
+- name: Actor runs
+  tags:
+  - Actor runs
+- name: Actor tasks
+  tags:
+  - Actor tasks
+- name: Storage
+  tags:
+  - Storage/Datasets
+  - Storage/Key-value stores
+  - Storage/Request queues
+  - Storage/Request queues/Requests
+  - Storage/Request queues/Requests locks
+- name: Webhook management
+  tags:
+  - Webhooks/Webhooks
+  - Webhooks/Webhook dispatches
+- name: Schedules
+  tags:
+  - Schedules
+- name: Apify Store
+  tags:
+  - Store
+- name: Logs
+  tags:
+  - Logs
+- name: Users
+  tags:
+  - Users
+  - Users/Usage
+- name: Utility tools
+  tags:
+  - Tools
+  - Tools/Encoding
+- name: Convenience endpoints
+  tags:
+  - Default dataset
+  - Default key-value store
+  - Default request queue
+  - Last Actor run's default dataset
+  - Last Actor run's default key-value store
+  - Last Actor run's default request queue
+  - Last Actor run's log
+  - Last Actor run's abort
+  - Last Actor run's metamorph
+  - Last Actor run's reboot
+  - Last Actor task run's default dataset
+  - Last Actor task run's default key-value store
+  - Last Actor task run's default request queue
+  - Last Actor task run's log
+  - Last Actor task run's abort
+  - Last Actor task run's metamorph
+  - Last Actor task run's reboot
