@@ -1589,3 +1589,9 @@ x-tagGroups:
   - Last Actor task run's abort
   - Last Actor task run's metamorph
   - Last Actor task run's reboot
+x-provenance:
+  method: harvested
+  publisher: Apify
+  source: https://docs.apify.com/api/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
