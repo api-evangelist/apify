@@ -1,4 +1,4 @@
-# Apify (apify)
+# Apify
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,141 +66,201 @@
 
 Apify is a full-stack web scraping and browser automation platform that enables developers to build, run, and scale web scrapers, crawlers, and data extraction tools using a cloud-based infrastructure with built-in proxy management, scheduling, and storage. The platform hosts thousands of ready-made Actors for scraping social media, search engines, maps, e-commerce sites, and more.
 
-**URL:** [https://apify.com](https://apify.com)
+**Areas:** Actors · Browser Automation · Crawling · Data Aggregation · Data Extraction · Web Scraping
 
-**Run:** [Capabilities Using Naftiko](https://github.com/naftiko/fleet?utm_source=api-evangelist&utm_medium=readme&utm_campaign=company-api-evangelist&utm_content=repo)
+## Apify on APIs.io
 
-## Tags:
+Everything profiled for Apify is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/apify/](https://apis.io/providers/apify/)** — or go straight to one of the APIs or properties below.
 
- - Actors, Browser Automation, Crawling, Data Aggregation, Data Extraction, Web Automation, Web Scraping
+### APIs (6)
 
-## Timestamps
+- [Apify Actor Runs API](https://apis.io/apis/apify/apify-actor-runs-api/) — Monitor and manage Actor run executions.
+- [Apify Actors API](https://apis.io/apis/apify/apify-actors-api/) — Manage and run Apify Actors.
+- [Apify Datasets API](https://apis.io/apis/apify/apify-datasets-api/) — Manage structured data storage from Actor runs.
+- [Apify Key-Value Stores API](https://apis.io/apis/apify/apify-key-value-stores-api/) — Manage persistent key-value storage.
+- [Apify Request Queues API](https://apis.io/apis/apify/apify-request-queues-api/) — Manage URL queues for web crawling.
+- [Apify Users API](https://apis.io/apis/apify/apify-users-api/) — User and account management.
 
-- **Created:** 2026-03-26
-- **Modified:** 2026-04-19
+### Published properties
 
-## APIs
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-### Apify API
-The Apify REST API (v2) provides programmatic access to the Apify platform, allowing you to manage actors, run scraping tasks, access datasets, key-value stores, and request queues.
+#### MCP servers (2)
 
-**Human URL:** [https://apify.com](https://apify.com)
+Model Context Protocol servers that expose the API to agents.
 
-#### Tags:
+- [apify](https://apis.io/servers/apify/apify/)
+- [MCP Server](https://apis.io/servers/apify/mcp-server/)
 
- - Actors, Automation, Crawling, Data Extraction, Datasets, Web Scraping
+#### Agent skills (5)
 
-#### Properties
+Agent skills built on the API.
 
-- [Documentation](https://docs.apify.com/api/v2)
-- [OpenAPI](openapi/apify-api.yaml)
-- [GettingStarted](https://docs.apify.com/api/v2/getting-started)
-- [Authentication](https://docs.apify.com/api/v2#authentication)
-- [RateLimits](https://docs.apify.com/api/v2#rate-limiting-and-scaling)
-- [JSONSchema](json-schema/apify-actor-schema.json)
-- [JSONSchema](json-schema/apify-run-schema.json)
-- [JSONSchema](json-schema/apify-dataset-schema.json)
-- [JSONSchema](json-schema/apify-key-value-store-schema.json)
-- [JSON-LD](json-ld/apify-context.jsonld)
-- [Node.js Client SDK](https://www.npmjs.com/package/apify-client)
-- [Python Client SDK](https://pypi.org/project/apify-client/)
+- [apify-actor-development](https://apis.io/agent-skills/apify/apify-actor-development/)
+- [apify-actorization](https://apis.io/agent-skills/apify/apify-actorization/)
+- [apify-generate-output-schema](https://apis.io/agent-skills/apify/apify-generate-output-schema/)
+- [apify-sdk-integration](https://apis.io/agent-skills/apify/apify-sdk-integration/)
+- [apify-ultimate-scraper](https://apis.io/agent-skills/apify/apify-ultimate-scraper/)
 
-## Common Properties
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Apify Agentic Access](https://apis.io/agentic-access/apify/apify-agentic-access/)
+
+#### JSON Schema (4)
+
+The data models the API reads and writes.
+
+- [Actor](https://apis.io/schemas/apify/apify-actor/)
+- [Dataset](https://apis.io/schemas/apify/apify-dataset/)
+- [KeyValueStore](https://apis.io/schemas/apify/apify-key-value-store/)
+- [Run](https://apis.io/schemas/apify/apify-run/)
+
+#### JSON Structure (4)
+
+Data models expressed in JSON Structure.
+
+- [Apify Actor Structure](https://apis.io/json-structure/apify/apify-actor-structure/)
+- [Apify Dataset Structure](https://apis.io/json-structure/apify/apify-dataset-structure/)
+- [Apify Key Value Store Structure](https://apis.io/json-structure/apify/apify-key-value-store-structure/)
+- [Apify Run Structure](https://apis.io/json-structure/apify/apify-run-structure/)
+
+#### JSON-LD (1)
+
+Linked-data contexts for the provider's vocabulary.
+
+- [Apify Context](https://apis.io/jsonld/apify/apify-context/)
+
+#### Vocabulary (1)
+
+The provider's domain terms, defined.
+
+- [Apify Vocabulary](https://apis.io/vocabularies/apify/apify-vocabulary/)
+
+#### Examples (4)
+
+Example requests and responses.
+
+- [Apify Actor Example](https://apis.io/examples/apify/apify-actor-example/)
+- [Apify Dataset Example](https://apis.io/examples/apify/apify-dataset-example/)
+- [Apify Key Value Store Example](https://apis.io/examples/apify/apify-key-value-store-example/)
+- [Apify Run Example](https://apis.io/examples/apify/apify-run-example/)
+
+#### Collections (12)
+
+Postman and Open Collection request collections.
+
+- [Apify Actor Runs API](https://apis.io/collections/apify/open-apify-actor-runs-api/)
+- [Apify Actor Runs Actors API](https://apis.io/collections/apify/open-apify-actors-api/)
+- [Apify Actor Runs Datasets API](https://apis.io/collections/apify/open-apify-datasets-api/)
+- [Apify Actor Runs Key-Value Stores API](https://apis.io/collections/apify/open-apify-key-value-stores-api/)
+- [Apify Actor Runs Request Queues API](https://apis.io/collections/apify/open-apify-request-queues-api/)
+- [Apify Actor Runs Users API](https://apis.io/collections/apify/open-apify-users-api/)
+- [Apify Actor Runs API](https://apis.io/collections/apify/postman-apify-actor-runs-api/)
+- [Apify Actor Runs Actors API](https://apis.io/collections/apify/postman-apify-actors-api/)
+- [Apify Actor Runs Datasets API](https://apis.io/collections/apify/postman-apify-datasets-api/)
+- [Apify Actor Runs Key-Value Stores API](https://apis.io/collections/apify/postman-apify-key-value-stores-api/)
+- [Apify Actor Runs Request Queues API](https://apis.io/collections/apify/postman-apify-request-queues-api/)
+- [Apify Actor Runs Users API](https://apis.io/collections/apify/postman-apify-users-api/)
+
+#### Governance rules (3)
+
+Spectral rulesets for the provider's contracts.
+
+- [Apify — apify docs rules](https://apis.io/rules/apify/apify-apify-docs-spectral-rules/)
+- [Apify — jsonschema rules](https://apis.io/rules/apify/apify-jsonschema-spectral-rules/)
+- [Apify API Rules](https://apis.io/rules/apify/apify-spectral-rules/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Apify Authentication](https://apis.io/security/apify/apify-authentication/)
+- [Apify Domain Security](https://apis.io/security/apify/apify-domain-security/)
+- [Apify Vulnerability Disclosure](https://apis.io/security/apify/apify-vulnerability-disclosure/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Apify Plans Pricing](https://apis.io/plans/apify/apify-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Apify Rate Limits](https://apis.io/rate-limits/apify/apify-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Apify Finops](https://apis.io/finops/apify/apify-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://apify.com)
 - [Documentation](https://docs.apify.com)
-- [GettingStarted](https://docs.apify.com/api/v2/getting-started)
+- [Getting started](https://docs.apify.com/api/v2/getting-started)
 - [Pricing](https://apify.com/pricing)
-- [Blog](https://blog.apify.com)
-- [SignUp](https://console.apify.com/sign-up)
-- [Login](https://console.apify.com/sign-in)
-- [Academy](https://docs.apify.com/academy)
 - [Support](https://help.apify.com)
-- [GitHubOrganization](https://github.com/apify)
-- [CLI](https://www.npmjs.com/package/apify-cli)
+- [Blog](https://blog.apify.com)
+- [GitHub](https://github.com/apify)
 
-## Features
+## API Evangelist rating
 
-| Name | Description |
-|------|-------------|
-| Actors Marketplace | Store of thousands of pre-built web scrapers and automation tools ready to run with zero configuration. |
-| Cloud Infrastructure | Run Actors on Apify's scalable cloud infrastructure with built-in proxy rotation, scheduling, and storage. |
-| Datasets | Structured storage for Actor output with multi-format export (JSON, CSV, XML, XLSX, etc.). |
-| Key-Value Stores | Persistent key-value storage for arbitrary data including files, screenshots, and configuration. |
-| Request Queues | URL queue management for large-scale distributed web crawling. |
-| Proxy Management | Built-in datacenter and residential proxy pools with automatic rotation. |
-| Scheduled Runs | Schedule Actors to run automatically on cron schedules. |
-| MCP Server | Apify MCP server enabling AI agents to use thousands of web scraping and automation tools. |
+**Kin Score 36.9** — thin · rubric 0.25.0 · scored 2026-10-23
 
-## Use Cases
+| Facet | Score |
+|---|---|
+| Discoverability | 80.0 |
+| Contract quality | 26.6 |
+| Contract governance | 13.6 |
+| Operational transparency | 21.1 |
+| Developer ergonomics | 62.4 |
+| Access clarity | 25.0 |
 
-| Name | Description |
-|------|-------------|
-| AI Training Data Collection | Extract structured data from websites for LLM training datasets, RAG pipelines, and AI applications. |
-| E-commerce Price Monitoring | Scrape product prices, availability, and reviews from e-commerce websites for competitive intelligence. |
-| Social Media Data Extraction | Extract posts, profiles, and engagement data from social media platforms. |
-| Search Engine Data | Scrape search engine results, SERP data, and web listings for SEO and market research. |
-| Lead Generation | Extract business data from directories, LinkedIn, and other professional platforms. |
+**Agent readiness 53.9** — agent-ready (gated down from agent-native)
 
-## Integrations
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | — |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | unknown |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
 
-| Name | Description |
-|------|-------------|
-| Crawlee | Open-source web crawling library for Node.js and Python built by Apify. |
-| Zapier | Zapier integration for connecting Apify Actors with 5000+ apps. |
-| Make (Integromat) | No-code automation platform integration for Apify. |
-| LangChain | LangChain integration for using Apify data loaders in AI applications. |
+**Regulatory alignment 22.5** — Horizontal (data, software, accessibility, platform)
 
-## Artifacts
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/apify/](https://apis.io/providers/apify/).
 
-Machine-readable API specifications organized by format.
+## How this profile is made
 
-### OpenAPI
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
 
-- [Apify API](openapi/apify-api.yaml)
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Apify: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
 
-### JSON Schema
+## Open an issue
 
-- [apify-actor-schema.json](json-schema/apify-actor-schema.json)
-- [apify-run-schema.json](json-schema/apify-run-schema.json)
-- [apify-dataset-schema.json](json-schema/apify-dataset-schema.json)
-- [apify-key-value-store-schema.json](json-schema/apify-key-value-store-schema.json)
-
-### JSON Structure
-
-- [apify-actor-structure.json](json-structure/apify-actor-structure.json)
-- [apify-run-structure.json](json-structure/apify-run-structure.json)
-- [apify-dataset-structure.json](json-structure/apify-dataset-structure.json)
-- [apify-key-value-store-structure.json](json-structure/apify-key-value-store-structure.json)
-
-### JSON-LD
-
-- [apify-context.jsonld](json-ld/apify-context.jsonld)
-
-## Capabilities
-
-Naftiko capabilities organized as shared per-API definitions composed into customer-facing workflows.
-
-### Shared Per-API Definitions
-
-- [Apify API](capabilities/shared/apify.yaml) — 8 operations for Actors, runs, and datasets
-
-### Workflow Capabilities
-
-| Workflow | APIs Combined | Tools | Persona |
-|----------|--------------|-------|---------|
-| [Web Scraping and Automation](capabilities/web-scraping-automation.yaml) | Apify API | 5 | Data Engineer, AI Developer, Web Scraping Engineer |
-
-## Vocabulary
-
-- [Apify Vocabulary](vocabulary/apify-vocabulary.yaml) — Unified taxonomy mapping 6 resources, 4 actions, 1 workflow, and 3 personas across operational (OpenAPI) and capability (Naftiko) dimensions
-
-## Rules
-
-- [apify-spectral-rules.yml](rules/apify-spectral-rules.yml) — 11 rules across 6 categories enforcing Apify API conventions
-
-## Maintainers
-
-**FN:** Kin Lane
-
-**Email:** kin@apievangelist.com
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/apify/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
