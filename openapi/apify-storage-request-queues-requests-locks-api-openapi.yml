@@ -436,148 +436,74 @@ paths:
       x-py-name: delete_request_lock
       x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/RequestQueueClientAsync#delete_request_lock
 components:
-  responses:
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    PaymentRequired:
-      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: x402-payment-required
-              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
-    NoContent:
-      description: No content
   schemas:
-    RequestQueueHead:
-      title: RequestQueueHead
-      description: A batch of requests from the request queue head without locking.
-      type: object
-      required:
-      - limit
-      - queueModifiedAt
-      - hadMultipleClients
-      - items
-      properties:
-        limit:
-          $ref: '#/components/schemas/HeadLimit'
-        queueModifiedAt:
-          $ref: '#/components/schemas/QueueModifiedAt'
-        hadMultipleClients:
-          $ref: '#/components/schemas/HadMultipleClients'
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/RequestQueueHeadItem'
-          description: The array of requests from the request queue head.
-    HadMultipleClients:
-      type: boolean
-      description: Whether the request queue has been accessed by multiple different clients.
-      examples:
-      - true
-    UniqueKey:
-      type: string
-      description: A unique key used for request de-duplication. Requests with the same unique key are considered identical.
-      examples:
-      - GET|60d83e70|e3b0c442|https://apify.com
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
     RetryCount:
       type: integer
       description: The number of times this request has been retried.
       examples:
       - 0
-    RequestLockInfo:
-      title: RequestLockInfo
-      description: Information about a request lock.
-      type: object
-      required:
-      - lockExpiresAt
-      properties:
-        lockExpiresAt:
-          $ref: '#/components/schemas/LockExpiresAt'
-    RequestUrl:
-      type: string
-      description: The URL of the request.
-      examples:
-      - https://apify.com
-    UnlockRequestsResponse:
-      title: UnlockRequestsResponse
-      description: Response containing the result of unlocking requests.
-      type: object
+    ProlongRequestLockResponse:
+      title: ProlongRequestLockResponse
+      description: Response containing updated lock information after prolonging a request lock.
       required:
       - data
+      type: object
       properties:
         data:
-          $ref: '#/components/schemas/UnlockRequestsResult'
+          $ref: '#/components/schemas/RequestLockInfo'
+    LockedRequestQueueHeadResponse:
+      title: LockedRequestQueueHeadResponse
+      description: Response containing locked requests from the request queue head.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/LockedRequestQueueHead'
+      example:
+        data:
+          limit: 3
+          queueModifiedAt: '2018-03-14T23:00:00.000Z'
+          hadMultipleClients: true
+          lockSecs: 60
+          items:
+          - id: 8OamqXBCpPHxyj9
+            retryCount: 0
+            uniqueKey: http://example.com
+            url: http://example.com
+            method: GET
+            lockExpiresAt: '2022-06-14T23:00:00.000Z'
+          - id: 8OamqXBCpPHxyx9
+            retryCount: 0
+            uniqueKey: http://example.com/a
+            url: http://example.com/a
+            method: GET
+            lockExpiresAt: '2022-06-14T23:00:00.000Z'
+          - id: 8OamqXBCpPHxy08
+            retryCount: 0
+            uniqueKey: http://example.com/a/b
+            url: http://example.com/a/b
+            method: GET
+            lockExpiresAt: '2022-06-14T23:00:00.000Z'
+    RequestQueueHeadItem:
+      title: RequestQueueHeadItem
+      description: A request from the request queue head without lock information.
+      type: object
+      required:
+      - id
+      - uniqueKey
+      - url
+      properties:
+        id:
+          $ref: '#/components/schemas/RequestId'
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+        url:
+          $ref: '#/components/schemas/RequestUrl'
+        method:
+          $ref: '#/components/schemas/RequestMethod'
+        retryCount:
+          $ref: '#/components/schemas/RetryCount'
     HttpMethod:
       type: string
       enum:
@@ -592,6 +518,120 @@ components:
       - PATCH
       examples:
       - GET
+    RequestId:
+      type: string
+      description: A unique identifier assigned to the request.
+      examples:
+      - sbJ7klsdf7ujN9l
+    QueueModifiedAt:
+      type: string
+      format: date-time
+      description: The timestamp when the request queue was last modified. Modifications include adding, updating, or removing requests, as well as locking or unlocking requests in the request queue.
+      examples:
+      - '2019-12-13T08:36:13.202Z'
+    RequestQueueHeadResponse:
+      title: RequestQueueHeadResponse
+      description: Response containing requests from the request queue head without locking.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestQueueHead'
+      example:
+        data:
+          limit: 1000
+          queueModifiedAt: '2018-03-14T23:00:00.000Z'
+          hadMultipleClients: false
+          items:
+          - id: 8OamqXBCpPHxyH9
+            retryCount: 0
+            uniqueKey: http://example.com
+            url: http://example.com
+            method: GET
+          - id: ZJAoqlRijenMQIn
+            retryCount: 0
+            uniqueKey: http://example.com/a/b
+            url: http://example.com/a/b
+            method: GET
+          - id: hAhkwyk5oOBHKQC
+            retryCount: 1
+            uniqueKey: http://example.com/c/d
+            url: http://example.com/c/d
+            method: GET
+    HadMultipleClients:
+      type: boolean
+      description: Whether the request queue has been accessed by multiple different clients.
+      examples:
+      - true
+    LockedRequestQueueHead:
+      title: LockedRequestQueueHead
+      description: A batch of locked requests from the request queue head.
+      type: object
+      required:
+      - limit
+      - queueModifiedAt
+      - hadMultipleClients
+      - lockSecs
+      - items
+      properties:
+        limit:
+          $ref: '#/components/schemas/HeadLimit'
+        queueModifiedAt:
+          $ref: '#/components/schemas/QueueModifiedAt'
+        queueHasLockedRequests:
+          type: boolean
+          description: Whether the request queue contains requests locked by any client (either the one calling the endpoint or a different one).
+          examples:
+          - true
+        clientKey:
+          type: string
+          description: The client key used for locking the requests.
+          examples:
+          - client-one
+        hadMultipleClients:
+          $ref: '#/components/schemas/HadMultipleClients'
+        lockSecs:
+          type: integer
+          description: The number of seconds the locks will be held.
+          examples:
+          - 60
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LockedRequestQueueHeadItem'
+          description: The array of locked requests from the request queue head.
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    RequestMethod:
+      description: The HTTP method of the request.
+      $ref: '#/components/schemas/HttpMethod'
+    LockExpiresAt:
+      type: string
+      format: date-time
+      description: The timestamp when the lock on this request expires.
+      examples:
+      - '2022-06-14T23:00:00.000Z'
+    RequestUrl:
+      type: string
+      description: The URL of the request.
+      examples:
+      - https://apify.com
     ErrorType:
       title: ErrorType
       type: string
@@ -992,18 +1032,36 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    LockExpiresAt:
-      type: string
-      format: date-time
-      description: The timestamp when the lock on this request expires.
-      examples:
-      - '2022-06-14T23:00:00.000Z'
-    QueueModifiedAt:
-      type: string
-      format: date-time
-      description: The timestamp when the request queue was last modified. Modifications include adding, updating, or removing requests, as well as locking or unlocking requests in the request queue.
-      examples:
-      - '2019-12-13T08:36:13.202Z'
+    RequestQueueHead:
+      title: RequestQueueHead
+      description: A batch of requests from the request queue head without locking.
+      type: object
+      required:
+      - limit
+      - queueModifiedAt
+      - hadMultipleClients
+      - items
+      properties:
+        limit:
+          $ref: '#/components/schemas/HeadLimit'
+        queueModifiedAt:
+          $ref: '#/components/schemas/QueueModifiedAt'
+        hadMultipleClients:
+          $ref: '#/components/schemas/HadMultipleClients'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestQueueHeadItem'
+          description: The array of requests from the request queue head.
+    UnlockRequestsResponse:
+      title: UnlockRequestsResponse
+      description: Response containing the result of unlocking requests.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          $ref: '#/components/schemas/UnlockRequestsResult'
     LockedRequestQueueHeadItem:
       title: LockedRequestQueueHeadItem
       description: A request from the request queue head that has been locked for processing.
@@ -1026,113 +1084,6 @@ components:
           $ref: '#/components/schemas/RetryCount'
         lockExpiresAt:
           $ref: '#/components/schemas/LockExpiresAt'
-    ProlongRequestLockResponse:
-      title: ProlongRequestLockResponse
-      description: Response containing updated lock information after prolonging a request lock.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestLockInfo'
-    RequestQueueHeadItem:
-      title: RequestQueueHeadItem
-      description: A request from the request queue head without lock information.
-      type: object
-      required:
-      - id
-      - uniqueKey
-      - url
-      properties:
-        id:
-          $ref: '#/components/schemas/RequestId'
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-        url:
-          $ref: '#/components/schemas/RequestUrl'
-        method:
-          $ref: '#/components/schemas/RequestMethod'
-        retryCount:
-          $ref: '#/components/schemas/RetryCount'
-    RequestId:
-      type: string
-      description: A unique identifier assigned to the request.
-      examples:
-      - sbJ7klsdf7ujN9l
-    LockedRequestQueueHead:
-      title: LockedRequestQueueHead
-      description: A batch of locked requests from the request queue head.
-      type: object
-      required:
-      - limit
-      - queueModifiedAt
-      - hadMultipleClients
-      - lockSecs
-      - items
-      properties:
-        limit:
-          $ref: '#/components/schemas/HeadLimit'
-        queueModifiedAt:
-          $ref: '#/components/schemas/QueueModifiedAt'
-        queueHasLockedRequests:
-          type: boolean
-          description: Whether the request queue contains requests locked by any client (either the one calling the endpoint or a different one).
-          examples:
-          - true
-        clientKey:
-          type: string
-          description: The client key used for locking the requests.
-          examples:
-          - client-one
-        hadMultipleClients:
-          $ref: '#/components/schemas/HadMultipleClients'
-        lockSecs:
-          type: integer
-          description: The number of seconds the locks will be held.
-          examples:
-          - 60
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/LockedRequestQueueHeadItem'
-          description: The array of locked requests from the request queue head.
-    LockedRequestQueueHeadResponse:
-      title: LockedRequestQueueHeadResponse
-      description: Response containing locked requests from the request queue head.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/LockedRequestQueueHead'
-      example:
-        data:
-          limit: 3
-          queueModifiedAt: '2018-03-14T23:00:00.000Z'
-          hadMultipleClients: true
-          lockSecs: 60
-          items:
-          - id: 8OamqXBCpPHxyj9
-            retryCount: 0
-            uniqueKey: http://example.com
-            url: http://example.com
-            method: GET
-            lockExpiresAt: '2022-06-14T23:00:00.000Z'
-          - id: 8OamqXBCpPHxyx9
-            retryCount: 0
-            uniqueKey: http://example.com/a
-            url: http://example.com/a
-            method: GET
-            lockExpiresAt: '2022-06-14T23:00:00.000Z'
-          - id: 8OamqXBCpPHxy08
-            retryCount: 0
-            uniqueKey: http://example.com/a/b
-            url: http://example.com/a/b
-            method: GET
-            lockExpiresAt: '2022-06-14T23:00:00.000Z'
-    RequestMethod:
-      description: The HTTP method of the request.
-      $ref: '#/components/schemas/HttpMethod'
     UnlockRequestsResult:
       title: UnlockRequestsResult
       description: Result of unlocking requests in the request queue.
@@ -1145,50 +1096,112 @@ components:
           description: Number of requests that were successfully unlocked.
           examples:
           - 10
+    UniqueKey:
+      type: string
+      description: A unique key used for request de-duplication. Requests with the same unique key are considered identical.
+      examples:
+      - GET|60d83e70|e3b0c442|https://apify.com
     HeadLimit:
       type: integer
       description: The maximum number of requests returned.
       examples:
       - 1000
-    RequestQueueHeadResponse:
-      title: RequestQueueHeadResponse
-      description: Response containing requests from the request queue head without locking.
-      required:
-      - data
+    RequestLockInfo:
+      title: RequestLockInfo
+      description: Information about a request lock.
       type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestQueueHead'
-      example:
-        data:
-          limit: 1000
-          queueModifiedAt: '2018-03-14T23:00:00.000Z'
-          hadMultipleClients: false
-          items:
-          - id: 8OamqXBCpPHxyH9
-            retryCount: 0
-            uniqueKey: http://example.com
-            url: http://example.com
-            method: GET
-          - id: ZJAoqlRijenMQIn
-            retryCount: 0
-            uniqueKey: http://example.com/a/b
-            url: http://example.com/a/b
-            method: GET
-          - id: hAhkwyk5oOBHKQC
-            retryCount: 1
-            uniqueKey: http://example.com/c/d
-            url: http://example.com/c/d
-            method: GET
-    ErrorResponse:
-      title: ErrorResponse
       required:
-      - error
-      type: object
+      - lockExpiresAt
       properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
+        lockExpiresAt:
+          $ref: '#/components/schemas/LockExpiresAt'
+  responses:
+    NoContent:
+      description: No content
+    PaymentRequired:
+      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: x402-payment-required
+              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
   parameters:
+    lockForefront:
+      name: forefront
+      in: query
+      description: 'Determines if request should be added to the head of the queue or to the
+
+        end after lock expires.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 'false'
     headLockLimit:
       name: limit
       in: query
@@ -1218,40 +1231,6 @@ components:
       schema:
         type: string
         example: WkzbQMuFYuamGv3YF
-    headLimit:
-      name: limit
-      in: query
-      description: How many items from queue should be returned.
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 100
-    lockForefront:
-      name: forefront
-      in: query
-      description: 'Determines if request should be added to the head of the queue or to the
-
-        end after lock expires.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 'false'
-    lockSecs:
-      name: lockSecs
-      in: query
-      description: How long the requests will be locked for (in seconds).
-      required: true
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 60
     clientKey:
       name: clientKey
       in: query
@@ -1275,6 +1254,17 @@ components:
       schema:
         type: string
         example: client-abc
+    lockSecs:
+      name: lockSecs
+      in: query
+      description: How long the requests will be locked for (in seconds).
+      required: true
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 60
     deleteForefront:
       name: forefront
       in: query
@@ -1288,6 +1278,16 @@ components:
       schema:
         type: string
         example: 'false'
+    headLimit:
+      name: limit
+      in: query
+      description: How many items from queue should be returned.
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 100
   securitySchemes:
     httpBearer:
       type: http

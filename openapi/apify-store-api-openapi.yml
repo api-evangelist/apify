@@ -355,48 +355,96 @@ paths:
       - https://docs.apify.com/api/v2#/reference/store/get-list-of-actors-in-store
       - https://docs.apify.com/api/v2#tag/StoreStore-Actors-collection/operation/store_get
 components:
-  responses:
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
   schemas:
+    CurrentPricingInfo:
+      title: CurrentPricingInfo
+      required:
+      - pricingModel
+      type: object
+      properties:
+        pricingModel:
+          type: string
+          examples:
+          - FREE
+        apifyMarginPercentage:
+          type: number
+          examples:
+          - 0.2
+          description: 'Apify''s share of the revenue generated under this pricing info record, as a fraction between 0 and 1. Set by the Apify platform.
+
+            '
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2023-01-01T00:00:00.000Z'
+        startedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2023-01-01T00:00:00.000Z'
+        notifiedAboutChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - null
+        notifiedAboutFutureChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - null
+        isPriceChangeNotificationSuppressed:
+          type: boolean
+          examples:
+          - false
+        forceContainsSignificantPriceChange:
+          type: boolean
+          examples:
+          - false
+        isPPEPlatformUsagePaidByUser:
+          type: boolean
+          examples:
+          - false
+        reasonForChange:
+          type:
+          - string
+          - 'null'
+          examples:
+          - null
+        trialMinutes:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - null
+        unitName:
+          type:
+          - string
+          - 'null'
+          examples:
+          - null
+        pricePerUnitUsd:
+          type:
+          - number
+          - 'null'
+          examples:
+          - null
+        minimalMaxTotalChargeUsd:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.5
+        pricingPerEvent:
+          type:
+          - object
+          - 'null'
+          description: Per-event pricing configuration for pay-per-event Actors.
+          additionalProperties: true
     ListOfStoreActors:
       title: ListOfStoreActors
       allOf:
@@ -409,28 +457,67 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/StoreActor'
-    ActorNotice:
-      title: ActorNotice
-      type:
-      - string
-      - 'null'
-      description: A warning displayed on the Actor's page in Apify Store and Console. Can be set by the Actor's developer or automatically by Apify's quality checks.
-      enum:
-      - NONE
-      - RESIDENTIAL_PROXY_REQUIRED
-      - UNDER_MAINTENANCE
-      - null
-      examples:
-      - UNDER_MAINTENANCE
-    ErrorDetail:
-      title: ErrorDetail
+    ListOfStoreActorsResponse:
+      title: ListOfStoreActorsResponse
+      required:
+      - data
       type: object
       properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
+        data:
+          $ref: '#/components/schemas/ListOfStoreActors'
+      example:
+        data:
+          total: 100
+          offset: 0
+          limit: 1000
+          desc: false
+          count: 1
+          items:
+          - id: zdc3Pyhyz3m8vjDeM
+            title: My Public Actor
+            name: my-public-actor
+            username: jane35
+            userFullName: Jane Doe
+            description: My public Actor!
+            pictureUrl: https://...
+            userPictureUrl: https://...
+            url: https://...
+            stats:
+              totalBuilds: 9
+              totalRuns: 16
+              totalUsers: 6
+              totalUsers7Days: 2
+              totalUsers30Days: 6
+              totalUsers90Days: 6
+              totalMetamorphs: 2
+              lastRunStartedAt: '2019-07-08T14:01:05.546Z'
+            currentPricingInfo:
+              pricingModel: FREE
+            isWhiteListedForAgenticPayments: true
+          - id: zdc3Pyhyz3m8vjDeM
+            title: My Public Actor
+            name: my-public-actor
+            username: jane35
+            userFullName: Jane H. Doe
+            categories:
+            - MARKETING
+            - LEAD_GENERATION
+            description: My public Actor!
+            pictureUrl: https://...
+            userPictureUrl: https://...
+            url: https://...
+            stats:
+              totalBuilds: 9
+              totalRuns: 16
+              totalUsers: 6
+              totalUsers7Days: 2
+              totalUsers30Days: 6
+              totalUsers90Days: 6
+              totalMetamorphs: 2
+              lastRunStartedAt: '2019-07-08T14:01:05.546Z'
+            currentPricingInfo:
+              pricingModel: FREE
+            isWhiteListedForAgenticPayments: false
     StoreActor:
       title: StoreActor
       required:
@@ -528,67 +615,100 @@ components:
         readmeSummary:
           type: string
           description: A brief, LLM-generated readme summary
-    ListOfStoreActorsResponse:
-      title: ListOfStoreActorsResponse
-      required:
-      - data
+    ActorStats:
+      title: ActorStats
       type: object
+      description: Usage statistics and Apify Store metrics for the Actor.
       properties:
-        data:
-          $ref: '#/components/schemas/ListOfStoreActors'
-      example:
-        data:
-          total: 100
-          offset: 0
-          limit: 1000
-          desc: false
-          count: 1
-          items:
-          - id: zdc3Pyhyz3m8vjDeM
-            title: My Public Actor
-            name: my-public-actor
-            username: jane35
-            userFullName: Jane Doe
-            description: My public Actor!
-            pictureUrl: https://...
-            userPictureUrl: https://...
-            url: https://...
-            stats:
-              totalBuilds: 9
-              totalRuns: 16
-              totalUsers: 6
-              totalUsers7Days: 2
-              totalUsers30Days: 6
-              totalUsers90Days: 6
-              totalMetamorphs: 2
-              lastRunStartedAt: '2019-07-08T14:01:05.546Z'
-            currentPricingInfo:
-              pricingModel: FREE
-            isWhiteListedForAgenticPayments: true
-          - id: zdc3Pyhyz3m8vjDeM
-            title: My Public Actor
-            name: my-public-actor
-            username: jane35
-            userFullName: Jane H. Doe
-            categories:
-            - MARKETING
-            - LEAD_GENERATION
-            description: My public Actor!
-            pictureUrl: https://...
-            userPictureUrl: https://...
-            url: https://...
-            stats:
-              totalBuilds: 9
-              totalRuns: 16
-              totalUsers: 6
-              totalUsers7Days: 2
-              totalUsers30Days: 6
-              totalUsers90Days: 6
-              totalMetamorphs: 2
-              lastRunStartedAt: '2019-07-08T14:01:05.546Z'
-            currentPricingInfo:
-              pricingModel: FREE
-            isWhiteListedForAgenticPayments: false
+        totalBuilds:
+          type: integer
+          examples:
+          - 9
+          description: The total number of builds of the Actor.
+        totalRuns:
+          type: integer
+          examples:
+          - 16
+          description: The total number of runs of the Actor.
+        totalUsers:
+          type: integer
+          examples:
+          - 6
+          description: The total number of Actor users, including its owner.
+        totalUsers7Days:
+          type: integer
+          examples:
+          - 2
+          description: The number of active users of the Actor in the last 7 days.
+        totalUsers30Days:
+          type: integer
+          examples:
+          - 6
+          description: The number of active users of the Actor in the last 30 days.
+        totalUsers90Days:
+          type: integer
+          examples:
+          - 6
+          description: The number of active users of the Actor in the last 90 days.
+        totalMetamorphs:
+          type: integer
+          examples:
+          - 2
+          description: The total number of times a run of another Actor was [metamorphed](https://docs.apify.com/platform/actors/development/programming-interface/metamorph) into this Actor.
+        lastRunStartedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-07-08T14:01:05.546Z'
+          description: The date and time the most recent run of the Actor started.
+        actorReviewCount:
+          type: integer
+          examples:
+          - 69
+          description: The number of reviews the Actor has received in Apify Store.
+        actorReviewRating:
+          type: number
+          examples:
+          - 4.7
+          description: The average rating of the Actor in Apify Store.
+        bookmarkCount:
+          type: integer
+          examples:
+          - 1269
+          description: The number of users who bookmarked the Actor in Apify Store.
+        publicActorRunStats30Days:
+          type: object
+          description: 'Run status counts from the last 30 days. Only for public Actors.
+
+            Excludes runs started by the Actor''s owner.
+
+            '
+          properties:
+            ABORTED:
+              type: integer
+              examples:
+              - 2542
+              description: The number of runs that were aborted.
+            FAILED:
+              type: integer
+              examples:
+              - 1234
+              description: The number of runs that failed.
+            SUCCEEDED:
+              type: integer
+              examples:
+              - 732805
+              description: The number of runs that succeeded.
+            TIMED-OUT:
+              type: integer
+              examples:
+              - 12556
+              description: The number of runs that timed out.
+            TOTAL:
+              type: integer
+              examples:
+              - 749137
+              description: The total number of runs.
     ErrorType:
       title: ErrorType
       type: string
@@ -989,95 +1109,19 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    CurrentPricingInfo:
-      title: CurrentPricingInfo
-      required:
-      - pricingModel
-      type: object
-      properties:
-        pricingModel:
-          type: string
-          examples:
-          - FREE
-        apifyMarginPercentage:
-          type: number
-          examples:
-          - 0.2
-          description: 'Apify''s share of the revenue generated under this pricing info record, as a fraction between 0 and 1. Set by the Apify platform.
-
-            '
-        createdAt:
-          type: string
-          format: date-time
-          examples:
-          - '2023-01-01T00:00:00.000Z'
-        startedAt:
-          type: string
-          format: date-time
-          examples:
-          - '2023-01-01T00:00:00.000Z'
-        notifiedAboutChangeAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          examples:
-          - null
-        notifiedAboutFutureChangeAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          examples:
-          - null
-        isPriceChangeNotificationSuppressed:
-          type: boolean
-          examples:
-          - false
-        forceContainsSignificantPriceChange:
-          type: boolean
-          examples:
-          - false
-        isPPEPlatformUsagePaidByUser:
-          type: boolean
-          examples:
-          - false
-        reasonForChange:
-          type:
-          - string
-          - 'null'
-          examples:
-          - null
-        trialMinutes:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - null
-        unitName:
-          type:
-          - string
-          - 'null'
-          examples:
-          - null
-        pricePerUnitUsd:
-          type:
-          - number
-          - 'null'
-          examples:
-          - null
-        minimalMaxTotalChargeUsd:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.5
-        pricingPerEvent:
-          type:
-          - object
-          - 'null'
-          description: Per-event pricing configuration for pay-per-event Actors.
-          additionalProperties: true
+    ActorNotice:
+      title: ActorNotice
+      type:
+      - string
+      - 'null'
+      description: A warning displayed on the Actor's page in Apify Store and Console. Can be set by the Actor's developer or automatically by Apify's quality checks.
+      enum:
+      - NONE
+      - RESIDENTIAL_PROXY_REQUIRED
+      - UNDER_MAINTENANCE
+      - null
+      examples:
+      - UNDER_MAINTENANCE
     PaginationResponse:
       title: PaginationResponse
       description: Common pagination fields for list responses.
@@ -1118,100 +1162,15 @@ components:
           minimum: 0
           examples:
           - 1
-    ActorStats:
-      title: ActorStats
+    ErrorDetail:
+      title: ErrorDetail
       type: object
-      description: Usage statistics and Apify Store metrics for the Actor.
       properties:
-        totalBuilds:
-          type: integer
-          examples:
-          - 9
-          description: The total number of builds of the Actor.
-        totalRuns:
-          type: integer
-          examples:
-          - 16
-          description: The total number of runs of the Actor.
-        totalUsers:
-          type: integer
-          examples:
-          - 6
-          description: The total number of Actor users, including its owner.
-        totalUsers7Days:
-          type: integer
-          examples:
-          - 2
-          description: The number of active users of the Actor in the last 7 days.
-        totalUsers30Days:
-          type: integer
-          examples:
-          - 6
-          description: The number of active users of the Actor in the last 30 days.
-        totalUsers90Days:
-          type: integer
-          examples:
-          - 6
-          description: The number of active users of the Actor in the last 90 days.
-        totalMetamorphs:
-          type: integer
-          examples:
-          - 2
-          description: The total number of times a run of another Actor was [metamorphed](https://docs.apify.com/platform/actors/development/programming-interface/metamorph) into this Actor.
-        lastRunStartedAt:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
           type: string
-          format: date-time
-          examples:
-          - '2019-07-08T14:01:05.546Z'
-          description: The date and time the most recent run of the Actor started.
-        actorReviewCount:
-          type: integer
-          examples:
-          - 69
-          description: The number of reviews the Actor has received in Apify Store.
-        actorReviewRating:
-          type: number
-          examples:
-          - 4.7
-          description: The average rating of the Actor in Apify Store.
-        bookmarkCount:
-          type: integer
-          examples:
-          - 1269
-          description: The number of users who bookmarked the Actor in Apify Store.
-        publicActorRunStats30Days:
-          type: object
-          description: 'Run status counts from the last 30 days. Only for public Actors.
-
-            Excludes runs started by the Actor''s owner.
-
-            '
-          properties:
-            ABORTED:
-              type: integer
-              examples:
-              - 2542
-              description: The number of runs that were aborted.
-            FAILED:
-              type: integer
-              examples:
-              - 1234
-              description: The number of runs that failed.
-            SUCCEEDED:
-              type: integer
-              examples:
-              - 732805
-              description: The number of runs that succeeded.
-            TIMED-OUT:
-              type: integer
-              examples:
-              - 12556
-              description: The number of runs that timed out.
-            TOTAL:
-              type: integer
-              examples:
-              - 749137
-              description: The total number of runs.
+          description: Human-readable error message describing what went wrong.
     ErrorResponse:
       title: ErrorResponse
       required:
@@ -1220,19 +1179,48 @@ components:
       properties:
         error:
           $ref: '#/components/schemas/ErrorDetail'
+  responses:
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
   parameters:
-    limit:
-      name: limit
-      in: query
-      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 1000
     offset:
       name: offset
       in: query
@@ -1245,6 +1233,18 @@ components:
         type: number
         format: double
         example: 0
+    limit:
+      name: limit
+      in: query
+      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 1000
   securitySchemes:
     httpBearer:
       type: http

@@ -1277,1464 +1277,22 @@ paths:
       - https://docs.apify.com/api/v2#/reference/actors/metamorph-run
       - https://docs.apify.com/api/v2#tag/ActorsMetamorph-run/operation/act_run_metamorph_post
 components:
-  responses:
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    PaymentRequired:
-      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: x402-payment-required
-              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    Timeout:
-      description: The HTTP request exceeded the timeout limit
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: run-timeout-exceeded
-              message: Actor run exceeded the timeout of 300 seconds for this API endpoint
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    UnsupportedMediaType:
-      description: Unsupported media type - the Content-Encoding of the request is not supported.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: unsupported-content-encoding
-              message: Content-Encoding "bla" is not supported.
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    PayloadTooLarge:
-      description: Payload too large - the request body exceeds the size limit.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: request-too-large
-              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
-  parameters:
-    bom:
-      name: bom
-      in: query
-      description: 'All text responses are encoded in UTF-8 encoding. By default, the
-
-        `format=csv` files are prefixed with the UTF-8 Byte Order Mark (BOM), while `json`, `jsonl`, `xml`, `html` and `rss` files are not.
-
-
-        If you want to override this default behavior, specify `bom=1` query parameter to include the BOM or `bom=0` to skip it.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    targetActorId:
-      name: targetActorId
-      in: query
-      description: ID of a target Actor that the run should be transformed into.
-      required: true
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: HDSasDasz78YcAPEB
-    maxTotalChargeUsd:
-      name: maxTotalChargeUsd
-      in: query
-      required: false
-      description: 'Specifies the maximum total cost of the run.
-
-        Use it to cap the total amount charged for all pricing models.
-
-        You can access the maximum cost in your Actor
-
-        by using the `ACTOR_MAX_TOTAL_CHARGE_USD` environment variable.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 5
-    limit:
-      name: limit
-      in: query
-      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 1000
-    status-2:
-      name: status
-      in: query
-      description: Filter for the run status.
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: SUCCEEDED
-    outputRecordKey:
-      name: outputRecordKey
-      in: query
-      description: 'Key of the record from the run''s default key-value store to return in the
-
-        response. Defaults to `OUTPUT`. Actors aren''t required to store a record
-
-        under this key, so if it doesn''t exist the response contains no data.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: OUTPUT
-    restartOnErrorResurrect:
-      name: restartOnError
-      in: query
-      description: 'Determines whether the resurrected run will be restarted if it fails.
-
-        By default, the resurrected run uses the same setting as before.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    clean:
-      name: clean
-      in: query
-      description: 'If `true` or `1` then the API endpoint returns only non-empty items and skips hidden fields (i.e. fields starting with the # character).
-
-        The `clean` parameter is just a shortcut for `skipHidden=true` and `skipEmpty=true` parameters.
-
-        Note that since some objects might be skipped from the output, that the result might contain less items than the `limit` value.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    skipEmpty:
-      name: skipEmpty
-      in: query
-      description: 'If `true` or `1` then empty items are skipped from the output.
-
-
-        Note that if used, the results might contain less items than the limit value.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    view:
-      name: view
-      in: query
-      description: 'Defines the view configuration for dataset items based on the schema definition.
-
-        This parameter determines how the data will be filtered and presented.
-
-        For complete specification details, see the [dataset schema documentation](/storage/dataset-schema).
-
-        '
-      schema:
-        type: string
-        example: overview
-    skipHeaderRow:
-      name: skipHeaderRow
-      in: query
-      description: If `true` or `1` then header row in the `csv` format is skipped.
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: true
-    status:
-      name: status
-      in: query
-      description: 'Single status or comma-separated list of statuses, see ([available
-
-        statuses](https://docs.apify.com/platform/actors/running/runs-and-builds#lifecycle)). Used to filter runs by the specified statuses only.
-
-        '
-      style: form
-      explode: false
-      schema:
-        type: array
-        items:
-          type: string
-        example:
-        - SUCCEEDED
-    omit:
-      name: omit
-      in: query
-      description: A comma-separated list of fields which should be omitted from the items.
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: myValue,myOtherValue
-    runId:
-      name: runId
-      in: path
-      description: Actor run ID.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: 3KH8gEpp4d8uQSe8T
-    skipFailedPages:
-      name: skipFailedPages
-      in: query
-      description: 'If `true` or `1` then, the all the items with errorInfo property will be skipped from the output.
-
-
-        This feature is here to emulate functionality of API version 1 used for the legacy Apify Crawler product and it''s not recommended to use it in new integrations.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    feedTitle:
-      name: feedTitle
-      in: query
-      description: 'Overrides the auto-generated RSS channel `<title>` element.
-
-        Only used when `format=rss`. If not provided, the title defaults to `Dataset <label>`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: Latest posts from r/pasta
-    format:
-      name: format
-      in: query
-      description: 'Format of the results, possible values are: `json`, `jsonl`, `csv`, `html`, `xlsx`, `xml` and `rss`. The default value is `json`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: json
-    waitForFinishRun:
-      name: waitForFinish
-      in: query
-      description: 'The maximum number of seconds the server waits for the run to finish. By
-
-        default it is `0`, the maximum value is `60`. <!-- MAX_ACTOR_JOB_ASYNC_WAIT_SECS -->
-
-        If the run finishes in time then the returned run object will have a terminal status (e.g. `SUCCEEDED`),
-
-        otherwise it will have a transitional status (e.g. `RUNNING`).
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 60
-    feedDescription:
-      name: feedDescription
-      in: query
-      description: 'Overrides the auto-generated RSS channel `<description>` element.
-
-        Only used when `format=rss`. If not provided, the description defaults to `Items in dataset with id "<datasetId>".`
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: Scraped forum posts
-    restartOnError:
-      name: restartOnError
-      in: query
-      description: 'Determines whether the run will be restarted if it fails.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    maxItems:
-      name: maxItems
-      in: query
-      required: false
-      description: 'Specifies the maximum number of dataset items that will be charged for pay-per-result Actors.
-
-        This does NOT guarantee that the Actor will return only this many items.
-
-        It only ensures you won''t be charged for more than this number of items.
-
-        Only works for pay-per-result Actors.
-
-        Value can be accessed in the actor run using `ACTOR_MAX_PAID_DATASET_ITEMS` environment variable.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 1000
-    buildResurrect:
-      name: build
-      in: query
-      description: 'Specifies the Actor build to run. It can be either a build tag or build number.
-
-        By default, the run is resurrected with the same build it originally used. Specifically,
-
-        if a run was first started with the `latest` tag, which resolves to version `0.0.3` at the
-
-        time, a run resurrected without this parameter will continue running with `0.0.3`, even if
-
-        `latest` already points to a newer build.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 0.1.234
-    descDataset:
-      name: desc
-      in: query
-      description: 'By default, results are returned in the same order as they were stored.
-
-        To reverse the order, set this parameter to `true` or `1`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: true
-    gracefully:
-      name: gracefully
-      in: query
-      description: 'If true passed, the Actor run will abort gracefully.
-
-        It will send `aborting` and `persistState` event into run and force-stop the run after 30 seconds.
-
-        It is helpful in cases where you plan to resurrect the run later.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: true
-    xmlRoot:
-      name: xmlRoot
-      in: query
-      description: 'Overrides default root element name of `xml` output. By default the root element is `items`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: items
-    flatten:
-      name: flatten
-      in: query
-      description: 'A comma-separated list of fields which should transform nested objects into flat structures.
-
-
-        For example, with `flatten="foo"` the object `{"foo":{"bar": "hello"}}` is turned into `{"foo.bar": "hello"}`.
-
-
-        The original object with properties is replaced with the flattened object.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: myValue
-    descStartedAt:
-      name: desc
-      in: query
-      description: 'If `true` or `1` then the objects are sorted by the `startedAt` field in
-
-        descending order. By default, they are sorted in ascending order.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: true
-    fields:
-      name: fields
-      in: query
-      description: 'A comma-separated list of fields which should be picked from the items, only these fields will remain in the resulting record objects.
-
-        Note that the fields in the outputted items are sorted the same way as they are specified in the `fields` query parameter.
-
-        You can use this feature to effectively fix the output format.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: myValue,myOtherValue
-    memoryResurrect:
-      name: memory
-      in: query
-      description: 'Memory limit for the run, in megabytes. The amount of memory can be set to a power of 2
-
-        with a minimum of 128. By default, the run uses the memory limit specified in the run
-
-        that is being resurrected.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 256
-    outputFields:
-      name: outputFields
-      in: query
-      description: 'A comma-separated list of output field names that positionally rename the fields specified in the `fields` parameter.
-
-        For example, `?fields=headline,url&outputFields=title,link` renames `headline` to `title` and `url` to `link` in the output.
-
-        The number of names in `outputFields` must match the number of names in `fields`.
-
-        Requires the `fields` parameter to be specified as well.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: title,link
-    xmlRow:
-      name: xmlRow
-      in: query
-      description: 'Overrides default element name that wraps each page or page function result object in `xml` output. By default the element name is `item`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: item
-    startedBefore:
-      name: startedBefore
-      in: query
-      description: 'Filter runs that started before the specified date and time (inclusive).
-
-        The value must be a valid ISO 8601 datetime string (UTC).
-
-        '
-      style: form
-      explode: true
-      allowReserved: true
-      schema:
-        type: string
-        format: date-time
-        example: '2025-09-17T23:59:59.000Z'
-    origin:
-      name: origin
-      in: query
-      description: Filter for the run origin, i.e. the means by which the run was started.
-      style: form
-      explode: true
-      schema:
-        $ref: '#/components/schemas/RunOrigin'
-    build:
-      name: build
-      in: query
-      description: 'Specifies the Actor build to run. It can be either a build tag or build number.
-
-        By default, the run uses the build from its configuration (typically `latest`).
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 0.1.234
-    memory:
-      name: memory
-      in: query
-      description: 'Memory limit for the run, in megabytes. You can set the amount of memory to a power of 2 with a minimum of 128.
-
-        By default, the run uses the memory limit from its configuration. Don''t change this value unless the Actor''s
-
-        documentation recommends it or you''re aware of the consequences.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 256
-    attachment:
-      name: attachment
-      in: query
-      description: 'If `true` or `1` then the response will define the `Content-Disposition:
-
-        attachment` header, forcing a web browser to download the file rather
-
-        than to display it. By default this header is not present.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: true
-    simplified:
-      name: simplified
-      in: query
-      description: 'If `true` or `1` then, the endpoint applies the `fields=url,pageFunctionResult,errorInfo`
-
-        and `unwind=pageFunctionResult` query parameters. This feature is used to emulate simplified results provided by the
-
-        legacy Apify Crawler product and it''s not recommended to use it in new integrations.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    delimiter:
-      name: delimiter
-      in: query
-      description: 'A delimiter character for CSV files, only used if `format=csv`. You
-
-        might need to URL-encode the character (e.g. use `%09` for tab or `%3B`
-
-        for semicolon). The default delimiter is a simple comma (`,`).
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: ;
-    timeoutResurrect:
-      name: timeout
-      in: query
-      description: 'Optional timeout for the run, in seconds. By default, the run uses the timeout
-
-        specified in the run that is being resurrected.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 60
-    webhooks:
-      name: webhooks
-      in: query
-      description: 'Specifies optional webhooks associated with the Actor run, which can be used to receive a notification
-
-        e.g. when the Actor finished or failed. The value is a Base64-encoded JSON array whose items follow
-
-        the WebhookRepresentation schema. For more information, see
-
-        [Webhooks documentation](https://docs.apify.com/platform/integrations/webhooks).
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        contentEncoding: base64
-        contentMediaType: application/json
-        contentSchema:
-          type: array
-          items:
-            $ref: '#/components/schemas/WebhookRepresentation'
-        example: dGhpcyBpcyBqdXN0IGV4YW1wbGUK...
-    actorId:
-      name: actorId
-      in: path
-      description: Actor ID or the username of the Actor owner and the Actor name, separated by a tilde (`~`).
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: compass~google-maps-extractor
-    unwind:
-      name: unwind
-      in: query
-      description: 'A comma-separated list of fields which should be unwound, in order which they should be processed. Each field should be either an array or an object.
-
-        If the field is an array then every element of the array will become a separate record and merged with parent object.
-
-        If the unwound field is an object then it is merged with the parent object.
-
-        If the unwound field is missing or its value is neither an array nor an object and therefore cannot be merged with a parent object then the item gets preserved as it is.
-
-        Note that the unwound items ignore the `desc` parameter.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: myValue,myOtherValue
-    skipHidden:
-      name: skipHidden
-      in: query
-      description: 'If `true` or `1` then hidden fields are skipped from the output, i.e. fields starting with the `#` character.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    startedAfter:
-      name: startedAfter
-      in: query
-      description: 'Filter runs that started after the specified date and time (inclusive).
-
-        The value must be a valid ISO 8601 datetime string (UTC).
-
-        '
-      style: form
-      explode: true
-      allowReserved: true
-      schema:
-        type: string
-        format: date-time
-        example: '2025-09-01T00:00:00.000Z'
-    limit-2:
-      name: limit
-      in: query
-      description: Maximum number of items to return. By default there is no limit.
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-    offset:
-      name: offset
-      in: query
-      description: 'Number of items that should be skipped at the start. The default value is `0`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 0
-    timeout:
-      name: timeout
-      in: query
-      description: 'Optional timeout for the run, in seconds. By default, the run uses the timeout from its configuration.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 60
   schemas:
-    ActorRunPricingInfo:
-      title: ActorRunPricingInfo
-      discriminator:
-        propertyName: pricingModel
-        mapping:
-          PAY_PER_EVENT: '#/components/schemas/PayPerEventActorPricingInfo'
-          PRICE_PER_DATASET_ITEM: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
-          FLAT_PRICE_PER_MONTH: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
-          FREE: '#/components/schemas/FreeActorPricingInfo'
-      oneOf:
-      - $ref: '#/components/schemas/PayPerEventActorPricingInfo'
-      - $ref: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
-      - $ref: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
-      - $ref: '#/components/schemas/FreeActorPricingInfo'
-    RunUsage:
-      title: RunUsage
-      type: object
-      properties:
-        ACTOR_COMPUTE_UNITS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 3
-        DATASET_READS:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 4
-        DATASET_WRITES:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 4
-        KEY_VALUE_STORE_READS:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 5
-        KEY_VALUE_STORE_WRITES:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 3
-        KEY_VALUE_STORE_LISTS:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 5
-        REQUEST_QUEUE_READS:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 2
-        REQUEST_QUEUE_WRITES:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 1
-        DATA_TRANSFER_INTERNAL_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 1
-        DATA_TRANSFER_EXTERNAL_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 3
-        PROXY_RESIDENTIAL_TRANSFER_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 34
-        PROXY_SERPS:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 3
-    GeneralAccess:
-      title: GeneralAccess
+    RunOrigin:
+      title: RunOrigin
       type: string
       enum:
-      - ANYONE_WITH_ID_CAN_READ
-      - ANYONE_WITH_NAME_CAN_READ
-      - FOLLOW_USER_SETTING
-      - RESTRICTED
-      examples:
-      - RESTRICTED
-      description: Defines the general access level for the resource.
-    RunListItem:
-      title: RunListItem
-      required:
-      - id
-      - actId
-      - status
-      - startedAt
-      - buildId
-      - meta
-      - usageTotalUsd
-      - defaultKeyValueStoreId
-      - defaultDatasetId
-      - defaultRequestQueueId
-      type: object
-      properties:
-        id:
-          type: string
-          examples:
-          - HG7ML7M8z78YcAPEB
-        actId:
-          type: string
-          examples:
-          - HDSasDasz78YcAPEB
-        userId:
-          type: string
-          examples:
-          - 7sT5jcggjjA9fNcxF
-        actorTaskId:
-          type:
-          - string
-          - 'null'
-          examples:
-          - KJHSKHausidyaJKHs
-        status:
-          $ref: '#/components/schemas/ActorJobStatus'
-        startedAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-11-30T07:34:24.202Z'
-        finishedAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          examples:
-          - '2019-12-12T09:30:12.202Z'
-        buildId:
-          type: string
-          examples:
-          - HG7ML7M8z78YcAPEB
-        buildNumber:
-          type: string
-          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
-          examples:
-          - 0.0.2
-        buildNumberInt:
-          type: integer
-          examples:
-          - 10000
-        meta:
-          $ref: '#/components/schemas/RunMeta'
-        usageTotalUsd:
-          type: number
-          examples:
-          - 0.2
-        defaultKeyValueStoreId:
-          type: string
-          examples:
-          - sfAjeR4QmeJCQzTfe
-        defaultDatasetId:
-          type: string
-          examples:
-          - 3ZojQDdFTsyE7Moy4
-        defaultRequestQueueId:
-          type: string
-          examples:
-          - so93g2shcDzK3pA85
-    RunResponse:
-      title: RunResponse
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Run'
-    PayPerEventActorPricingInfo:
-      title: PayPerEventActorPricingInfo
-      allOf:
-      - $ref: '#/components/schemas/CommonActorPricingInfo'
-      - type: object
-        required:
-        - pricingModel
-        - pricingPerEvent
-        properties:
-          pricingModel:
-            type: string
-            const: PAY_PER_EVENT
-          pricingPerEvent:
-            type: object
-            properties:
-              actorChargeEvents:
-                type: object
-                additionalProperties:
-                  $ref: '#/components/schemas/ActorChargeEvent'
-          minimalMaxTotalChargeUsd:
-            type:
-            - number
-            - 'null'
-    RunUsageUsd:
-      title: RunUsageUsd
-      description: Resource usage costs in USD. All values are monetary amounts in US dollars.
-      type: object
-      properties:
-        ACTOR_COMPUTE_UNITS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0003
-        DATASET_READS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        DATASET_WRITES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        KEY_VALUE_STORE_READS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        KEY_VALUE_STORE_WRITES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 5.0e-05
-        KEY_VALUE_STORE_LISTS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        REQUEST_QUEUE_READS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        REQUEST_QUEUE_WRITES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        DATA_TRANSFER_INTERNAL_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.001
-        DATA_TRANSFER_EXTERNAL_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.003
-        PROXY_RESIDENTIAL_TRANSFER_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.034
-        PROXY_SERPS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.003
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
-    WebhookEventType:
-      title: WebhookEventType
-      type: string
-      enum:
-      - ACTOR.BUILD.ABORTED
-      - ACTOR.BUILD.CREATED
-      - ACTOR.BUILD.FAILED
-      - ACTOR.BUILD.SUCCEEDED
-      - ACTOR.BUILD.TIMED_OUT
-      - ACTOR.RUN.ABORTED
-      - ACTOR.RUN.CREATED
-      - ACTOR.RUN.FAILED
-      - ACTOR.RUN.RESURRECTED
-      - ACTOR.RUN.SUCCEEDED
-      - ACTOR.RUN.TIMED_OUT
+      - DEVELOPMENT
+      - WEB
+      - API
+      - SCHEDULER
       - TEST
-      description: Type of event that triggers the webhook.
-    ActorChargeEvent:
-      title: ActorChargeEvent
-      description: 'Definition of a single chargeable event for a pay-per-event Actor. Each event is either flat-priced
-
-        (`eventPriceUsd` is set) or tier-priced (`eventTieredPricingUsd` is set); the two are mutually exclusive.
-
-        '
-      type: object
-      required:
-      - eventTitle
-      - eventDescription
-      properties:
-        eventTitle:
-          type: string
-          description: Human-readable title shown to users in the billing UI.
-        eventDescription:
-          type: string
-          description: Human-readable description of what triggers this event.
-        eventPriceUsd:
-          type: number
-          description: 'Flat price per event in USD. Present only for non-tiered events. Mutually exclusive with `eventTieredPricingUsd`.
-
-            '
-        eventTieredPricingUsd:
-          $ref: '#/components/schemas/TieredPricingPerEvent'
-        isPrimaryEvent:
-          type: boolean
-          description: Whether this event is the Actor's primary chargeable event.
-        isOneTimeEvent:
-          type: boolean
-          description: Whether this event can only be charged once per Actor run.
-    TieredPricingPerDatasetItem:
-      title: TieredPricingPerDatasetItem
-      description: 'Tiered price-per-dataset-item pricing, keyed by subscription tier (e.g. `FREE`, `BRONZE`, `SILVER`, `GOLD`,
-
-        `PLATINUM`, `DIAMOND`). The actual price applied to a run is resolved from the user''s tier.
-
-        '
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/TieredPricingPerDatasetItemEntry'
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
-    CommonActorPricingInfo:
-      title: CommonActorPricingInfo
-      type: object
-      required:
-      - apifyMarginPercentage
-      - createdAt
-      - startedAt
-      properties:
-        apifyMarginPercentage:
-          type: number
-          examples:
-          - 0.2
-          description: 'Apify''s share of the revenue generated under this pricing info record, as a fraction between 0 and 1. Set by the Apify platform.
-
-            '
-        createdAt:
-          type: string
-          format: date-time
-          description: When this pricing info record has been created
-        startedAt:
-          type: string
-          format: date-time
-          description: Since when is this pricing info record effective for a given Actor
-        notifiedAboutFutureChangeAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          x-internal: true
-        notifiedAboutChangeAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          x-internal: true
-        reasonForChange:
-          type:
-          - string
-          - 'null'
-          x-internal: true
-        isPriceChangeNotificationSuppressed:
-          type: boolean
-          x-internal: true
-        forceContainsSignificantPriceChange:
-          type: boolean
-          x-internal: true
-    ActorJobStatus:
-      title: ActorJobStatus
-      type: string
-      enum:
-      - READY
-      - RUNNING
-      - SUCCEEDED
-      - FAILED
-      - TIMING-OUT
-      - TIMED-OUT
-      - ABORTING
-      - ABORTED
-      description: Status of an Actor job (run or build).
-    RunMetamorphEvent:
-      title: RunMetamorphEvent
-      description: Information about a metamorph event that occurred during the run.
-      type: object
-      required:
-      - createdAt
-      - actorId
-      - buildId
-      properties:
-        createdAt:
-          type: string
-          format: date-time
-          description: Time when the metamorph occurred.
-          examples:
-          - '2019-11-30T07:39:24.202Z'
-        actorId:
-          type: string
-          description: ID of the Actor that the run was metamorphed to.
-          examples:
-          - nspoEjklmnsF2oosD
-        buildId:
-          type: string
-          description: ID of the build used for the metamorphed Actor.
-          examples:
-          - ME6oKecqy5kXDS4KQ
-        inputKey:
-          type:
-          - string
-          - 'null'
-          description: Key of the input record in the key-value store.
-          examples:
-          - INPUT-METAMORPH-1
-    ListOfRunsResponse:
-      title: ListOfRunsResponse
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ListOfRuns'
-    FlatPricePerMonthActorPricingInfo:
-      title: FlatPricePerMonthActorPricingInfo
-      allOf:
-      - $ref: '#/components/schemas/CommonActorPricingInfo'
-      - type: object
-        required:
-        - pricingModel
-        - pricePerUnitUsd
-        - trialMinutes
-        properties:
-          pricingModel:
-            type: string
-            const: FLAT_PRICE_PER_MONTH
-          trialMinutes:
-            type: integer
-            description: For how long this Actor can be used for free in trial period
-          pricePerUnitUsd:
-            type: number
-            description: Monthly flat price in USD
-    ListOfRuns:
-      title: ListOfRuns
-      allOf:
-      - $ref: '#/components/schemas/PaginationResponse'
-      - type: object
-        required:
-        - items
-        properties:
-          items:
-            type: array
-            items:
-              $ref: '#/components/schemas/RunListItem'
-    Run:
-      title: Run
-      description: Represents an Actor run and its associated data.
-      required:
-      - id
-      - actId
-      - userId
-      - startedAt
-      - status
-      - meta
-      - stats
-      - options
-      - buildId
-      - defaultKeyValueStoreId
-      - defaultDatasetId
-      - defaultRequestQueueId
-      type: object
-      properties:
-        id:
-          type: string
-          examples:
-          - HG7ML7M8z78YcAPEB
-          description: Unique identifier of the Actor run.
-        actId:
-          type: string
-          examples:
-          - HDSasDasz78YcAPEB
-          description: ID of the Actor that was run.
-        userId:
-          type: string
-          examples:
-          - 7sT5jcggjjA9fNcxF
-          description: ID of the user who started the run.
-        actorTaskId:
-          type:
-          - string
-          - 'null'
-          examples:
-          - KJHSKHausidyaJKHs
-          description: ID of the Actor task, if the run was started from a task.
-        startedAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-11-30T07:34:24.202Z'
-          description: Time when the Actor run started.
-        finishedAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          examples:
-          - '2019-12-12T09:30:12.202Z'
-          description: Time when the Actor run finished.
-        status:
-          description: Current status of the Actor run.
-          $ref: '#/components/schemas/ActorJobStatus'
-        statusMessage:
-          type:
-          - string
-          - 'null'
-          examples:
-          - Actor is running
-          description: Detailed message about the run status.
-        isStatusMessageTerminal:
-          type:
-          - boolean
-          - 'null'
-          examples:
-          - false
-          description: Whether the status message is terminal (final).
-        meta:
-          description: Metadata about the Actor run.
-          $ref: '#/components/schemas/RunMeta'
-        pricingInfo:
-          description: Pricing information for the Actor.
-          $ref: '#/components/schemas/ActorRunPricingInfo'
-        stats:
-          description: Statistics of the Actor run.
-          $ref: '#/components/schemas/RunStats'
-        chargedEventCounts:
-          description: A map of charged event types to their counts. The keys are event type identifiers defined by the Actor's pricing model (pay-per-event), and the values are the number of times each event was charged during this run.
-          type: object
-          additionalProperties:
-            type: integer
-          example:
-            actor-start: 1
-            page-crawled: 150
-            data-extracted: 75
-        options:
-          description: Configuration options for the Actor run.
-          $ref: '#/components/schemas/RunOptions'
-        buildId:
-          type: string
-          examples:
-          - 7sT5jcggjjA9fNcxF
-          description: ID of the Actor build used for this run.
-        exitCode:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 0
-          description: Exit code of the Actor run process.
-        generalAccess:
-          description: General access level for the Actor run.
-          anyOf:
-          - $ref: '#/components/schemas/GeneralAccess'
-          - type: 'null'
-        defaultKeyValueStoreId:
-          type: string
-          examples:
-          - eJNzqsbPiopwJcgGQ
-          description: ID of the default key-value store for this run.
-        defaultDatasetId:
-          type: string
-          examples:
-          - wmKPijuyDnPZAPRMk
-          description: ID of the default dataset for this run.
-        defaultRequestQueueId:
-          type: string
-          examples:
-          - FL35cSF7jrxr3BY39
-          description: ID of the default request queue for this run.
-        storageIds:
-          type: object
-          description: A map of aliased storage IDs associated with this run, grouped by storage type.
-          properties:
-            datasets:
-              type: object
-              description: Aliased dataset IDs for this run.
-              properties:
-                default:
-                  type: string
-                  description: ID of the default dataset for this run.
-                  example: wmKPijuyDnPZAPRMk
-              additionalProperties:
-                type: string
-            keyValueStores:
-              type: object
-              description: Aliased key-value store IDs for this run.
-              properties:
-                default:
-                  type: string
-                  description: ID of the default key-value store for this run.
-                  example: eJNzqsbPiopwJcgGQ
-              additionalProperties:
-                type: string
-            requestQueues:
-              type: object
-              description: Aliased request queue IDs for this run.
-              properties:
-                default:
-                  type: string
-                  description: ID of the default request queue for this run.
-                  example: FL35cSF7jrxr3BY39
-              additionalProperties:
-                type: string
-        buildNumber:
-          type:
-          - string
-          - 'null'
-          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
-          examples:
-          - 0.0.36
-          description: Build number of the Actor build used for this run.
-        containerUrl:
-          type: string
-          format: uri
-          examples:
-          - https://g8kd8kbc5ge8.runs.apify.net
-          description: URL of the container running the Actor.
-        isContainerServerReady:
-          type:
-          - boolean
-          - 'null'
-          examples:
-          - true
-          description: Whether the container's HTTP server is ready to accept requests.
-        gitBranchName:
-          type:
-          - string
-          - 'null'
-          examples:
-          - master
-          description: Name of the git branch used for the Actor build.
-        usage:
-          description: Resource usage statistics for the run.
-          anyOf:
-          - $ref: '#/components/schemas/RunUsage'
-          - type: 'null'
-        usageTotalUsd:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.2654
-          description: 'Total cost in USD for this run. Represents what you actually pay. For run owners: includes platform usage (compute units) and/or event costs depending on the Actor''s pricing model. For run non-owners: only available for Pay-Per-Event Actors (event costs only). Requires authentication token to access.'
-        usageUsd:
-          description: Platform usage costs breakdown in USD. Only present if you own the run AND are paying for platform usage (Pay-Per-Usage, Rental, or Pay-Per-Event with usage costs like standby Actors). Not available for standard Pay-Per-Event Actors. Requires authentication token to access.
-          anyOf:
-          - $ref: '#/components/schemas/RunUsageUsd'
-          - type: 'null'
-        metamorphs:
-          description: List of metamorph events that occurred during the run.
-          anyOf:
-          - type: array
-            items:
-              $ref: '#/components/schemas/RunMetamorphEvent'
-          - type: 'null'
-        platformUsageBillingModel:
-          type: string
-          description: Indicates which party covers platform usage costs for this run.
-          examples:
-          - USER
+      - WEBHOOK
+      - ACTOR
+      - CLI
+      - CI
+      - STANDBY
+      - MCP
     TieredPricingPerEventEntry:
       title: TieredPricingPerEventEntry
       description: A single tier's price-per-event entry.
@@ -2785,83 +1343,42 @@ components:
           minimum: 0
           examples:
           - 1
-    TieredPricingPerDatasetItemEntry:
-      title: TieredPricingPerDatasetItemEntry
-      description: A single tier's price-per-dataset-item entry.
+    FlatPricePerMonthActorPricingInfo:
+      title: FlatPricePerMonthActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - pricePerUnitUsd
+        - trialMinutes
+        properties:
+          pricingModel:
+            type: string
+            const: FLAT_PRICE_PER_MONTH
+          trialMinutes:
+            type: integer
+            description: For how long this Actor can be used for free in trial period
+          pricePerUnitUsd:
+            type: number
+            description: Monthly flat price in USD
+    ErrorDetail:
+      title: ErrorDetail
       type: object
-      required:
-      - tieredPricePerUnitUsd
       properties:
-        tieredPricePerUnitUsd:
-          type: number
-          description: Price per unit in USD for this tier.
-    WebhookRepresentation:
-      title: WebhookRepresentation
-      description: 'Minimal representation of an ad-hoc webhook attached to a single Actor run or build via the
-
-        `webhooks` query parameter. The query parameter value is a Base64-encoded JSON array whose
-
-        items match this schema. Persistent webhook fields (e.g. `condition`) are not used here.
-
-        '
-      required:
-      - eventTypes
-      - requestUrl
-      type: object
-      properties:
-        eventTypes:
-          type: array
-          items:
-            $ref: '#/components/schemas/WebhookEventType'
-          examples:
-          - - ACTOR.RUN.SUCCEEDED
-        requestUrl:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
           type: string
-          description: The URL to which the webhook sends its payload.
-          examples:
-          - http://example.com/
-        payloadTemplate:
-          type:
-          - string
-          - 'null'
-          description: Optional template for the JSON payload sent by the webhook.
-          examples:
-          - '{\n "userId": {{userId}}...'
-        headersTemplate:
-          type:
-          - string
-          - 'null'
-          description: Optional template for the HTTP headers sent by the webhook.
-          examples:
-          - '{\n "Authorization": "Bearer ..."}'
-        shouldInterpolateStrings:
-          type:
-          - boolean
-          - 'null'
-          description: Flag to also interpolate `{{...}}` variables inside string values of the payload and headers templates.
-          examples:
-          - false
-        idempotencyKey:
-          type:
-          - string
-          - 'null'
-          description: Key that prevents creating duplicate webhooks, e.g. when the run-starting request is retried.
-          examples:
-          - fdSJmdP3nfs7sfk3y
-        ignoreSslErrors:
-          type:
-          - boolean
-          - 'null'
-          description: Flag to ignore SSL errors when the webhook sends the request.
-          examples:
-          - false
-        doNotRetry:
-          type:
-          - boolean
-          - 'null'
-          description: Flag to skip retrying the webhook request on failure.
-          examples:
-          - false
+          description: Human-readable error message describing what went wrong.
+    ListOfRunsResponse:
+      title: ListOfRunsResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfRuns'
     RunOptions:
       title: RunOptions
       required:
@@ -2905,108 +1422,123 @@ components:
           minimum: 0
           examples:
           - 5
-    RunOrigin:
-      title: RunOrigin
-      type: string
-      enum:
-      - DEVELOPMENT
-      - WEB
-      - API
-      - SCHEDULER
-      - TEST
-      - WEBHOOK
-      - ACTOR
-      - CLI
-      - CI
-      - STANDBY
-      - MCP
-    RunStats:
-      title: RunStats
+    TieredPricingPerDatasetItem:
+      title: TieredPricingPerDatasetItem
+      description: 'Tiered price-per-dataset-item pricing, keyed by subscription tier (e.g. `FREE`, `BRONZE`, `SILVER`, `GOLD`,
+
+        `PLATINUM`, `DIAMOND`). The actual price applied to a run is resolved from the user''s tier.
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/TieredPricingPerDatasetItemEntry'
+    ListOfRuns:
+      title: ListOfRuns
+      allOf:
+      - $ref: '#/components/schemas/PaginationResponse'
+      - type: object
+        required:
+        - items
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/RunListItem'
+    RunMetamorphEvent:
+      title: RunMetamorphEvent
+      description: Information about a metamorph event that occurred during the run.
+      type: object
+      required:
+      - createdAt
+      - actorId
+      - buildId
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          description: Time when the metamorph occurred.
+          examples:
+          - '2019-11-30T07:39:24.202Z'
+        actorId:
+          type: string
+          description: ID of the Actor that the run was metamorphed to.
+          examples:
+          - nspoEjklmnsF2oosD
+        buildId:
+          type: string
+          description: ID of the build used for the metamorphed Actor.
+          examples:
+          - ME6oKecqy5kXDS4KQ
+        inputKey:
+          type:
+          - string
+          - 'null'
+          description: Key of the input record in the key-value store.
+          examples:
+          - INPUT-METAMORPH-1
+    TieredPricingPerDatasetItemEntry:
+      title: TieredPricingPerDatasetItemEntry
+      description: A single tier's price-per-dataset-item entry.
+      type: object
+      required:
+      - tieredPricePerUnitUsd
+      properties:
+        tieredPricePerUnitUsd:
+          type: number
+          description: Price per unit in USD for this tier.
+    RunResponse:
+      title: RunResponse
+      required:
+      - data
       type: object
       properties:
-        inputBodyLen:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-          examples:
-          - 240
-        migrationCount:
-          type: integer
-          minimum: 0
-          examples:
-          - 0
-        rebootCount:
-          type: integer
-          minimum: 0
-          examples:
-          - 0
-        restartCount:
-          type: integer
-          minimum: 0
-          examples:
-          - 0
-        resurrectCount:
-          type: integer
-          minimum: 0
-          examples:
-          - 2
-        memAvgBytes:
+        data:
+          $ref: '#/components/schemas/Run'
+    ActorChargeEvent:
+      title: ActorChargeEvent
+      description: 'Definition of a single chargeable event for a pay-per-event Actor. Each event is either flat-priced
+
+        (`eventPriceUsd` is set) or tier-priced (`eventTieredPricingUsd` is set); the two are mutually exclusive.
+
+        '
+      type: object
+      required:
+      - eventTitle
+      - eventDescription
+      properties:
+        eventTitle:
+          type: string
+          description: Human-readable title shown to users in the billing UI.
+        eventDescription:
+          type: string
+          description: Human-readable description of what triggers this event.
+        eventPriceUsd:
           type: number
-          examples:
-          - 267874071.9
-        memMaxBytes:
-          type: integer
-          minimum: 0
-          examples:
-          - 404713472
-        memCurrentBytes:
-          type: integer
-          minimum: 0
-          examples:
-          - 0
-        cpuAvgUsage:
-          type: number
-          examples:
-          - 33.7532101107538
-        cpuMaxUsage:
-          type: number
-          examples:
-          - 169.650735534941
-        cpuCurrentUsage:
-          type: number
-          examples:
-          - 0
-        netRxBytes:
-          type: integer
-          minimum: 0
-          examples:
-          - 103508042
-        netTxBytes:
-          type: integer
-          minimum: 0
-          examples:
-          - 4854600
-        durationMillis:
-          type: integer
-          minimum: 0
-          examples:
-          - 248472
-        runTimeSecs:
-          type: number
-          minimum: 0
-          examples:
-          - 248.472
-        metamorph:
-          type: integer
-          minimum: 0
-          examples:
-          - 0
-        computeUnits:
-          type: number
-          minimum: 0
-          examples:
-          - 0.13804
+          description: 'Flat price per event in USD. Present only for non-tiered events. Mutually exclusive with `eventTieredPricingUsd`.
+
+            '
+        eventTieredPricingUsd:
+          $ref: '#/components/schemas/TieredPricingPerEvent'
+        isPrimaryEvent:
+          type: boolean
+          description: Whether this event is the Actor's primary chargeable event.
+        isOneTimeEvent:
+          type: boolean
+          description: Whether this event can only be charged once per Actor run.
+    ActorRunPricingInfo:
+      title: ActorRunPricingInfo
+      discriminator:
+        propertyName: pricingModel
+        mapping:
+          PAY_PER_EVENT: '#/components/schemas/PayPerEventActorPricingInfo'
+          PRICE_PER_DATASET_ITEM: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
+          FLAT_PRICE_PER_MONTH: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
+          FREE: '#/components/schemas/FreeActorPricingInfo'
+      oneOf:
+      - $ref: '#/components/schemas/PayPerEventActorPricingInfo'
+      - $ref: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
+      - $ref: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
+      - $ref: '#/components/schemas/FreeActorPricingInfo'
     ErrorType:
       title: ErrorType
       type: string
@@ -3407,27 +1939,345 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    TieredPricingPerEvent:
-      title: TieredPricingPerEvent
-      description: 'Tiered price-per-event pricing for a single charge event, keyed by subscription tier (e.g. `FREE`, `BRONZE`,
-
-        `SILVER`, `GOLD`, `PLATINUM`, `DIAMOND`). The actual price applied is resolved from the user''s tier.
-
-        '
+    RunStats:
+      title: RunStats
       type: object
-      additionalProperties:
-        $ref: '#/components/schemas/TieredPricingPerEventEntry'
-    FreeActorPricingInfo:
-      title: FreeActorPricingInfo
+      properties:
+        inputBodyLen:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          examples:
+          - 240
+        migrationCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        rebootCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        restartCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        resurrectCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 2
+        memAvgBytes:
+          type: number
+          examples:
+          - 267874071.9
+        memMaxBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 404713472
+        memCurrentBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        cpuAvgUsage:
+          type: number
+          examples:
+          - 33.7532101107538
+        cpuMaxUsage:
+          type: number
+          examples:
+          - 169.650735534941
+        cpuCurrentUsage:
+          type: number
+          examples:
+          - 0
+        netRxBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 103508042
+        netTxBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 4854600
+        durationMillis:
+          type: integer
+          minimum: 0
+          examples:
+          - 248472
+        runTimeSecs:
+          type: number
+          minimum: 0
+          examples:
+          - 248.472
+        metamorph:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        computeUnits:
+          type: number
+          minimum: 0
+          examples:
+          - 0.13804
+    CommonActorPricingInfo:
+      title: CommonActorPricingInfo
+      type: object
+      required:
+      - apifyMarginPercentage
+      - createdAt
+      - startedAt
+      properties:
+        apifyMarginPercentage:
+          type: number
+          examples:
+          - 0.2
+          description: 'Apify''s share of the revenue generated under this pricing info record, as a fraction between 0 and 1. Set by the Apify platform.
+
+            '
+        createdAt:
+          type: string
+          format: date-time
+          description: When this pricing info record has been created
+        startedAt:
+          type: string
+          format: date-time
+          description: Since when is this pricing info record effective for a given Actor
+        notifiedAboutFutureChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-internal: true
+        notifiedAboutChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-internal: true
+        reasonForChange:
+          type:
+          - string
+          - 'null'
+          x-internal: true
+        isPriceChangeNotificationSuppressed:
+          type: boolean
+          x-internal: true
+        forceContainsSignificantPriceChange:
+          type: boolean
+          x-internal: true
+    WebhookEventType:
+      title: WebhookEventType
+      type: string
+      enum:
+      - ACTOR.BUILD.ABORTED
+      - ACTOR.BUILD.CREATED
+      - ACTOR.BUILD.FAILED
+      - ACTOR.BUILD.SUCCEEDED
+      - ACTOR.BUILD.TIMED_OUT
+      - ACTOR.RUN.ABORTED
+      - ACTOR.RUN.CREATED
+      - ACTOR.RUN.FAILED
+      - ACTOR.RUN.RESURRECTED
+      - ACTOR.RUN.SUCCEEDED
+      - ACTOR.RUN.TIMED_OUT
+      - TEST
+      description: Type of event that triggers the webhook.
+    RunUsageUsd:
+      title: RunUsageUsd
+      description: Resource usage costs in USD. All values are monetary amounts in US dollars.
+      type: object
+      properties:
+        ACTOR_COMPUTE_UNITS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0003
+        DATASET_READS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        DATASET_WRITES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        KEY_VALUE_STORE_READS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        KEY_VALUE_STORE_WRITES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 5.0e-05
+        KEY_VALUE_STORE_LISTS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        REQUEST_QUEUE_READS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        REQUEST_QUEUE_WRITES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        DATA_TRANSFER_INTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.001
+        DATA_TRANSFER_EXTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.003
+        PROXY_RESIDENTIAL_TRANSFER_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.034
+        PROXY_SERPS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.003
+    ActorJobStatus:
+      title: ActorJobStatus
+      type: string
+      enum:
+      - READY
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+      - TIMING-OUT
+      - TIMED-OUT
+      - ABORTING
+      - ABORTED
+      description: Status of an Actor job (run or build).
+    PayPerEventActorPricingInfo:
+      title: PayPerEventActorPricingInfo
       allOf:
       - $ref: '#/components/schemas/CommonActorPricingInfo'
       - type: object
         required:
         - pricingModel
+        - pricingPerEvent
         properties:
           pricingModel:
             type: string
-            const: FREE
+            const: PAY_PER_EVENT
+          pricingPerEvent:
+            type: object
+            properties:
+              actorChargeEvents:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/ActorChargeEvent'
+          minimalMaxTotalChargeUsd:
+            type:
+            - number
+            - 'null'
+    RunUsage:
+      title: RunUsage
+      type: object
+      properties:
+        ACTOR_COMPUTE_UNITS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 3
+        DATASET_READS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 4
+        DATASET_WRITES:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 4
+        KEY_VALUE_STORE_READS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 5
+        KEY_VALUE_STORE_WRITES:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 3
+        KEY_VALUE_STORE_LISTS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 5
+        REQUEST_QUEUE_READS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 2
+        REQUEST_QUEUE_WRITES:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 1
+        DATA_TRANSFER_INTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 1
+        DATA_TRANSFER_EXTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 3
+        PROXY_RESIDENTIAL_TRANSFER_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 34
+        PROXY_SERPS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 3
     RunMeta:
       title: RunMeta
       required:
@@ -3457,6 +2307,328 @@ components:
           - 'null'
           format: date-time
           description: Time when the run was scheduled.
+    Run:
+      title: Run
+      description: Represents an Actor run and its associated data.
+      required:
+      - id
+      - actId
+      - userId
+      - startedAt
+      - status
+      - meta
+      - stats
+      - options
+      - buildId
+      - defaultKeyValueStoreId
+      - defaultDatasetId
+      - defaultRequestQueueId
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - HG7ML7M8z78YcAPEB
+          description: Unique identifier of the Actor run.
+        actId:
+          type: string
+          examples:
+          - HDSasDasz78YcAPEB
+          description: ID of the Actor that was run.
+        userId:
+          type: string
+          examples:
+          - 7sT5jcggjjA9fNcxF
+          description: ID of the user who started the run.
+        actorTaskId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - KJHSKHausidyaJKHs
+          description: ID of the Actor task, if the run was started from a task.
+        startedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-11-30T07:34:24.202Z'
+          description: Time when the Actor run started.
+        finishedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - '2019-12-12T09:30:12.202Z'
+          description: Time when the Actor run finished.
+        status:
+          description: Current status of the Actor run.
+          $ref: '#/components/schemas/ActorJobStatus'
+        statusMessage:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Actor is running
+          description: Detailed message about the run status.
+        isStatusMessageTerminal:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+          description: Whether the status message is terminal (final).
+        meta:
+          description: Metadata about the Actor run.
+          $ref: '#/components/schemas/RunMeta'
+        pricingInfo:
+          description: Pricing information for the Actor.
+          $ref: '#/components/schemas/ActorRunPricingInfo'
+        stats:
+          description: Statistics of the Actor run.
+          $ref: '#/components/schemas/RunStats'
+        chargedEventCounts:
+          description: A map of charged event types to their counts. The keys are event type identifiers defined by the Actor's pricing model (pay-per-event), and the values are the number of times each event was charged during this run.
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            actor-start: 1
+            page-crawled: 150
+            data-extracted: 75
+        options:
+          description: Configuration options for the Actor run.
+          $ref: '#/components/schemas/RunOptions'
+        buildId:
+          type: string
+          examples:
+          - 7sT5jcggjjA9fNcxF
+          description: ID of the Actor build used for this run.
+        exitCode:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 0
+          description: Exit code of the Actor run process.
+        generalAccess:
+          description: General access level for the Actor run.
+          anyOf:
+          - $ref: '#/components/schemas/GeneralAccess'
+          - type: 'null'
+        defaultKeyValueStoreId:
+          type: string
+          examples:
+          - eJNzqsbPiopwJcgGQ
+          description: ID of the default key-value store for this run.
+        defaultDatasetId:
+          type: string
+          examples:
+          - wmKPijuyDnPZAPRMk
+          description: ID of the default dataset for this run.
+        defaultRequestQueueId:
+          type: string
+          examples:
+          - FL35cSF7jrxr3BY39
+          description: ID of the default request queue for this run.
+        storageIds:
+          type: object
+          description: A map of aliased storage IDs associated with this run, grouped by storage type.
+          properties:
+            datasets:
+              type: object
+              description: Aliased dataset IDs for this run.
+              properties:
+                default:
+                  type: string
+                  description: ID of the default dataset for this run.
+                  example: wmKPijuyDnPZAPRMk
+              additionalProperties:
+                type: string
+            keyValueStores:
+              type: object
+              description: Aliased key-value store IDs for this run.
+              properties:
+                default:
+                  type: string
+                  description: ID of the default key-value store for this run.
+                  example: eJNzqsbPiopwJcgGQ
+              additionalProperties:
+                type: string
+            requestQueues:
+              type: object
+              description: Aliased request queue IDs for this run.
+              properties:
+                default:
+                  type: string
+                  description: ID of the default request queue for this run.
+                  example: FL35cSF7jrxr3BY39
+              additionalProperties:
+                type: string
+        buildNumber:
+          type:
+          - string
+          - 'null'
+          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
+          examples:
+          - 0.0.36
+          description: Build number of the Actor build used for this run.
+        containerUrl:
+          type: string
+          format: uri
+          examples:
+          - https://g8kd8kbc5ge8.runs.apify.net
+          description: URL of the container running the Actor.
+        isContainerServerReady:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - true
+          description: Whether the container's HTTP server is ready to accept requests.
+        gitBranchName:
+          type:
+          - string
+          - 'null'
+          examples:
+          - master
+          description: Name of the git branch used for the Actor build.
+        usage:
+          description: Resource usage statistics for the run.
+          anyOf:
+          - $ref: '#/components/schemas/RunUsage'
+          - type: 'null'
+        usageTotalUsd:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.2654
+          description: 'Total cost in USD for this run. Represents what you actually pay. For run owners: includes platform usage (compute units) and/or event costs depending on the Actor''s pricing model. For run non-owners: only available for Pay-Per-Event Actors (event costs only). Requires authentication token to access.'
+        usageUsd:
+          description: Platform usage costs breakdown in USD. Only present if you own the run AND are paying for platform usage (Pay-Per-Usage, Rental, or Pay-Per-Event with usage costs like standby Actors). Not available for standard Pay-Per-Event Actors. Requires authentication token to access.
+          anyOf:
+          - $ref: '#/components/schemas/RunUsageUsd'
+          - type: 'null'
+        metamorphs:
+          description: List of metamorph events that occurred during the run.
+          anyOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/RunMetamorphEvent'
+          - type: 'null'
+        platformUsageBillingModel:
+          type: string
+          description: Indicates which party covers platform usage costs for this run.
+          examples:
+          - USER
+    GeneralAccess:
+      title: GeneralAccess
+      type: string
+      enum:
+      - ANYONE_WITH_ID_CAN_READ
+      - ANYONE_WITH_NAME_CAN_READ
+      - FOLLOW_USER_SETTING
+      - RESTRICTED
+      examples:
+      - RESTRICTED
+      description: Defines the general access level for the resource.
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    RunListItem:
+      title: RunListItem
+      required:
+      - id
+      - actId
+      - status
+      - startedAt
+      - buildId
+      - meta
+      - usageTotalUsd
+      - defaultKeyValueStoreId
+      - defaultDatasetId
+      - defaultRequestQueueId
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - HG7ML7M8z78YcAPEB
+        actId:
+          type: string
+          examples:
+          - HDSasDasz78YcAPEB
+        userId:
+          type: string
+          examples:
+          - 7sT5jcggjjA9fNcxF
+        actorTaskId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - KJHSKHausidyaJKHs
+        status:
+          $ref: '#/components/schemas/ActorJobStatus'
+        startedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-11-30T07:34:24.202Z'
+        finishedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - '2019-12-12T09:30:12.202Z'
+        buildId:
+          type: string
+          examples:
+          - HG7ML7M8z78YcAPEB
+        buildNumber:
+          type: string
+          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
+          examples:
+          - 0.0.2
+        buildNumberInt:
+          type: integer
+          examples:
+          - 10000
+        meta:
+          $ref: '#/components/schemas/RunMeta'
+        usageTotalUsd:
+          type: number
+          examples:
+          - 0.2
+        defaultKeyValueStoreId:
+          type: string
+          examples:
+          - sfAjeR4QmeJCQzTfe
+        defaultDatasetId:
+          type: string
+          examples:
+          - 3ZojQDdFTsyE7Moy4
+        defaultRequestQueueId:
+          type: string
+          examples:
+          - so93g2shcDzK3pA85
+    TieredPricingPerEvent:
+      title: TieredPricingPerEvent
+      description: 'Tiered price-per-event pricing for a single charge event, keyed by subscription tier (e.g. `FREE`, `BRONZE`,
+
+        `SILVER`, `GOLD`, `PLATINUM`, `DIAMOND`). The actual price applied is resolved from the user''s tier.
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/TieredPricingPerEventEntry'
     PricePerDatasetItemActorPricingInfo:
       title: PricePerDatasetItemActorPricingInfo
       allOf:
@@ -3481,6 +2653,834 @@ components:
               '
           tieredPricing:
             $ref: '#/components/schemas/TieredPricingPerDatasetItem'
+    FreeActorPricingInfo:
+      title: FreeActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        properties:
+          pricingModel:
+            type: string
+            const: FREE
+    WebhookRepresentation:
+      title: WebhookRepresentation
+      description: 'Minimal representation of an ad-hoc webhook attached to a single Actor run or build via the
+
+        `webhooks` query parameter. The query parameter value is a Base64-encoded JSON array whose
+
+        items match this schema. Persistent webhook fields (e.g. `condition`) are not used here.
+
+        '
+      required:
+      - eventTypes
+      - requestUrl
+      type: object
+      properties:
+        eventTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookEventType'
+          examples:
+          - - ACTOR.RUN.SUCCEEDED
+        requestUrl:
+          type: string
+          description: The URL to which the webhook sends its payload.
+          examples:
+          - http://example.com/
+        payloadTemplate:
+          type:
+          - string
+          - 'null'
+          description: Optional template for the JSON payload sent by the webhook.
+          examples:
+          - '{\n "userId": {{userId}}...'
+        headersTemplate:
+          type:
+          - string
+          - 'null'
+          description: Optional template for the HTTP headers sent by the webhook.
+          examples:
+          - '{\n "Authorization": "Bearer ..."}'
+        shouldInterpolateStrings:
+          type:
+          - boolean
+          - 'null'
+          description: Flag to also interpolate `{{...}}` variables inside string values of the payload and headers templates.
+          examples:
+          - false
+        idempotencyKey:
+          type:
+          - string
+          - 'null'
+          description: Key that prevents creating duplicate webhooks, e.g. when the run-starting request is retried.
+          examples:
+          - fdSJmdP3nfs7sfk3y
+        ignoreSslErrors:
+          type:
+          - boolean
+          - 'null'
+          description: Flag to ignore SSL errors when the webhook sends the request.
+          examples:
+          - false
+        doNotRetry:
+          type:
+          - boolean
+          - 'null'
+          description: Flag to skip retrying the webhook request on failure.
+          examples:
+          - false
+  parameters:
+    simplified:
+      name: simplified
+      in: query
+      description: 'If `true` or `1` then, the endpoint applies the `fields=url,pageFunctionResult,errorInfo`
+
+        and `unwind=pageFunctionResult` query parameters. This feature is used to emulate simplified results provided by the
+
+        legacy Apify Crawler product and it''s not recommended to use it in new integrations.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    format:
+      name: format
+      in: query
+      description: 'Format of the results, possible values are: `json`, `jsonl`, `csv`, `html`, `xlsx`, `xml` and `rss`. The default value is `json`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: json
+    webhooks:
+      name: webhooks
+      in: query
+      description: 'Specifies optional webhooks associated with the Actor run, which can be used to receive a notification
+
+        e.g. when the Actor finished or failed. The value is a Base64-encoded JSON array whose items follow
+
+        the WebhookRepresentation schema. For more information, see
+
+        [Webhooks documentation](https://docs.apify.com/platform/integrations/webhooks).
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        contentEncoding: base64
+        contentMediaType: application/json
+        contentSchema:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookRepresentation'
+        example: dGhpcyBpcyBqdXN0IGV4YW1wbGUK...
+    view:
+      name: view
+      in: query
+      description: 'Defines the view configuration for dataset items based on the schema definition.
+
+        This parameter determines how the data will be filtered and presented.
+
+        For complete specification details, see the [dataset schema documentation](/storage/dataset-schema).
+
+        '
+      schema:
+        type: string
+        example: overview
+    xmlRoot:
+      name: xmlRoot
+      in: query
+      description: 'Overrides default root element name of `xml` output. By default the root element is `items`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: items
+    actorId:
+      name: actorId
+      in: path
+      description: Actor ID or the username of the Actor owner and the Actor name, separated by a tilde (`~`).
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: compass~google-maps-extractor
+    xmlRow:
+      name: xmlRow
+      in: query
+      description: 'Overrides default element name that wraps each page or page function result object in `xml` output. By default the element name is `item`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: item
+    status-2:
+      name: status
+      in: query
+      description: Filter for the run status.
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: SUCCEEDED
+    skipHeaderRow:
+      name: skipHeaderRow
+      in: query
+      description: If `true` or `1` then header row in the `csv` format is skipped.
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    skipHidden:
+      name: skipHidden
+      in: query
+      description: 'If `true` or `1` then hidden fields are skipped from the output, i.e. fields starting with the `#` character.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    offset:
+      name: offset
+      in: query
+      description: 'Number of items that should be skipped at the start. The default value is `0`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 0
+    delimiter:
+      name: delimiter
+      in: query
+      description: 'A delimiter character for CSV files, only used if `format=csv`. You
+
+        might need to URL-encode the character (e.g. use `%09` for tab or `%3B`
+
+        for semicolon). The default delimiter is a simple comma (`,`).
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: ;
+    buildResurrect:
+      name: build
+      in: query
+      description: 'Specifies the Actor build to run. It can be either a build tag or build number.
+
+        By default, the run is resurrected with the same build it originally used. Specifically,
+
+        if a run was first started with the `latest` tag, which resolves to version `0.0.3` at the
+
+        time, a run resurrected without this parameter will continue running with `0.0.3`, even if
+
+        `latest` already points to a newer build.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0.1.234
+    memoryResurrect:
+      name: memory
+      in: query
+      description: 'Memory limit for the run, in megabytes. The amount of memory can be set to a power of 2
+
+        with a minimum of 128. By default, the run uses the memory limit specified in the run
+
+        that is being resurrected.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 256
+    targetActorId:
+      name: targetActorId
+      in: query
+      description: ID of a target Actor that the run should be transformed into.
+      required: true
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: HDSasDasz78YcAPEB
+    skipFailedPages:
+      name: skipFailedPages
+      in: query
+      description: 'If `true` or `1` then, the all the items with errorInfo property will be skipped from the output.
+
+
+        This feature is here to emulate functionality of API version 1 used for the legacy Apify Crawler product and it''s not recommended to use it in new integrations.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    unwind:
+      name: unwind
+      in: query
+      description: 'A comma-separated list of fields which should be unwound, in order which they should be processed. Each field should be either an array or an object.
+
+        If the field is an array then every element of the array will become a separate record and merged with parent object.
+
+        If the unwound field is an object then it is merged with the parent object.
+
+        If the unwound field is missing or its value is neither an array nor an object and therefore cannot be merged with a parent object then the item gets preserved as it is.
+
+        Note that the unwound items ignore the `desc` parameter.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: myValue,myOtherValue
+    restartOnError:
+      name: restartOnError
+      in: query
+      description: 'Determines whether the run will be restarted if it fails.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    bom:
+      name: bom
+      in: query
+      description: 'All text responses are encoded in UTF-8 encoding. By default, the
+
+        `format=csv` files are prefixed with the UTF-8 Byte Order Mark (BOM), while `json`, `jsonl`, `xml`, `html` and `rss` files are not.
+
+
+        If you want to override this default behavior, specify `bom=1` query parameter to include the BOM or `bom=0` to skip it.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    memory:
+      name: memory
+      in: query
+      description: 'Memory limit for the run, in megabytes. You can set the amount of memory to a power of 2 with a minimum of 128.
+
+        By default, the run uses the memory limit from its configuration. Don''t change this value unless the Actor''s
+
+        documentation recommends it or you''re aware of the consequences.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 256
+    gracefully:
+      name: gracefully
+      in: query
+      description: 'If true passed, the Actor run will abort gracefully.
+
+        It will send `aborting` and `persistState` event into run and force-stop the run after 30 seconds.
+
+        It is helpful in cases where you plan to resurrect the run later.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    descDataset:
+      name: desc
+      in: query
+      description: 'By default, results are returned in the same order as they were stored.
+
+        To reverse the order, set this parameter to `true` or `1`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    clean:
+      name: clean
+      in: query
+      description: 'If `true` or `1` then the API endpoint returns only non-empty items and skips hidden fields (i.e. fields starting with the # character).
+
+        The `clean` parameter is just a shortcut for `skipHidden=true` and `skipEmpty=true` parameters.
+
+        Note that since some objects might be skipped from the output, that the result might contain less items than the `limit` value.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    runId:
+      name: runId
+      in: path
+      description: Actor run ID.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 3KH8gEpp4d8uQSe8T
+    status:
+      name: status
+      in: query
+      description: 'Single status or comma-separated list of statuses, see ([available
+
+        statuses](https://docs.apify.com/platform/actors/running/runs-and-builds#lifecycle)). Used to filter runs by the specified statuses only.
+
+        '
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+        example:
+        - SUCCEEDED
+    outputRecordKey:
+      name: outputRecordKey
+      in: query
+      description: 'Key of the record from the run''s default key-value store to return in the
+
+        response. Defaults to `OUTPUT`. Actors aren''t required to store a record
+
+        under this key, so if it doesn''t exist the response contains no data.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: OUTPUT
+    restartOnErrorResurrect:
+      name: restartOnError
+      in: query
+      description: 'Determines whether the resurrected run will be restarted if it fails.
+
+        By default, the resurrected run uses the same setting as before.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    limit:
+      name: limit
+      in: query
+      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 1000
+    descStartedAt:
+      name: desc
+      in: query
+      description: 'If `true` or `1` then the objects are sorted by the `startedAt` field in
+
+        descending order. By default, they are sorted in ascending order.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    maxTotalChargeUsd:
+      name: maxTotalChargeUsd
+      in: query
+      required: false
+      description: 'Specifies the maximum total cost of the run.
+
+        Use it to cap the total amount charged for all pricing models.
+
+        You can access the maximum cost in your Actor
+
+        by using the `ACTOR_MAX_TOTAL_CHARGE_USD` environment variable.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 5
+    feedTitle:
+      name: feedTitle
+      in: query
+      description: 'Overrides the auto-generated RSS channel `<title>` element.
+
+        Only used when `format=rss`. If not provided, the title defaults to `Dataset <label>`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: Latest posts from r/pasta
+    flatten:
+      name: flatten
+      in: query
+      description: 'A comma-separated list of fields which should transform nested objects into flat structures.
+
+
+        For example, with `flatten="foo"` the object `{"foo":{"bar": "hello"}}` is turned into `{"foo.bar": "hello"}`.
+
+
+        The original object with properties is replaced with the flattened object.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: myValue
+    omit:
+      name: omit
+      in: query
+      description: A comma-separated list of fields which should be omitted from the items.
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: myValue,myOtherValue
+    build:
+      name: build
+      in: query
+      description: 'Specifies the Actor build to run. It can be either a build tag or build number.
+
+        By default, the run uses the build from its configuration (typically `latest`).
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 0.1.234
+    fields:
+      name: fields
+      in: query
+      description: 'A comma-separated list of fields which should be picked from the items, only these fields will remain in the resulting record objects.
+
+        Note that the fields in the outputted items are sorted the same way as they are specified in the `fields` query parameter.
+
+        You can use this feature to effectively fix the output format.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: myValue,myOtherValue
+    timeout:
+      name: timeout
+      in: query
+      description: 'Optional timeout for the run, in seconds. By default, the run uses the timeout from its configuration.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 60
+    startedAfter:
+      name: startedAfter
+      in: query
+      description: 'Filter runs that started after the specified date and time (inclusive).
+
+        The value must be a valid ISO 8601 datetime string (UTC).
+
+        '
+      style: form
+      explode: true
+      allowReserved: true
+      schema:
+        type: string
+        format: date-time
+        example: '2025-09-01T00:00:00.000Z'
+    timeoutResurrect:
+      name: timeout
+      in: query
+      description: 'Optional timeout for the run, in seconds. By default, the run uses the timeout
+
+        specified in the run that is being resurrected.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 60
+    maxItems:
+      name: maxItems
+      in: query
+      required: false
+      description: 'Specifies the maximum number of dataset items that will be charged for pay-per-result Actors.
+
+        This does NOT guarantee that the Actor will return only this many items.
+
+        It only ensures you won''t be charged for more than this number of items.
+
+        Only works for pay-per-result Actors.
+
+        Value can be accessed in the actor run using `ACTOR_MAX_PAID_DATASET_ITEMS` environment variable.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 1000
+    skipEmpty:
+      name: skipEmpty
+      in: query
+      description: 'If `true` or `1` then empty items are skipped from the output.
+
+
+        Note that if used, the results might contain less items than the limit value.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    feedDescription:
+      name: feedDescription
+      in: query
+      description: 'Overrides the auto-generated RSS channel `<description>` element.
+
+        Only used when `format=rss`. If not provided, the description defaults to `Items in dataset with id "<datasetId>".`
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: Scraped forum posts
+    attachment:
+      name: attachment
+      in: query
+      description: 'If `true` or `1` then the response will define the `Content-Disposition:
+
+        attachment` header, forcing a web browser to download the file rather
+
+        than to display it. By default this header is not present.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    origin:
+      name: origin
+      in: query
+      description: Filter for the run origin, i.e. the means by which the run was started.
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/RunOrigin'
+    limit-2:
+      name: limit
+      in: query
+      description: Maximum number of items to return. By default there is no limit.
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+    waitForFinishRun:
+      name: waitForFinish
+      in: query
+      description: 'The maximum number of seconds the server waits for the run to finish. By
+
+        default it is `0`, the maximum value is `60`. <!-- MAX_ACTOR_JOB_ASYNC_WAIT_SECS -->
+
+        If the run finishes in time then the returned run object will have a terminal status (e.g. `SUCCEEDED`),
+
+        otherwise it will have a transitional status (e.g. `RUNNING`).
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 60
+    startedBefore:
+      name: startedBefore
+      in: query
+      description: 'Filter runs that started before the specified date and time (inclusive).
+
+        The value must be a valid ISO 8601 datetime string (UTC).
+
+        '
+      style: form
+      explode: true
+      allowReserved: true
+      schema:
+        type: string
+        format: date-time
+        example: '2025-09-17T23:59:59.000Z'
+    outputFields:
+      name: outputFields
+      in: query
+      description: 'A comma-separated list of output field names that positionally rename the fields specified in the `fields` parameter.
+
+        For example, `?fields=headline,url&outputFields=title,link` renames `headline` to `title` and `url` to `link` in the output.
+
+        The number of names in `outputFields` must match the number of names in `fields`.
+
+        Requires the `fields` parameter to be specified as well.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: title,link
+  responses:
+    Timeout:
+      description: The HTTP request exceeded the timeout limit
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: run-timeout-exceeded
+              message: Actor run exceeded the timeout of 300 seconds for this API endpoint
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    PaymentRequired:
+      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: x402-payment-required
+              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
   examples:
     ListOfRunsResponseExample:
       value:

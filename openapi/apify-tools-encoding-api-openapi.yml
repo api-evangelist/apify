@@ -241,56 +241,6 @@ paths:
       deprecated: false
 components:
   responses:
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    UnsupportedMediaType:
-      description: Unsupported media type - the Content-Encoding of the request is not supported.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: unsupported-content-encoding
-              message: Content-Encoding "bla" is not supported.
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
     PayloadTooLarge:
       description: Payload too large - the request body exceeds the size limit.
       content:
@@ -311,17 +261,57 @@ components:
             error:
               type: insufficient-permissions
               message: You do not have permission to perform this action.
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
   schemas:
-    EncodeAndSignResult:
-      title: EncodeAndSignResult
-      type: object
-      required:
-      - encoded
-      properties:
-        encoded:
-          type: string
-          examples:
-          - eyJwYXlsb2FkIjoiLi4uIiwic2lnbmF0dXJlIjoiLi4uIn0=
     ErrorType:
       title: ErrorType
       type: string
@@ -722,33 +712,6 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
-    DecodeAndVerifyRequest:
-      title: DecodeAndVerifyRequest
-      type: object
-      required:
-      - encoded
-      properties:
-        encoded:
-          type: string
-          examples:
-          - eyJwYXlsb2FkIjoiLi4uIiwic2lnbmF0dXJlIjoiLi4uIn0=
-    DecodeAndVerifyResponse:
-      title: DecodeAndVerifyResponse
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          $ref: '#/components/schemas/DecodeAndVerifyResult'
     DecodeAndVerifyResult:
       title: DecodeAndVerifyResult
       type: object
@@ -769,6 +732,43 @@ components:
           type: boolean
           examples:
           - false
+    EncodeAndSignResult:
+      title: EncodeAndSignResult
+      type: object
+      required:
+      - encoded
+      properties:
+        encoded:
+          type: string
+          examples:
+          - eyJwYXlsb2FkIjoiLi4uIiwic2lnbmF0dXJlIjoiLi4uIn0=
+    DecodeAndVerifyResponse:
+      title: DecodeAndVerifyResponse
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          $ref: '#/components/schemas/DecodeAndVerifyResult'
+    DecodeAndVerifyRequest:
+      title: DecodeAndVerifyRequest
+      type: object
+      required:
+      - encoded
+      properties:
+        encoded:
+          type: string
+          examples:
+          - eyJwYXlsb2FkIjoiLi4uIiwic2lnbmF0dXJlIjoiLi4uIn0=
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
     EncodeAndSignResponse:
       title: EncodeAndSignResponse
       type: object

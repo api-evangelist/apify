@@ -240,107 +240,92 @@ paths:
       - https://docs.apify.com/api/v2#/reference/actors/get-list-of-webhooks
       - https://docs.apify.com/api/v2#tag/ActorsWebhook-collection/operation/act_webhooks_get
 components:
-  responses:
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
   schemas:
-    WebhookCondition:
-      title: WebhookCondition
+    WebhookListItem:
+      title: WebhookListItem
+      required:
+      - id
+      - createdAt
+      - modifiedAt
+      - userId
+      - eventTypes
+      - condition
+      - ignoreSslErrors
+      - doNotRetry
+      - requestUrl
       type: object
       properties:
-        actorId:
+        id:
+          type: string
+          examples:
+          - YiKoxjkaS9gjGTqhF
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-12T07:34:14.202Z'
+        modifiedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-13T08:36:13.202Z'
+        userId:
+          type: string
+          examples:
+          - wRsJZtadYvn4mBZmm
+        isAdHoc:
           type:
-          - string
+          - boolean
           - 'null'
           examples:
-          - hksJZtadYvn4mBuin
-        actorTaskId:
+          - false
+        isApifyIntegration:
+          type: boolean
+          examples:
+          - false
+        isEnabled:
+          type: boolean
+          examples:
+          - true
+        actionType:
+          type: string
+          examples:
+          - HTTP_REQUEST
+        shouldInterpolateStrings:
           type:
-          - string
+          - boolean
           - 'null'
           examples:
-          - asdLZtadYvn4mBZmm
-        actorRunId:
-          type:
-          - string
-          - 'null'
+          - false
+        eventTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookEventType'
           examples:
-          - hgdKZtadYvn4mBpoi
-    WebhookEventType:
-      title: WebhookEventType
-      type: string
-      enum:
-      - ACTOR.BUILD.ABORTED
-      - ACTOR.BUILD.CREATED
-      - ACTOR.BUILD.FAILED
-      - ACTOR.BUILD.SUCCEEDED
-      - ACTOR.BUILD.TIMED_OUT
-      - ACTOR.RUN.ABORTED
-      - ACTOR.RUN.CREATED
-      - ACTOR.RUN.FAILED
-      - ACTOR.RUN.RESURRECTED
-      - ACTOR.RUN.SUCCEEDED
-      - ACTOR.RUN.TIMED_OUT
-      - TEST
-      description: Type of event that triggers the webhook.
+          - - ACTOR.RUN.SUCCEEDED
+        condition:
+          $ref: '#/components/schemas/WebhookCondition'
+        ignoreSslErrors:
+          type: boolean
+          examples:
+          - false
+        doNotRetry:
+          type: boolean
+          examples:
+          - false
+        requestUrl:
+          type: string
+          format: uri
+          examples:
+          - http://example.com/
+        lastDispatch:
+          anyOf:
+          - $ref: '#/components/schemas/WebhookLastDispatch'
+          - type: 'null'
+        stats:
+          anyOf:
+          - $ref: '#/components/schemas/WebhookStats'
+          - type: 'null'
     PaginationResponse:
       title: PaginationResponse
       description: Common pagination fields for list responses.
@@ -390,6 +375,26 @@ components:
         message:
           type: string
           description: Human-readable error message describing what went wrong.
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    ListOfWebhooks:
+      title: ListOfWebhooks
+      allOf:
+      - $ref: '#/components/schemas/PaginationResponse'
+      - type: object
+        required:
+        - items
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/WebhookListItem'
     ErrorType:
       title: ErrorType
       type: string
@@ -812,99 +817,28 @@ components:
           format: date-time
           examples:
           - null
-    WebhookListItem:
-      title: WebhookListItem
-      required:
-      - id
-      - createdAt
-      - modifiedAt
-      - userId
-      - eventTypes
-      - condition
-      - ignoreSslErrors
-      - doNotRetry
-      - requestUrl
+    WebhookCondition:
+      title: WebhookCondition
       type: object
       properties:
-        id:
-          type: string
-          examples:
-          - YiKoxjkaS9gjGTqhF
-        createdAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-12T07:34:14.202Z'
-        modifiedAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-13T08:36:13.202Z'
-        userId:
-          type: string
-          examples:
-          - wRsJZtadYvn4mBZmm
-        isAdHoc:
+        actorId:
           type:
-          - boolean
+          - string
           - 'null'
           examples:
-          - false
-        isApifyIntegration:
-          type: boolean
-          examples:
-          - false
-        isEnabled:
-          type: boolean
-          examples:
-          - true
-        actionType:
-          type: string
-          examples:
-          - HTTP_REQUEST
-        shouldInterpolateStrings:
+          - hksJZtadYvn4mBuin
+        actorTaskId:
           type:
-          - boolean
+          - string
           - 'null'
           examples:
-          - false
-        eventTypes:
-          type: array
-          items:
-            $ref: '#/components/schemas/WebhookEventType'
+          - asdLZtadYvn4mBZmm
+        actorRunId:
+          type:
+          - string
+          - 'null'
           examples:
-          - - ACTOR.RUN.SUCCEEDED
-        condition:
-          $ref: '#/components/schemas/WebhookCondition'
-        ignoreSslErrors:
-          type: boolean
-          examples:
-          - false
-        doNotRetry:
-          type: boolean
-          examples:
-          - false
-        requestUrl:
-          type: string
-          format: uri
-          examples:
-          - http://example.com/
-        lastDispatch:
-          anyOf:
-          - $ref: '#/components/schemas/WebhookLastDispatch'
-          - type: 'null'
-        stats:
-          anyOf:
-          - $ref: '#/components/schemas/WebhookStats'
-          - type: 'null'
-    WebhookStats:
-      title: WebhookStats
-      type: object
-      properties:
-        totalDispatches:
-          type: integer
-          examples:
-          - 1
+          - hgdKZtadYvn4mBpoi
     ListOfWebhooksResponse:
       title: ListOfWebhooksResponse
       required:
@@ -913,18 +847,31 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/ListOfWebhooks'
-    ListOfWebhooks:
-      title: ListOfWebhooks
-      allOf:
-      - $ref: '#/components/schemas/PaginationResponse'
-      - type: object
-        required:
-        - items
-        properties:
-          items:
-            type: array
-            items:
-              $ref: '#/components/schemas/WebhookListItem'
+    WebhookEventType:
+      title: WebhookEventType
+      type: string
+      enum:
+      - ACTOR.BUILD.ABORTED
+      - ACTOR.BUILD.CREATED
+      - ACTOR.BUILD.FAILED
+      - ACTOR.BUILD.SUCCEEDED
+      - ACTOR.BUILD.TIMED_OUT
+      - ACTOR.RUN.ABORTED
+      - ACTOR.RUN.CREATED
+      - ACTOR.RUN.FAILED
+      - ACTOR.RUN.RESURRECTED
+      - ACTOR.RUN.SUCCEEDED
+      - ACTOR.RUN.TIMED_OUT
+      - TEST
+      description: Type of event that triggers the webhook.
+    WebhookStats:
+      title: WebhookStats
+      type: object
+      properties:
+        totalDispatches:
+          type: integer
+          examples:
+          - 1
     WebhookDispatchStatus:
       title: WebhookDispatchStatus
       type: string
@@ -933,27 +880,7 @@ components:
       - SUCCEEDED
       - FAILED
       description: Status of the webhook dispatch indicating whether the HTTP request was successful.
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
   parameters:
-    limit:
-      name: limit
-      in: query
-      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 1000
     actorId:
       name: actorId
       in: path
@@ -988,6 +915,79 @@ components:
         type: number
         format: double
         example: 0
+    limit:
+      name: limit
+      in: query
+      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 1000
+  responses:
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
   securitySchemes:
     httpBearer:
       type: http

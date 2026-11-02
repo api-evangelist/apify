@@ -226,68 +226,16 @@ paths:
       x-py-name: stream
       x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/LogClientAsync#stream
 components:
-  responses:
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
   parameters:
+    buildOrRunId:
+      name: buildOrRunId
+      in: path
+      description: ID of the Actor build or run.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: HG7ML7M8z78YcAPE
     raw:
       name: raw
       in: query
@@ -302,15 +250,6 @@ components:
       schema:
         type: boolean
         example: false
-    buildOrRunId:
-      name: buildOrRunId
-      in: path
-      description: ID of the Actor build or run.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: HG7ML7M8z78YcAPE
     download:
       name: download
       in: query
@@ -335,6 +274,67 @@ components:
       schema:
         type: boolean
         example: false
+  responses:
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
   schemas:
     ErrorType:
       title: ErrorType

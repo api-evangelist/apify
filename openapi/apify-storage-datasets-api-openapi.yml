@@ -1071,55 +1071,91 @@ paths:
       - $ref: '#/components/parameters/datasetId'
 components:
   schemas:
-    ListOfDatasets:
-      title: ListOfDatasets
-      allOf:
-      - $ref: '#/components/schemas/PaginationResponse'
-      - type: object
-        required:
-        - items
-        properties:
-          unnamed:
-            type: boolean
-            description: Whether the listing was filtered to only unnamed datasets.
-            examples:
-            - false
-          items:
-            type: array
-            items:
-              $ref: '#/components/schemas/DatasetListItem'
-    DatasetSchemaValidationErrorData:
-      title: DatasetSchemaValidationErrorData
+    DatasetListItem:
+      title: DatasetListItem
       required:
-      - invalidItems
+      - id
+      - name
+      - userId
+      - createdAt
+      - modifiedAt
+      - accessedAt
+      - itemCount
+      - cleanItemCount
       type: object
       properties:
-        invalidItems:
-          type: array
-          description: A list of invalid items in the received array of items.
-          items:
-            $ref: '#/components/schemas/InvalidDatasetItem'
-    ListOfDatasetsResponse:
-      title: ListOfDatasetsResponse
+        id:
+          type: string
+          examples:
+          - WkzbQMuFYuamGv3YF
+        name:
+          type: string
+          examples:
+          - d7b9MDYsbtX5L7XAj
+        userId:
+          type: string
+          examples:
+          - tbXmWu7GCxnyYtSiL
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-12T07:34:14.202Z'
+        modifiedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-13T08:36:13.202Z'
+        accessedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-14T08:36:13.202Z'
+        itemCount:
+          type: integer
+          examples:
+          - 7
+        cleanItemCount:
+          type: integer
+          examples:
+          - 5
+        actId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - zdc3Pyhyz3m8vjDeM
+        actRunId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - HG7ML7M8z78YcAPEB
+        title:
+          type:
+          - string
+          - 'null'
+          examples:
+          - My Dataset
+        username:
+          type: string
+          examples:
+          - janedoe
+        generalAccess:
+          anyOf:
+          - $ref: '#/components/schemas/GeneralAccess'
+          - type: 'null'
+        stats:
+          $ref: '#/components/schemas/DatasetStats'
+    DatasetResponse:
+      title: DatasetResponse
+      description: Response containing dataset metadata.
       required:
       - data
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/ListOfDatasets'
-    PutItemsRequest:
-      title: PutItemsRequest
-      description: 'The request body containing the item(s) to add to the dataset. Can be a single
-
-        object or an array of objects. Each object represents one dataset item.
-
-        '
-      type: object
-      additionalProperties: true
-      example:
-        title: Example Item
-        url: https://example.com
-        price: 19.99
+          $ref: '#/components/schemas/DatasetResource'
     DatasetStatistics:
       title: DatasetStatistics
       type: object
@@ -1138,28 +1174,24 @@ components:
           price:
             min: 59
             max: 89
-    DatasetStats:
-      title: DatasetStats
+    DatasetSchemaValidationErrorData:
+      title: DatasetSchemaValidationErrorData
+      required:
+      - invalidItems
       type: object
       properties:
-        readCount:
-          type: integer
-          examples:
-          - 22
-        writeCount:
-          type: integer
-          examples:
-          - 3
-        storageBytes:
-          type: integer
-          description: Total storage size in bytes. Only returned by the single-dataset endpoint.
-          examples:
-          - 783
-        inflatedBytes:
-          type: integer
-          description: Uncompressed size in bytes. Only returned by the dataset list endpoint.
-          examples:
-          - 0
+        invalidItems:
+          type: array
+          description: A list of invalid items in the received array of items.
+          items:
+            $ref: '#/components/schemas/InvalidDatasetItem'
+    StorageOwnership:
+      type: string
+      enum:
+      - ownedByMe
+      - sharedWithMe
+      examples:
+      - ownedByMe
     PaginationResponse:
       title: PaginationResponse
       description: Common pagination fields for list responses.
@@ -1200,183 +1232,6 @@ components:
           minimum: 0
           examples:
           - 1
-    UpdateDatasetRequest:
-      title: UpdateDatasetRequest
-      type: object
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-        generalAccess:
-          $ref: '#/components/schemas/GeneralAccess'
-      example:
-        name: new-dataset-name
-        generalAccess: RESTRICTED
-    GeneralAccess:
-      title: GeneralAccess
-      type: string
-      enum:
-      - ANYONE_WITH_ID_CAN_READ
-      - ANYONE_WITH_NAME_CAN_READ
-      - FOLLOW_USER_SETTING
-      - RESTRICTED
-      examples:
-      - RESTRICTED
-      description: Defines the general access level for the resource.
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
-    DatasetResponse:
-      title: DatasetResponse
-      description: Response containing dataset metadata.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/DatasetResource'
-    StorageOwnership:
-      type: string
-      enum:
-      - ownedByMe
-      - sharedWithMe
-      examples:
-      - ownedByMe
-    DatasetItemValidationError:
-      title: DatasetItemValidationError
-      type: object
-      properties:
-        instancePath:
-          type: string
-          description: The path to the instance being validated.
-        schemaPath:
-          type: string
-          description: The path to the schema that failed the validation.
-        keyword:
-          type: string
-          description: The validation keyword that caused the error.
-        message:
-          type: string
-          description: A message describing the validation error.
-        params:
-          type: object
-          description: Additional parameters specific to the validation error.
-    DatasetResource:
-      title: DatasetResource
-      required:
-      - id
-      - userId
-      - createdAt
-      - modifiedAt
-      - accessedAt
-      - itemCount
-      - cleanItemCount
-      - consoleUrl
-      type: object
-      properties:
-        id:
-          type: string
-          examples:
-          - WkzbQMuFYuamGv3YF
-        name:
-          type:
-          - string
-          - 'null'
-          examples:
-          - d7b9MDYsbtX5L7XAj
-        userId:
-          type: string
-          examples:
-          - wRsJZtadYvn4mBZmm
-        createdAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-12T07:34:14.202Z'
-        modifiedAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-13T08:36:13.202Z'
-        accessedAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-14T08:36:13.202Z'
-        itemCount:
-          type: integer
-          minimum: 0
-          examples:
-          - 7
-        cleanItemCount:
-          type: integer
-          minimum: 0
-          examples:
-          - 5
-        actId:
-          type:
-          - string
-          - 'null'
-        actRunId:
-          type:
-          - string
-          - 'null'
-        fields:
-          type:
-          - array
-          - 'null'
-          items:
-            type: string
-          description: ''
-        schema:
-          type:
-          - object
-          - 'null'
-          description: Defines the schema of items in your dataset, the full specification can be found in [Apify docs](/storage/dataset-schema)
-          example:
-            actorSpecification: 1
-            title: My dataset
-            views:
-              overview:
-                title: Overview
-                transformation:
-                  fields:
-                  - linkUrl
-                display:
-                  component: table
-                  properties:
-                    linkUrl:
-                      label: Link URL
-                      format: link
-        consoleUrl:
-          type: string
-          format: uri
-          examples:
-          - https://console.apify.com/storage/datasets/27TmTznX9YPeAYhkC
-        itemsPublicUrl:
-          type: string
-          format: uri
-          description: A public link to access the dataset items directly.
-          examples:
-          - https://api.apify.com/v2/datasets/WkzbQMuFYuamGv3YF/items?signature=abc123
-        urlSigningSecretKey:
-          type:
-          - string
-          - 'null'
-          description: A secret key for generating signed public URLs. It is only provided to clients with WRITE permission for the dataset.
-        generalAccess:
-          anyOf:
-          - $ref: '#/components/schemas/GeneralAccess'
-          - type: 'null'
-        stats:
-          $ref: '#/components/schemas/DatasetStats'
     DatasetSchemaValidationError:
       title: DatasetSchemaValidationError
       type: object
@@ -1393,6 +1248,140 @@ components:
           - Schema validation failed
         data:
           $ref: '#/components/schemas/DatasetSchemaValidationErrorData'
+    GeneralAccess:
+      title: GeneralAccess
+      type: string
+      enum:
+      - ANYONE_WITH_ID_CAN_READ
+      - ANYONE_WITH_NAME_CAN_READ
+      - FOLLOW_USER_SETTING
+      - RESTRICTED
+      examples:
+      - RESTRICTED
+      description: Defines the general access level for the resource.
+    ListOfDatasets:
+      title: ListOfDatasets
+      allOf:
+      - $ref: '#/components/schemas/PaginationResponse'
+      - type: object
+        required:
+        - items
+        properties:
+          unnamed:
+            type: boolean
+            description: Whether the listing was filtered to only unnamed datasets.
+            examples:
+            - false
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/DatasetListItem'
+    ListOfDatasetsResponse:
+      title: ListOfDatasetsResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfDatasets'
+    DatasetFieldStatistics:
+      title: DatasetFieldStatistics
+      type: object
+      properties:
+        min:
+          type:
+          - number
+          - 'null'
+          description: Minimum value of the field. For numbers, this is calculated directly. For strings, this is the length of the shortest string. For arrays, this is the length of the shortest array. For objects, this is the number of keys in the smallest object.
+        max:
+          type:
+          - number
+          - 'null'
+          description: Maximum value of the field. For numbers, this is calculated directly. For strings, this is the length of the longest string. For arrays, this is the length of the longest array. For objects, this is the number of keys in the largest object.
+        nullCount:
+          type:
+          - integer
+          - 'null'
+          description: How many items in the dataset have a null value for this field.
+        emptyCount:
+          type:
+          - integer
+          - 'null'
+          description: How many items in the dataset are `undefined`, meaning that for example empty string is not considered empty.
+    PutItemsErrorResponse:
+      title: PutItemsErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/DatasetSchemaValidationError'
+      example:
+        error:
+          type: schema-validation-error
+          message: Schema validation failed
+          data:
+            invalidItems:
+            - itemPosition: 2
+              validationErrors:
+              - instancePath: /1/stringField
+                schemaPath: /items/properties/stringField/type
+                keyword: type
+                params:
+                  type: string
+                message: must be string
+    InvalidDatasetItem:
+      title: InvalidDatasetItem
+      type: object
+      properties:
+        itemPosition:
+          type: integer
+          description: The position of the invalid item in the array.
+          examples:
+          - 2
+        validationErrors:
+          type: array
+          description: A complete list of AJV validation error objects for the invalid item.
+          items:
+            $ref: '#/components/schemas/DatasetItemValidationError'
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
+    UpdateDatasetRequest:
+      title: UpdateDatasetRequest
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        generalAccess:
+          $ref: '#/components/schemas/GeneralAccess'
+      example:
+        name: new-dataset-name
+        generalAccess: RESTRICTED
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    DatasetStatisticsResponse:
+      title: DatasetStatisticsResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/DatasetStatistics'
     ErrorType:
       title: ErrorType
       type: string
@@ -1793,85 +1782,49 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    PutItemsErrorResponse:
-      title: PutItemsErrorResponse
-      required:
-      - error
+    DatasetItemValidationError:
+      title: DatasetItemValidationError
       type: object
       properties:
-        error:
-          $ref: '#/components/schemas/DatasetSchemaValidationError'
+        instancePath:
+          type: string
+          description: The path to the instance being validated.
+        schemaPath:
+          type: string
+          description: The path to the schema that failed the validation.
+        keyword:
+          type: string
+          description: The validation keyword that caused the error.
+        message:
+          type: string
+          description: A message describing the validation error.
+        params:
+          type: object
+          description: Additional parameters specific to the validation error.
+    PutItemsRequest:
+      title: PutItemsRequest
+      description: 'The request body containing the item(s) to add to the dataset. Can be a single
+
+        object or an array of objects. Each object represents one dataset item.
+
+        '
+      type: object
+      additionalProperties: true
       example:
-        error:
-          type: schema-validation-error
-          message: Schema validation failed
-          data:
-            invalidItems:
-            - itemPosition: 2
-              validationErrors:
-              - instancePath: /1/stringField
-                schemaPath: /items/properties/stringField/type
-                keyword: type
-                params:
-                  type: string
-                message: must be string
-    InvalidDatasetItem:
-      title: InvalidDatasetItem
-      type: object
-      properties:
-        itemPosition:
-          type: integer
-          description: The position of the invalid item in the array.
-          examples:
-          - 2
-        validationErrors:
-          type: array
-          description: A complete list of AJV validation error objects for the invalid item.
-          items:
-            $ref: '#/components/schemas/DatasetItemValidationError'
-    DatasetFieldStatistics:
-      title: DatasetFieldStatistics
-      type: object
-      properties:
-        min:
-          type:
-          - number
-          - 'null'
-          description: Minimum value of the field. For numbers, this is calculated directly. For strings, this is the length of the shortest string. For arrays, this is the length of the shortest array. For objects, this is the number of keys in the smallest object.
-        max:
-          type:
-          - number
-          - 'null'
-          description: Maximum value of the field. For numbers, this is calculated directly. For strings, this is the length of the longest string. For arrays, this is the length of the longest array. For objects, this is the number of keys in the largest object.
-        nullCount:
-          type:
-          - integer
-          - 'null'
-          description: How many items in the dataset have a null value for this field.
-        emptyCount:
-          type:
-          - integer
-          - 'null'
-          description: How many items in the dataset are `undefined`, meaning that for example empty string is not considered empty.
-    DatasetStatisticsResponse:
-      title: DatasetStatisticsResponse
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/DatasetStatistics'
-    DatasetListItem:
-      title: DatasetListItem
+        title: Example Item
+        url: https://example.com
+        price: 19.99
+    DatasetResource:
+      title: DatasetResource
       required:
       - id
-      - name
       - userId
       - createdAt
       - modifiedAt
       - accessedAt
       - itemCount
       - cleanItemCount
+      - consoleUrl
       type: object
       properties:
         id:
@@ -1879,13 +1832,15 @@ components:
           examples:
           - WkzbQMuFYuamGv3YF
         name:
-          type: string
+          type:
+          - string
+          - 'null'
           examples:
           - d7b9MDYsbtX5L7XAj
         userId:
           type: string
           examples:
-          - tbXmWu7GCxnyYtSiL
+          - wRsJZtadYvn4mBZmm
         createdAt:
           type: string
           format: date-time
@@ -1903,142 +1858,103 @@ components:
           - '2019-12-14T08:36:13.202Z'
         itemCount:
           type: integer
+          minimum: 0
           examples:
           - 7
         cleanItemCount:
           type: integer
+          minimum: 0
           examples:
           - 5
         actId:
           type:
           - string
           - 'null'
-          examples:
-          - zdc3Pyhyz3m8vjDeM
         actRunId:
           type:
           - string
           - 'null'
+        fields:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: ''
+        schema:
+          type:
+          - object
+          - 'null'
+          description: Defines the schema of items in your dataset, the full specification can be found in [Apify docs](/storage/dataset-schema)
+          example:
+            actorSpecification: 1
+            title: My dataset
+            views:
+              overview:
+                title: Overview
+                transformation:
+                  fields:
+                  - linkUrl
+                display:
+                  component: table
+                  properties:
+                    linkUrl:
+                      label: Link URL
+                      format: link
+        consoleUrl:
+          type: string
+          format: uri
           examples:
-          - HG7ML7M8z78YcAPEB
-        title:
+          - https://console.apify.com/storage/datasets/27TmTznX9YPeAYhkC
+        itemsPublicUrl:
+          type: string
+          format: uri
+          description: A public link to access the dataset items directly.
+          examples:
+          - https://api.apify.com/v2/datasets/WkzbQMuFYuamGv3YF/items?signature=abc123
+        urlSigningSecretKey:
           type:
           - string
           - 'null'
-          examples:
-          - My Dataset
-        username:
-          type: string
-          examples:
-          - janedoe
+          description: A secret key for generating signed public URLs. It is only provided to clients with WRITE permission for the dataset.
         generalAccess:
           anyOf:
           - $ref: '#/components/schemas/GeneralAccess'
           - type: 'null'
         stats:
           $ref: '#/components/schemas/DatasetStats'
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
+    DatasetStats:
+      title: DatasetStats
       type: object
       properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
-  responses:
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    PaymentRequired:
-      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: x402-payment-required
-              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    PayloadTooLarge:
-      description: Payload too large - the request body exceeds the size limit.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: request-too-large
-              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    UnsupportedMediaType:
-      description: Unsupported media type - the Content-Encoding of the request is not supported.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: unsupported-content-encoding
-              message: Content-Encoding "bla" is not supported.
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
-    NoContent:
-      description: No content
+        readCount:
+          type: integer
+          examples:
+          - 22
+        writeCount:
+          type: integer
+          examples:
+          - 3
+        storageBytes:
+          type: integer
+          description: Total storage size in bytes. Only returned by the single-dataset endpoint.
+          examples:
+          - 783
+        inflatedBytes:
+          type: integer
+          description: Uncompressed size in bytes. Only returned by the dataset list endpoint.
+          examples:
+          - 0
   parameters:
+    datasetId:
+      name: datasetId
+      in: path
+      description: Dataset ID or `username~dataset-name`.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: WkzbQMuFYuamGv3YF
     simplified:
       name: simplified
       in: query
@@ -2054,75 +1970,26 @@ components:
       schema:
         type: boolean
         example: false
-    signature:
-      name: signature
+    format:
+      name: format
       in: query
-      description: Signature used for the access.
-      required: false
-      style: form
-      schema:
-        type: string
-        example: 2wTI46Bg8qWQrV7tavlPI
-    delimiter:
-      name: delimiter
-      in: query
-      description: 'A delimiter character for CSV files, only used if `format=csv`. You
-
-        might need to URL-encode the character (e.g. use `%09` for tab or `%3B`
-
-        for semicolon). The default delimiter is a simple comma (`,`).
+      description: 'Format of the results, possible values are: `json`, `jsonl`, `csv`, `html`, `xlsx`, `xml` and `rss`. The default value is `json`.
 
         '
       style: form
       explode: true
       schema:
         type: string
-        example: ;
-    clean:
-      name: clean
+        example: json
+    omit:
+      name: omit
       in: query
-      description: 'If `true` or `1` then the API endpoint returns only non-empty items and skips hidden fields (i.e. fields starting with the # character).
-
-        The `clean` parameter is just a shortcut for `skipHidden=true` and `skipEmpty=true` parameters.
-
-        Note that since some objects might be skipped from the output, that the result might contain less items than the `limit` value.
-
-        '
+      description: A comma-separated list of fields which should be omitted from the items.
       style: form
       explode: true
       schema:
-        type: boolean
-        example: false
-    bom:
-      name: bom
-      in: query
-      description: 'All text responses are encoded in UTF-8 encoding. By default, the
-
-        `format=csv` files are prefixed with the UTF-8 Byte Order Mark (BOM), while `json`, `jsonl`, `xml`, `html` and `rss` files are not.
-
-
-        If you want to override this default behavior, specify `bom=1` query parameter to include the BOM or `bom=0` to skip it.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    skipEmpty:
-      name: skipEmpty
-      in: query
-      description: 'If `true` or `1` then empty items are skipped from the output.
-
-
-        Note that if used, the results might contain less items than the limit value.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
+        type: string
+        example: myValue,myOtherValue
     descDataset:
       name: desc
       in: query
@@ -2131,15 +1998,6 @@ components:
         To reverse the order, set this parameter to `true` or `1`.
 
         '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: true
-    skipHeaderRow:
-      name: skipHeaderRow
-      in: query
-      description: If `true` or `1` then header row in the `csv` format is skipped.
       style: form
       explode: true
       schema:
@@ -2158,27 +2016,6 @@ components:
       schema:
         type: string
         example: overview
-    limit:
-      name: limit
-      in: query
-      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 1000
-    omit:
-      name: omit
-      in: query
-      description: A comma-separated list of fields which should be omitted from the items.
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: myValue,myOtherValue
     xmlRoot:
       name: xmlRoot
       in: query
@@ -2190,23 +2027,82 @@ components:
       schema:
         type: string
         example: items
-    flatten:
-      name: flatten
+    unnamed:
+      name: unnamed
       in: query
-      description: 'A comma-separated list of fields which should transform nested objects into flat structures.
+      description: 'If `true` or `1` then all the storages are returned. By default, only
 
+        named storages are returned.
 
-        For example, with `flatten="foo"` the object `{"foo":{"bar": "hello"}}` is turned into `{"foo.bar": "hello"}`.
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    fields:
+      name: fields
+      in: query
+      description: 'A comma-separated list of fields which should be picked from the items, only these fields will remain in the resulting record objects.
 
+        Note that the fields in the outputted items are sorted the same way as they are specified in the `fields` query parameter.
 
-        The original object with properties is replaced with the flattened object.
+        You can use this feature to effectively fix the output format.
 
         '
       style: form
       explode: true
       schema:
         type: string
-        example: myValue
+        example: myValue,myOtherValue
+    clean:
+      name: clean
+      in: query
+      description: 'If `true` or `1` then the API endpoint returns only non-empty items and skips hidden fields (i.e. fields starting with the # character).
+
+        The `clean` parameter is just a shortcut for `skipHidden=true` and `skipEmpty=true` parameters.
+
+        Note that since some objects might be skipped from the output, that the result might contain less items than the `limit` value.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    descCreatedAt:
+      name: desc
+      in: query
+      description: 'If `true` or `1` then the objects are sorted by the `createdAt` field in
+
+        descending order. By default, they are sorted in ascending order.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    xmlRow:
+      name: xmlRow
+      in: query
+      description: 'Overrides default element name that wraps each page or page function result object in `xml` output. By default the element name is `item`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: item
+    skipHeaderRow:
+      name: skipHeaderRow
+      in: query
+      description: If `true` or `1` then header row in the `csv` format is skipped.
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
     skipFailedPages:
       name: skipFailedPages
       in: query
@@ -2240,54 +2136,6 @@ components:
       schema:
         type: string
         example: myValue,myOtherValue
-    datasetId:
-      name: datasetId
-      in: path
-      description: Dataset ID or `username~dataset-name`.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: WkzbQMuFYuamGv3YF
-    feedTitle:
-      name: feedTitle
-      in: query
-      description: 'Overrides the auto-generated RSS channel `<title>` element.
-
-        Only used when `format=rss`. If not provided, the title defaults to `Dataset <label>`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: Latest posts from r/pasta
-    fields:
-      name: fields
-      in: query
-      description: 'A comma-separated list of fields which should be picked from the items, only these fields will remain in the resulting record objects.
-
-        Note that the fields in the outputted items are sorted the same way as they are specified in the `fields` query parameter.
-
-        You can use this feature to effectively fix the output format.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: myValue,myOtherValue
-    format:
-      name: format
-      in: query
-      description: 'Format of the results, possible values are: `json`, `jsonl`, `csv`, `html`, `xlsx`, `xml` and `rss`. The default value is `json`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: json
     skipHidden:
       name: skipHidden
       in: query
@@ -2299,47 +2147,20 @@ components:
       schema:
         type: boolean
         example: false
-    outputFields:
-      name: outputFields
+    skipEmpty:
+      name: skipEmpty
       in: query
-      description: 'A comma-separated list of output field names that positionally rename the fields specified in the `fields` parameter.
+      description: 'If `true` or `1` then empty items are skipped from the output.
 
-        For example, `?fields=headline,url&outputFields=title,link` renames `headline` to `title` and `url` to `link` in the output.
 
-        The number of names in `outputFields` must match the number of names in `fields`.
-
-        Requires the `fields` parameter to be specified as well.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: title,link
-    xmlRow:
-      name: xmlRow
-      in: query
-      description: 'Overrides default element name that wraps each page or page function result object in `xml` output. By default the element name is `item`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: item
-    descCreatedAt:
-      name: desc
-      in: query
-      description: 'If `true` or `1` then the objects are sorted by the `createdAt` field in
-
-        descending order. By default, they are sorted in ascending order.
+        Note that if used, the results might contain less items than the limit value.
 
         '
       style: form
       explode: true
       schema:
         type: boolean
-        example: true
+        example: false
     feedDescription:
       name: feedDescription
       in: query
@@ -2353,41 +2174,6 @@ components:
       schema:
         type: string
         example: Scraped forum posts
-    Content-Encoding:
-      name: Content-Encoding
-      in: header
-      description: Compression encoding of the request body.
-      required: false
-      style: simple
-      schema:
-        enum:
-        - br
-        - gzip
-        - deflate
-        - identity
-        type: string
-    limit-2:
-      name: limit
-      in: query
-      description: Maximum number of items to return. By default there is no limit.
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-    unnamed:
-      name: unnamed
-      in: query
-      description: 'If `true` or `1` then all the storages are returned. By default, only
-
-        named storages are returned.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: true
     attachment:
       name: attachment
       in: query
@@ -2415,6 +2201,220 @@ components:
         type: number
         format: double
         example: 0
+    limit-2:
+      name: limit
+      in: query
+      description: Maximum number of items to return. By default there is no limit.
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+    limit:
+      name: limit
+      in: query
+      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 1000
+    signature:
+      name: signature
+      in: query
+      description: Signature used for the access.
+      required: false
+      style: form
+      schema:
+        type: string
+        example: 2wTI46Bg8qWQrV7tavlPI
+    Content-Encoding:
+      name: Content-Encoding
+      in: header
+      description: Compression encoding of the request body.
+      required: false
+      style: simple
+      schema:
+        enum:
+        - br
+        - gzip
+        - deflate
+        - identity
+        type: string
+    delimiter:
+      name: delimiter
+      in: query
+      description: 'A delimiter character for CSV files, only used if `format=csv`. You
+
+        might need to URL-encode the character (e.g. use `%09` for tab or `%3B`
+
+        for semicolon). The default delimiter is a simple comma (`,`).
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: ;
+    outputFields:
+      name: outputFields
+      in: query
+      description: 'A comma-separated list of output field names that positionally rename the fields specified in the `fields` parameter.
+
+        For example, `?fields=headline,url&outputFields=title,link` renames `headline` to `title` and `url` to `link` in the output.
+
+        The number of names in `outputFields` must match the number of names in `fields`.
+
+        Requires the `fields` parameter to be specified as well.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: title,link
+    feedTitle:
+      name: feedTitle
+      in: query
+      description: 'Overrides the auto-generated RSS channel `<title>` element.
+
+        Only used when `format=rss`. If not provided, the title defaults to `Dataset <label>`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: Latest posts from r/pasta
+    flatten:
+      name: flatten
+      in: query
+      description: 'A comma-separated list of fields which should transform nested objects into flat structures.
+
+
+        For example, with `flatten="foo"` the object `{"foo":{"bar": "hello"}}` is turned into `{"foo.bar": "hello"}`.
+
+
+        The original object with properties is replaced with the flattened object.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: myValue
+    bom:
+      name: bom
+      in: query
+      description: 'All text responses are encoded in UTF-8 encoding. By default, the
+
+        `format=csv` files are prefixed with the UTF-8 Byte Order Mark (BOM), while `json`, `jsonl`, `xml`, `html` and `rss` files are not.
+
+
+        If you want to override this default behavior, specify `bom=1` query parameter to include the BOM or `bom=0` to skip it.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+  responses:
+    NoContent:
+      description: No content
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    PaymentRequired:
+      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: x402-payment-required
+              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
   securitySchemes:
     httpBearer:
       type: http

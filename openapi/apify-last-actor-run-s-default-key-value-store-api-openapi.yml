@@ -562,220 +562,22 @@ paths:
       - $ref: '#/components/parameters/origin'
       - $ref: '#/components/parameters/recordKey'
 components:
-  responses:
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    PaymentRequired:
-      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: x402-payment-required
-              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    PayloadTooLarge:
-      description: Payload too large - the request body exceeds the size limit.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: request-too-large
-              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    UnsupportedMediaType:
-      description: Unsupported media type - the Content-Encoding of the request is not supported.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: unsupported-content-encoding
-              message: Content-Encoding "bla" is not supported.
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
-    NoContent:
-      description: No content
-  parameters:
-    attachment-2:
-      name: attachment
-      in: query
-      description: 'If `true` or `1`, the response will be served with `Content-Disposition: attachment` header,
-
-        causing web browsers to offer downloading HTML records instead of displaying them.
-
-        '
-      required: false
-      schema:
-        type: boolean
-        example: true
-    signature:
-      name: signature
-      in: query
-      description: Signature used for the access.
-      required: false
-      style: form
-      schema:
-        type: string
-        example: 2wTI46Bg8qWQrV7tavlPI
-    limit-3:
-      name: limit
-      in: query
-      description: Number of keys to be returned.
-      schema:
-        type: number
-        format: int32
-        minimum: 1
-        maximum: 1000
-        default: 1000
-        example: 100
-    prefixKeys:
-      name: prefix
-      in: query
-      description: Limit the results to keys that start with a specific prefix.
-      schema:
-        type: string
-        example: post-images-
-    actorId:
-      name: actorId
-      in: path
-      description: Actor ID or the username of the Actor owner and the Actor name, separated by a tilde (`~`).
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: compass~google-maps-extractor
-    recordKey:
-      name: recordKey
-      in: path
-      description: Key of the record.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: someKey
-    status-2:
-      name: status
-      in: query
-      description: Filter for the run status.
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: SUCCEEDED
-    prefixRecords:
-      name: prefix
-      in: query
-      description: 'If specified, only records whose key starts with the given prefix are included in the archive.
-
-        '
-      schema:
-        type: string
-        example: my-prefix/
-    Content-Encoding:
-      name: Content-Encoding
-      in: header
-      description: Compression encoding of the request body.
-      required: false
-      style: simple
-      schema:
-        enum:
-        - br
-        - gzip
-        - deflate
-        - identity
-        type: string
-    collectionKeys:
-      name: collection
-      in: query
-      description: Limit the results to keys that belong to a specific collection from the key-value store schema. The key-value store need to have a schema defined for this parameter to work.
-      schema:
-        type: string
-        example: postImages
-    exclusiveStartKey:
-      name: exclusiveStartKey
-      in: query
-      description: All keys up to this one (including) are skipped from the result.
-      schema:
-        type: string
-        example: Ihnsp8YrvJ8102Kj
-    origin:
-      name: origin
-      in: query
-      description: Filter for the run origin, i.e. the means by which the run was started.
-      style: form
-      explode: true
-      schema:
-        $ref: '#/components/schemas/RunOrigin'
-    collectionRecords:
-      name: collection
-      in: query
-      description: 'If specified, only records belonging to a specific collection from the key-value store schema. The key-value store need to have a schema defined for this parameter to work.
-
-        '
-      schema:
-        type: string
-        example: my-collection
   schemas:
+    RunOrigin:
+      title: RunOrigin
+      type: string
+      enum:
+      - DEVELOPMENT
+      - WEB
+      - API
+      - SCHEDULER
+      - TEST
+      - WEBHOOK
+      - ACTOR
+      - CLI
+      - CI
+      - STANDBY
+      - MCP
     PutRecordRequest:
       title: PutRecordRequest
       description: 'The request body contains the value to store in the record. The content type
@@ -788,34 +590,6 @@ components:
       example:
         message: Hello, world!
         count: 42
-    KeyValueStoreStats:
-      title: KeyValueStoreStats
-      type: object
-      properties:
-        readCount:
-          type: integer
-          examples:
-          - 9
-        writeCount:
-          type: integer
-          examples:
-          - 3
-        deleteCount:
-          type: integer
-          examples:
-          - 6
-        listCount:
-          type: integer
-          examples:
-          - 2
-        s3StorageBytes:
-          type: integer
-          examples:
-          - 18
-        storageBytes:
-          type: integer
-          examples:
-          - 457225
     KeyValueStoreKey:
       title: KeyValueStoreKey
       type: object
@@ -838,97 +612,17 @@ components:
           description: A public link to access this record directly.
           examples:
           - https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/records/some-key?signature=abc123
-    KeyValueStoreResource:
-      title: KeyValueStoreResource
-      required:
-      - id
-      - createdAt
-      - modifiedAt
-      - accessedAt
-      type: object
-      properties:
-        id:
-          type: string
-          examples:
-          - WkzbQMuFYuamGv3YF
-        name:
-          type:
-          - string
-          - 'null'
-          examples:
-          - d7b9MDYsbtX5L7XAj
-        userId:
-          type:
-          - string
-          - 'null'
-          examples:
-          - BPWDBd7Z9c746JAnF
-        username:
-          type:
-          - string
-          - 'null'
-          examples:
-          - janedoe
-        createdAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-12T07:34:14.202Z'
-        modifiedAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-13T08:36:13.202Z'
-        accessedAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-14T08:36:13.202Z'
-        actId:
-          type:
-          - string
-          - 'null'
-          examples:
-          - null
-        actRunId:
-          type:
-          - string
-          - 'null'
-          examples:
-          - null
-        consoleUrl:
-          type: string
-          format: uri
-          examples:
-          - https://console.apify.com/storage/key-value-stores/27TmTznX9YPeAYhkC
-        keysPublicUrl:
-          type: string
-          format: uri
-          description: A public link to access keys of the key-value store directly.
-          examples:
-          - https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/keys?signature=abc123
-        recordsPublicUrl:
-          type: string
-          format: uri
-          description: A public link to access records of the key-value store directly.
-          examples:
-          - https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/records
-        schema:
-          type:
-          - object
-          - 'null'
-          description: Optional JSON schema describing the keys stored in the key-value store.
-        urlSigningSecretKey:
-          type:
-          - string
-          - 'null'
-          description: A secret key for generating signed public URLs. It is only provided to clients with WRITE permission for the key-value store.
-        generalAccess:
-          anyOf:
-          - $ref: '#/components/schemas/GeneralAccess'
-          - type: 'null'
-        stats:
-          $ref: '#/components/schemas/KeyValueStoreStats'
+    GeneralAccess:
+      title: GeneralAccess
+      type: string
+      enum:
+      - ANYONE_WITH_ID_CAN_READ
+      - ANYONE_WITH_NAME_CAN_READ
+      - FOLLOW_USER_SETTING
+      - RESTRICTED
+      examples:
+      - RESTRICTED
+      description: Defines the general access level for the resource.
     ListOfKeys:
       title: ListOfKeys
       type: object
@@ -967,32 +661,6 @@ components:
           - 'null'
           examples:
           - third-key
-    GeneralAccess:
-      title: GeneralAccess
-      type: string
-      enum:
-      - ANYONE_WITH_ID_CAN_READ
-      - ANYONE_WITH_NAME_CAN_READ
-      - FOLLOW_USER_SETTING
-      - RESTRICTED
-      examples:
-      - RESTRICTED
-      description: Defines the general access level for the resource.
-    RunOrigin:
-      title: RunOrigin
-      type: string
-      enum:
-      - DEVELOPMENT
-      - WEB
-      - API
-      - SCHEDULER
-      - TEST
-      - WEBHOOK
-      - ACTOR
-      - CLI
-      - CI
-      - STANDBY
-      - MCP
     ErrorDetail:
       title: ErrorDetail
       type: object
@@ -1002,6 +670,42 @@ components:
         message:
           type: string
           description: Human-readable error message describing what went wrong.
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    KeyValueStoreStats:
+      title: KeyValueStoreStats
+      type: object
+      properties:
+        readCount:
+          type: integer
+          examples:
+          - 9
+        writeCount:
+          type: integer
+          examples:
+          - 3
+        deleteCount:
+          type: integer
+          examples:
+          - 6
+        listCount:
+          type: integer
+          examples:
+          - 2
+        s3StorageBytes:
+          type: integer
+          examples:
+          - 18
+        storageBytes:
+          type: integer
+          examples:
+          - 457225
     ErrorType:
       title: ErrorType
       type: string
@@ -1414,15 +1118,97 @@ components:
       example:
         message: Hello, world!
         count: 42
-    KeyValueStoreResponse:
-      title: KeyValueStoreResponse
-      description: Response containing key-value store data.
+    KeyValueStoreResource:
+      title: KeyValueStoreResource
       required:
-      - data
+      - id
+      - createdAt
+      - modifiedAt
+      - accessedAt
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/KeyValueStoreResource'
+        id:
+          type: string
+          examples:
+          - WkzbQMuFYuamGv3YF
+        name:
+          type:
+          - string
+          - 'null'
+          examples:
+          - d7b9MDYsbtX5L7XAj
+        userId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - BPWDBd7Z9c746JAnF
+        username:
+          type:
+          - string
+          - 'null'
+          examples:
+          - janedoe
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-12T07:34:14.202Z'
+        modifiedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-13T08:36:13.202Z'
+        accessedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-14T08:36:13.202Z'
+        actId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - null
+        actRunId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - null
+        consoleUrl:
+          type: string
+          format: uri
+          examples:
+          - https://console.apify.com/storage/key-value-stores/27TmTznX9YPeAYhkC
+        keysPublicUrl:
+          type: string
+          format: uri
+          description: A public link to access keys of the key-value store directly.
+          examples:
+          - https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/keys?signature=abc123
+        recordsPublicUrl:
+          type: string
+          format: uri
+          description: A public link to access records of the key-value store directly.
+          examples:
+          - https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/records
+        schema:
+          type:
+          - object
+          - 'null'
+          description: Optional JSON schema describing the keys stored in the key-value store.
+        urlSigningSecretKey:
+          type:
+          - string
+          - 'null'
+          description: A secret key for generating signed public URLs. It is only provided to clients with WRITE permission for the key-value store.
+        generalAccess:
+          anyOf:
+          - $ref: '#/components/schemas/GeneralAccess'
+          - type: 'null'
+        stats:
+          $ref: '#/components/schemas/KeyValueStoreStats'
     UpdateKeyValueStoreRequest:
       title: UpdateKeyValueStoreRequest
       type: object
@@ -1458,14 +1244,228 @@ components:
           exclusiveStartKey: some-key
           isTruncated: true
           nextExclusiveStartKey: third-key
-    ErrorResponse:
-      title: ErrorResponse
+    KeyValueStoreResponse:
+      title: KeyValueStoreResponse
+      description: Response containing key-value store data.
       required:
-      - error
+      - data
       type: object
       properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
+        data:
+          $ref: '#/components/schemas/KeyValueStoreResource'
+  parameters:
+    limit-3:
+      name: limit
+      in: query
+      description: Number of keys to be returned.
+      schema:
+        type: number
+        format: int32
+        minimum: 1
+        maximum: 1000
+        default: 1000
+        example: 100
+    attachment-2:
+      name: attachment
+      in: query
+      description: 'If `true` or `1`, the response will be served with `Content-Disposition: attachment` header,
+
+        causing web browsers to offer downloading HTML records instead of displaying them.
+
+        '
+      required: false
+      schema:
+        type: boolean
+        example: true
+    actorId:
+      name: actorId
+      in: path
+      description: Actor ID or the username of the Actor owner and the Actor name, separated by a tilde (`~`).
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: compass~google-maps-extractor
+    collectionKeys:
+      name: collection
+      in: query
+      description: Limit the results to keys that belong to a specific collection from the key-value store schema. The key-value store need to have a schema defined for this parameter to work.
+      schema:
+        type: string
+        example: postImages
+    collectionRecords:
+      name: collection
+      in: query
+      description: 'If specified, only records belonging to a specific collection from the key-value store schema. The key-value store need to have a schema defined for this parameter to work.
+
+        '
+      schema:
+        type: string
+        example: my-collection
+    status-2:
+      name: status
+      in: query
+      description: Filter for the run status.
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: SUCCEEDED
+    prefixRecords:
+      name: prefix
+      in: query
+      description: 'If specified, only records whose key starts with the given prefix are included in the archive.
+
+        '
+      schema:
+        type: string
+        example: my-prefix/
+    origin:
+      name: origin
+      in: query
+      description: Filter for the run origin, i.e. the means by which the run was started.
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/RunOrigin'
+    recordKey:
+      name: recordKey
+      in: path
+      description: Key of the record.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: someKey
+    prefixKeys:
+      name: prefix
+      in: query
+      description: Limit the results to keys that start with a specific prefix.
+      schema:
+        type: string
+        example: post-images-
+    signature:
+      name: signature
+      in: query
+      description: Signature used for the access.
+      required: false
+      style: form
+      schema:
+        type: string
+        example: 2wTI46Bg8qWQrV7tavlPI
+    exclusiveStartKey:
+      name: exclusiveStartKey
+      in: query
+      description: All keys up to this one (including) are skipped from the result.
+      schema:
+        type: string
+        example: Ihnsp8YrvJ8102Kj
+    Content-Encoding:
+      name: Content-Encoding
+      in: header
+      description: Compression encoding of the request body.
+      required: false
+      style: simple
+      schema:
+        enum:
+        - br
+        - gzip
+        - deflate
+        - identity
+        type: string
+  responses:
+    NoContent:
+      description: No content
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    PaymentRequired:
+      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: x402-payment-required
+              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
   securitySchemes:
     httpBearer:
       type: http

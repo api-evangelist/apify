@@ -197,111 +197,46 @@ paths:
       - $ref: '#/components/parameters/status-2'
       - $ref: '#/components/parameters/origin'
 components:
-  responses:
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
   schemas:
-    RunOptions:
-      title: RunOptions
-      required:
-      - build
-      - timeoutSecs
-      - memoryMbytes
-      - diskMbytes
-      type: object
-      properties:
-        build:
-          type: string
-          examples:
-          - latest
-        timeoutSecs:
-          type: integer
-          minimum: 0
-          examples:
-          - 300
-        memoryMbytes:
-          type: integer
-          minimum: 128
-          maximum: 32768
-          examples:
-          - 1024
-        diskMbytes:
-          type: integer
-          minimum: 0
-          examples:
-          - 2048
-        maxItems:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-          examples:
-          - 1000
-        maxTotalChargeUsd:
-          type:
-          - number
-          - 'null'
-          minimum: 0
-          examples:
-          - 5
+    RunOrigin:
+      title: RunOrigin
+      type: string
+      enum:
+      - DEVELOPMENT
+      - WEB
+      - API
+      - SCHEDULER
+      - TEST
+      - WEBHOOK
+      - ACTOR
+      - CLI
+      - CI
+      - STANDBY
+      - MCP
+    PricePerDatasetItemActorPricingInfo:
+      title: PricePerDatasetItemActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - unitName
+        properties:
+          pricingModel:
+            type: string
+            const: PRICE_PER_DATASET_ITEM
+          unitName:
+            type: string
+            description: Name of the unit that is being charged
+          pricePerUnitUsd:
+            type: number
+            description: 'Price per unit in USD. Mutually exclusive with `tieredPricing` - exactly one of the two is present
+
+              on a pricing record.
+
+              '
+          tieredPricing:
+            $ref: '#/components/schemas/TieredPricingPerDatasetItem'
     TieredPricingPerEventEntry:
       title: TieredPricingPerEventEntry
       description: A single tier's price-per-event entry.
@@ -312,51 +247,6 @@ components:
         tieredEventPriceUsd:
           type: number
           description: Price per event in USD for this tier.
-    ActorChargeEvent:
-      title: ActorChargeEvent
-      description: 'Definition of a single chargeable event for a pay-per-event Actor. Each event is either flat-priced
-
-        (`eventPriceUsd` is set) or tier-priced (`eventTieredPricingUsd` is set); the two are mutually exclusive.
-
-        '
-      type: object
-      required:
-      - eventTitle
-      - eventDescription
-      properties:
-        eventTitle:
-          type: string
-          description: Human-readable title shown to users in the billing UI.
-        eventDescription:
-          type: string
-          description: Human-readable description of what triggers this event.
-        eventPriceUsd:
-          type: number
-          description: 'Flat price per event in USD. Present only for non-tiered events. Mutually exclusive with `eventTieredPricingUsd`.
-
-            '
-        eventTieredPricingUsd:
-          $ref: '#/components/schemas/TieredPricingPerEvent'
-        isPrimaryEvent:
-          type: boolean
-          description: Whether this event is the Actor's primary chargeable event.
-        isOneTimeEvent:
-          type: boolean
-          description: Whether this event can only be charged once per Actor run.
-    ActorRunPricingInfo:
-      title: ActorRunPricingInfo
-      discriminator:
-        propertyName: pricingModel
-        mapping:
-          PAY_PER_EVENT: '#/components/schemas/PayPerEventActorPricingInfo'
-          PRICE_PER_DATASET_ITEM: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
-          FLAT_PRICE_PER_MONTH: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
-          FREE: '#/components/schemas/FreeActorPricingInfo'
-      oneOf:
-      - $ref: '#/components/schemas/PayPerEventActorPricingInfo'
-      - $ref: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
-      - $ref: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
-      - $ref: '#/components/schemas/FreeActorPricingInfo'
     TieredPricingPerDatasetItemEntry:
       title: TieredPricingPerDatasetItemEntry
       description: A single tier's price-per-dataset-item entry.
@@ -367,24 +257,53 @@ components:
         tieredPricePerUnitUsd:
           type: number
           description: Price per unit in USD for this tier.
-    TieredPricingPerDatasetItem:
-      title: TieredPricingPerDatasetItem
-      description: 'Tiered price-per-dataset-item pricing, keyed by subscription tier (e.g. `FREE`, `BRONZE`, `SILVER`, `GOLD`,
-
-        `PLATINUM`, `DIAMOND`). The actual price applied to a run is resolved from the user''s tier.
-
-        '
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/TieredPricingPerDatasetItemEntry'
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
+    ActorJobStatus:
+      title: ActorJobStatus
+      type: string
+      enum:
+      - READY
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+      - TIMING-OUT
+      - TIMED-OUT
+      - ABORTING
+      - ABORTED
+      description: Status of an Actor job (run or build).
+    FreeActorPricingInfo:
+      title: FreeActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        properties:
+          pricingModel:
+            type: string
+            const: FREE
+    PayPerEventActorPricingInfo:
+      title: PayPerEventActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - pricingPerEvent
+        properties:
+          pricingModel:
+            type: string
+            const: PAY_PER_EVENT
+          pricingPerEvent:
+            type: object
+            properties:
+              actorChargeEvents:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/ActorChargeEvent'
+          minimalMaxTotalChargeUsd:
+            type:
+            - number
+            - 'null'
     RunUsage:
       title: RunUsage
       type: object
@@ -461,6 +380,35 @@ components:
           - 'null'
           examples:
           - 3
+    RunMeta:
+      title: RunMeta
+      required:
+      - origin
+      type: object
+      properties:
+        origin:
+          $ref: '#/components/schemas/RunOrigin'
+        clientIp:
+          type:
+          - string
+          - 'null'
+          description: IP address of the client that started the run.
+        userAgent:
+          type:
+          - string
+          - 'null'
+          description: User agent of the client that started the run.
+        scheduleId:
+          type:
+          - string
+          - 'null'
+          description: ID of the schedule that triggered the run.
+        scheduledAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Time when the run was scheduled.
     GeneralAccess:
       title: GeneralAccess
       type: string
@@ -472,21 +420,279 @@ components:
       examples:
       - RESTRICTED
       description: Defines the general access level for the resource.
-    RunOrigin:
-      title: RunOrigin
-      type: string
-      enum:
-      - DEVELOPMENT
-      - WEB
-      - API
-      - SCHEDULER
-      - TEST
-      - WEBHOOK
-      - ACTOR
-      - CLI
-      - CI
-      - STANDBY
-      - MCP
+    Run:
+      title: Run
+      description: Represents an Actor run and its associated data.
+      required:
+      - id
+      - actId
+      - userId
+      - startedAt
+      - status
+      - meta
+      - stats
+      - options
+      - buildId
+      - defaultKeyValueStoreId
+      - defaultDatasetId
+      - defaultRequestQueueId
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - HG7ML7M8z78YcAPEB
+          description: Unique identifier of the Actor run.
+        actId:
+          type: string
+          examples:
+          - HDSasDasz78YcAPEB
+          description: ID of the Actor that was run.
+        userId:
+          type: string
+          examples:
+          - 7sT5jcggjjA9fNcxF
+          description: ID of the user who started the run.
+        actorTaskId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - KJHSKHausidyaJKHs
+          description: ID of the Actor task, if the run was started from a task.
+        startedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-11-30T07:34:24.202Z'
+          description: Time when the Actor run started.
+        finishedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - '2019-12-12T09:30:12.202Z'
+          description: Time when the Actor run finished.
+        status:
+          description: Current status of the Actor run.
+          $ref: '#/components/schemas/ActorJobStatus'
+        statusMessage:
+          type:
+          - string
+          - 'null'
+          examples:
+          - Actor is running
+          description: Detailed message about the run status.
+        isStatusMessageTerminal:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+          description: Whether the status message is terminal (final).
+        meta:
+          description: Metadata about the Actor run.
+          $ref: '#/components/schemas/RunMeta'
+        pricingInfo:
+          description: Pricing information for the Actor.
+          $ref: '#/components/schemas/ActorRunPricingInfo'
+        stats:
+          description: Statistics of the Actor run.
+          $ref: '#/components/schemas/RunStats'
+        chargedEventCounts:
+          description: A map of charged event types to their counts. The keys are event type identifiers defined by the Actor's pricing model (pay-per-event), and the values are the number of times each event was charged during this run.
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            actor-start: 1
+            page-crawled: 150
+            data-extracted: 75
+        options:
+          description: Configuration options for the Actor run.
+          $ref: '#/components/schemas/RunOptions'
+        buildId:
+          type: string
+          examples:
+          - 7sT5jcggjjA9fNcxF
+          description: ID of the Actor build used for this run.
+        exitCode:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 0
+          description: Exit code of the Actor run process.
+        generalAccess:
+          description: General access level for the Actor run.
+          anyOf:
+          - $ref: '#/components/schemas/GeneralAccess'
+          - type: 'null'
+        defaultKeyValueStoreId:
+          type: string
+          examples:
+          - eJNzqsbPiopwJcgGQ
+          description: ID of the default key-value store for this run.
+        defaultDatasetId:
+          type: string
+          examples:
+          - wmKPijuyDnPZAPRMk
+          description: ID of the default dataset for this run.
+        defaultRequestQueueId:
+          type: string
+          examples:
+          - FL35cSF7jrxr3BY39
+          description: ID of the default request queue for this run.
+        storageIds:
+          type: object
+          description: A map of aliased storage IDs associated with this run, grouped by storage type.
+          properties:
+            datasets:
+              type: object
+              description: Aliased dataset IDs for this run.
+              properties:
+                default:
+                  type: string
+                  description: ID of the default dataset for this run.
+                  example: wmKPijuyDnPZAPRMk
+              additionalProperties:
+                type: string
+            keyValueStores:
+              type: object
+              description: Aliased key-value store IDs for this run.
+              properties:
+                default:
+                  type: string
+                  description: ID of the default key-value store for this run.
+                  example: eJNzqsbPiopwJcgGQ
+              additionalProperties:
+                type: string
+            requestQueues:
+              type: object
+              description: Aliased request queue IDs for this run.
+              properties:
+                default:
+                  type: string
+                  description: ID of the default request queue for this run.
+                  example: FL35cSF7jrxr3BY39
+              additionalProperties:
+                type: string
+        buildNumber:
+          type:
+          - string
+          - 'null'
+          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
+          examples:
+          - 0.0.36
+          description: Build number of the Actor build used for this run.
+        containerUrl:
+          type: string
+          format: uri
+          examples:
+          - https://g8kd8kbc5ge8.runs.apify.net
+          description: URL of the container running the Actor.
+        isContainerServerReady:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - true
+          description: Whether the container's HTTP server is ready to accept requests.
+        gitBranchName:
+          type:
+          - string
+          - 'null'
+          examples:
+          - master
+          description: Name of the git branch used for the Actor build.
+        usage:
+          description: Resource usage statistics for the run.
+          anyOf:
+          - $ref: '#/components/schemas/RunUsage'
+          - type: 'null'
+        usageTotalUsd:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.2654
+          description: 'Total cost in USD for this run. Represents what you actually pay. For run owners: includes platform usage (compute units) and/or event costs depending on the Actor''s pricing model. For run non-owners: only available for Pay-Per-Event Actors (event costs only). Requires authentication token to access.'
+        usageUsd:
+          description: Platform usage costs breakdown in USD. Only present if you own the run AND are paying for platform usage (Pay-Per-Usage, Rental, or Pay-Per-Event with usage costs like standby Actors). Not available for standard Pay-Per-Event Actors. Requires authentication token to access.
+          anyOf:
+          - $ref: '#/components/schemas/RunUsageUsd'
+          - type: 'null'
+        metamorphs:
+          description: List of metamorph events that occurred during the run.
+          anyOf:
+          - type: array
+            items:
+              $ref: '#/components/schemas/RunMetamorphEvent'
+          - type: 'null'
+        platformUsageBillingModel:
+          type: string
+          description: Indicates which party covers platform usage costs for this run.
+          examples:
+          - USER
+    RunResponse:
+      title: RunResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Run'
+    FlatPricePerMonthActorPricingInfo:
+      title: FlatPricePerMonthActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - pricePerUnitUsd
+        - trialMinutes
+        properties:
+          pricingModel:
+            type: string
+            const: FLAT_PRICE_PER_MONTH
+          trialMinutes:
+            type: integer
+            description: For how long this Actor can be used for free in trial period
+          pricePerUnitUsd:
+            type: number
+            description: Monthly flat price in USD
+    ActorChargeEvent:
+      title: ActorChargeEvent
+      description: 'Definition of a single chargeable event for a pay-per-event Actor. Each event is either flat-priced
+
+        (`eventPriceUsd` is set) or tier-priced (`eventTieredPricingUsd` is set); the two are mutually exclusive.
+
+        '
+      type: object
+      required:
+      - eventTitle
+      - eventDescription
+      properties:
+        eventTitle:
+          type: string
+          description: Human-readable title shown to users in the billing UI.
+        eventDescription:
+          type: string
+          description: Human-readable description of what triggers this event.
+        eventPriceUsd:
+          type: number
+          description: 'Flat price per event in USD. Present only for non-tiered events. Mutually exclusive with `eventTieredPricingUsd`.
+
+            '
+        eventTieredPricingUsd:
+          $ref: '#/components/schemas/TieredPricingPerEvent'
+        isPrimaryEvent:
+          type: boolean
+          description: Whether this event is the Actor's primary chargeable event.
+        isOneTimeEvent:
+          type: boolean
+          description: Whether this event can only be charged once per Actor run.
     ErrorDetail:
       title: ErrorDetail
       type: object
@@ -496,192 +702,28 @@ components:
         message:
           type: string
           description: Human-readable error message describing what went wrong.
-    CommonActorPricingInfo:
-      title: CommonActorPricingInfo
-      type: object
+    ErrorResponse:
+      title: ErrorResponse
       required:
-      - apifyMarginPercentage
-      - createdAt
-      - startedAt
-      properties:
-        apifyMarginPercentage:
-          type: number
-          examples:
-          - 0.2
-          description: 'Apify''s share of the revenue generated under this pricing info record, as a fraction between 0 and 1. Set by the Apify platform.
-
-            '
-        createdAt:
-          type: string
-          format: date-time
-          description: When this pricing info record has been created
-        startedAt:
-          type: string
-          format: date-time
-          description: Since when is this pricing info record effective for a given Actor
-        notifiedAboutFutureChangeAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          x-internal: true
-        notifiedAboutChangeAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          x-internal: true
-        reasonForChange:
-          type:
-          - string
-          - 'null'
-          x-internal: true
-        isPriceChangeNotificationSuppressed:
-          type: boolean
-          x-internal: true
-        forceContainsSignificantPriceChange:
-          type: boolean
-          x-internal: true
-    RunStats:
-      title: RunStats
+      - error
       type: object
       properties:
-        inputBodyLen:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-          examples:
-          - 240
-        migrationCount:
-          type: integer
-          minimum: 0
-          examples:
-          - 0
-        rebootCount:
-          type: integer
-          minimum: 0
-          examples:
-          - 0
-        restartCount:
-          type: integer
-          minimum: 0
-          examples:
-          - 0
-        resurrectCount:
-          type: integer
-          minimum: 0
-          examples:
-          - 2
-        memAvgBytes:
-          type: number
-          examples:
-          - 267874071.9
-        memMaxBytes:
-          type: integer
-          minimum: 0
-          examples:
-          - 404713472
-        memCurrentBytes:
-          type: integer
-          minimum: 0
-          examples:
-          - 0
-        cpuAvgUsage:
-          type: number
-          examples:
-          - 33.7532101107538
-        cpuMaxUsage:
-          type: number
-          examples:
-          - 169.650735534941
-        cpuCurrentUsage:
-          type: number
-          examples:
-          - 0
-        netRxBytes:
-          type: integer
-          minimum: 0
-          examples:
-          - 103508042
-        netTxBytes:
-          type: integer
-          minimum: 0
-          examples:
-          - 4854600
-        durationMillis:
-          type: integer
-          minimum: 0
-          examples:
-          - 248472
-        runTimeSecs:
-          type: number
-          minimum: 0
-          examples:
-          - 248.472
-        metamorph:
-          type: integer
-          minimum: 0
-          examples:
-          - 0
-        computeUnits:
-          type: number
-          minimum: 0
-          examples:
-          - 0.13804
-    ActorJobStatus:
-      title: ActorJobStatus
-      type: string
-      enum:
-      - READY
-      - RUNNING
-      - SUCCEEDED
-      - FAILED
-      - TIMING-OUT
-      - TIMED-OUT
-      - ABORTING
-      - ABORTED
-      description: Status of an Actor job (run or build).
-    RunMetamorphEvent:
-      title: RunMetamorphEvent
-      description: Information about a metamorph event that occurred during the run.
-      type: object
-      required:
-      - createdAt
-      - actorId
-      - buildId
-      properties:
-        createdAt:
-          type: string
-          format: date-time
-          description: Time when the metamorph occurred.
-          examples:
-          - '2019-11-30T07:39:24.202Z'
-        actorId:
-          type: string
-          description: ID of the Actor that the run was metamorphed to.
-          examples:
-          - nspoEjklmnsF2oosD
-        buildId:
-          type: string
-          description: ID of the build used for the metamorphed Actor.
-          examples:
-          - ME6oKecqy5kXDS4KQ
-        inputKey:
-          type:
-          - string
-          - 'null'
-          description: Key of the input record in the key-value store.
-          examples:
-          - INPUT-METAMORPH-1
-    RunResponse:
-      title: RunResponse
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Run'
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    ActorRunPricingInfo:
+      title: ActorRunPricingInfo
+      discriminator:
+        propertyName: pricingModel
+        mapping:
+          PAY_PER_EVENT: '#/components/schemas/PayPerEventActorPricingInfo'
+          PRICE_PER_DATASET_ITEM: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
+          FLAT_PRICE_PER_MONTH: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
+          FREE: '#/components/schemas/FreeActorPricingInfo'
+      oneOf:
+      - $ref: '#/components/schemas/PayPerEventActorPricingInfo'
+      - $ref: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
+      - $ref: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
+      - $ref: '#/components/schemas/FreeActorPricingInfo'
     ErrorType:
       title: ErrorType
       type: string
@@ -1082,29 +1124,192 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    PayPerEventActorPricingInfo:
-      title: PayPerEventActorPricingInfo
-      allOf:
-      - $ref: '#/components/schemas/CommonActorPricingInfo'
-      - type: object
-        required:
-        - pricingModel
-        - pricingPerEvent
-        properties:
-          pricingModel:
-            type: string
-            const: PAY_PER_EVENT
-          pricingPerEvent:
-            type: object
-            properties:
-              actorChargeEvents:
-                type: object
-                additionalProperties:
-                  $ref: '#/components/schemas/ActorChargeEvent'
-          minimalMaxTotalChargeUsd:
-            type:
-            - number
-            - 'null'
+    RunStats:
+      title: RunStats
+      type: object
+      properties:
+        inputBodyLen:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          examples:
+          - 240
+        migrationCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        rebootCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        restartCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        resurrectCount:
+          type: integer
+          minimum: 0
+          examples:
+          - 2
+        memAvgBytes:
+          type: number
+          examples:
+          - 267874071.9
+        memMaxBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 404713472
+        memCurrentBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        cpuAvgUsage:
+          type: number
+          examples:
+          - 33.7532101107538
+        cpuMaxUsage:
+          type: number
+          examples:
+          - 169.650735534941
+        cpuCurrentUsage:
+          type: number
+          examples:
+          - 0
+        netRxBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 103508042
+        netTxBytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 4854600
+        durationMillis:
+          type: integer
+          minimum: 0
+          examples:
+          - 248472
+        runTimeSecs:
+          type: number
+          minimum: 0
+          examples:
+          - 248.472
+        metamorph:
+          type: integer
+          minimum: 0
+          examples:
+          - 0
+        computeUnits:
+          type: number
+          minimum: 0
+          examples:
+          - 0.13804
+    RunOptions:
+      title: RunOptions
+      required:
+      - build
+      - timeoutSecs
+      - memoryMbytes
+      - diskMbytes
+      type: object
+      properties:
+        build:
+          type: string
+          examples:
+          - latest
+        timeoutSecs:
+          type: integer
+          minimum: 0
+          examples:
+          - 300
+        memoryMbytes:
+          type: integer
+          minimum: 128
+          maximum: 32768
+          examples:
+          - 1024
+        diskMbytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 2048
+        maxItems:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          examples:
+          - 1000
+        maxTotalChargeUsd:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          examples:
+          - 5
+    TieredPricingPerEvent:
+      title: TieredPricingPerEvent
+      description: 'Tiered price-per-event pricing for a single charge event, keyed by subscription tier (e.g. `FREE`, `BRONZE`,
+
+        `SILVER`, `GOLD`, `PLATINUM`, `DIAMOND`). The actual price applied is resolved from the user''s tier.
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/TieredPricingPerEventEntry'
+    CommonActorPricingInfo:
+      title: CommonActorPricingInfo
+      type: object
+      required:
+      - apifyMarginPercentage
+      - createdAt
+      - startedAt
+      properties:
+        apifyMarginPercentage:
+          type: number
+          examples:
+          - 0.2
+          description: 'Apify''s share of the revenue generated under this pricing info record, as a fraction between 0 and 1. Set by the Apify platform.
+
+            '
+        createdAt:
+          type: string
+          format: date-time
+          description: When this pricing info record has been created
+        startedAt:
+          type: string
+          format: date-time
+          description: Since when is this pricing info record effective for a given Actor
+        notifiedAboutFutureChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-internal: true
+        notifiedAboutChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-internal: true
+        reasonForChange:
+          type:
+          - string
+          - 'null'
+          x-internal: true
+        isPriceChangeNotificationSuppressed:
+          type: boolean
+          x-internal: true
+        forceContainsSignificantPriceChange:
+          type: boolean
+          x-internal: true
     RunUsageUsd:
       title: RunUsageUsd
       description: Resource usage costs in USD. All values are monetary amounts in US dollars.
@@ -1182,315 +1387,58 @@ components:
           - 'null'
           examples:
           - 0.003
-    TieredPricingPerEvent:
-      title: TieredPricingPerEvent
-      description: 'Tiered price-per-event pricing for a single charge event, keyed by subscription tier (e.g. `FREE`, `BRONZE`,
+    TieredPricingPerDatasetItem:
+      title: TieredPricingPerDatasetItem
+      description: 'Tiered price-per-dataset-item pricing, keyed by subscription tier (e.g. `FREE`, `BRONZE`, `SILVER`, `GOLD`,
 
-        `SILVER`, `GOLD`, `PLATINUM`, `DIAMOND`). The actual price applied is resolved from the user''s tier.
+        `PLATINUM`, `DIAMOND`). The actual price applied to a run is resolved from the user''s tier.
 
         '
       type: object
       additionalProperties:
-        $ref: '#/components/schemas/TieredPricingPerEventEntry'
-    FlatPricePerMonthActorPricingInfo:
-      title: FlatPricePerMonthActorPricingInfo
-      allOf:
-      - $ref: '#/components/schemas/CommonActorPricingInfo'
-      - type: object
-        required:
-        - pricingModel
-        - pricePerUnitUsd
-        - trialMinutes
-        properties:
-          pricingModel:
-            type: string
-            const: FLAT_PRICE_PER_MONTH
-          trialMinutes:
-            type: integer
-            description: For how long this Actor can be used for free in trial period
-          pricePerUnitUsd:
-            type: number
-            description: Monthly flat price in USD
-    FreeActorPricingInfo:
-      title: FreeActorPricingInfo
-      allOf:
-      - $ref: '#/components/schemas/CommonActorPricingInfo'
-      - type: object
-        required:
-        - pricingModel
-        properties:
-          pricingModel:
-            type: string
-            const: FREE
-    RunMeta:
-      title: RunMeta
-      required:
-      - origin
+        $ref: '#/components/schemas/TieredPricingPerDatasetItemEntry'
+    RunMetamorphEvent:
+      title: RunMetamorphEvent
+      description: Information about a metamorph event that occurred during the run.
       type: object
-      properties:
-        origin:
-          $ref: '#/components/schemas/RunOrigin'
-        clientIp:
-          type:
-          - string
-          - 'null'
-          description: IP address of the client that started the run.
-        userAgent:
-          type:
-          - string
-          - 'null'
-          description: User agent of the client that started the run.
-        scheduleId:
-          type:
-          - string
-          - 'null'
-          description: ID of the schedule that triggered the run.
-        scheduledAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Time when the run was scheduled.
-    Run:
-      title: Run
-      description: Represents an Actor run and its associated data.
       required:
-      - id
-      - actId
-      - userId
-      - startedAt
-      - status
-      - meta
-      - stats
-      - options
+      - createdAt
+      - actorId
       - buildId
-      - defaultKeyValueStoreId
-      - defaultDatasetId
-      - defaultRequestQueueId
-      type: object
       properties:
-        id:
-          type: string
-          examples:
-          - HG7ML7M8z78YcAPEB
-          description: Unique identifier of the Actor run.
-        actId:
-          type: string
-          examples:
-          - HDSasDasz78YcAPEB
-          description: ID of the Actor that was run.
-        userId:
-          type: string
-          examples:
-          - 7sT5jcggjjA9fNcxF
-          description: ID of the user who started the run.
-        actorTaskId:
-          type:
-          - string
-          - 'null'
-          examples:
-          - KJHSKHausidyaJKHs
-          description: ID of the Actor task, if the run was started from a task.
-        startedAt:
+        createdAt:
           type: string
           format: date-time
+          description: Time when the metamorph occurred.
           examples:
-          - '2019-11-30T07:34:24.202Z'
-          description: Time when the Actor run started.
-        finishedAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
+          - '2019-11-30T07:39:24.202Z'
+        actorId:
+          type: string
+          description: ID of the Actor that the run was metamorphed to.
           examples:
-          - '2019-12-12T09:30:12.202Z'
-          description: Time when the Actor run finished.
-        status:
-          description: Current status of the Actor run.
-          $ref: '#/components/schemas/ActorJobStatus'
-        statusMessage:
-          type:
-          - string
-          - 'null'
-          examples:
-          - Actor is running
-          description: Detailed message about the run status.
-        isStatusMessageTerminal:
-          type:
-          - boolean
-          - 'null'
-          examples:
-          - false
-          description: Whether the status message is terminal (final).
-        meta:
-          description: Metadata about the Actor run.
-          $ref: '#/components/schemas/RunMeta'
-        pricingInfo:
-          description: Pricing information for the Actor.
-          $ref: '#/components/schemas/ActorRunPricingInfo'
-        stats:
-          description: Statistics of the Actor run.
-          $ref: '#/components/schemas/RunStats'
-        chargedEventCounts:
-          description: A map of charged event types to their counts. The keys are event type identifiers defined by the Actor's pricing model (pay-per-event), and the values are the number of times each event was charged during this run.
-          type: object
-          additionalProperties:
-            type: integer
-          example:
-            actor-start: 1
-            page-crawled: 150
-            data-extracted: 75
-        options:
-          description: Configuration options for the Actor run.
-          $ref: '#/components/schemas/RunOptions'
+          - nspoEjklmnsF2oosD
         buildId:
           type: string
+          description: ID of the build used for the metamorphed Actor.
           examples:
-          - 7sT5jcggjjA9fNcxF
-          description: ID of the Actor build used for this run.
-        exitCode:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 0
-          description: Exit code of the Actor run process.
-        generalAccess:
-          description: General access level for the Actor run.
-          anyOf:
-          - $ref: '#/components/schemas/GeneralAccess'
-          - type: 'null'
-        defaultKeyValueStoreId:
-          type: string
-          examples:
-          - eJNzqsbPiopwJcgGQ
-          description: ID of the default key-value store for this run.
-        defaultDatasetId:
-          type: string
-          examples:
-          - wmKPijuyDnPZAPRMk
-          description: ID of the default dataset for this run.
-        defaultRequestQueueId:
-          type: string
-          examples:
-          - FL35cSF7jrxr3BY39
-          description: ID of the default request queue for this run.
-        storageIds:
-          type: object
-          description: A map of aliased storage IDs associated with this run, grouped by storage type.
-          properties:
-            datasets:
-              type: object
-              description: Aliased dataset IDs for this run.
-              properties:
-                default:
-                  type: string
-                  description: ID of the default dataset for this run.
-                  example: wmKPijuyDnPZAPRMk
-              additionalProperties:
-                type: string
-            keyValueStores:
-              type: object
-              description: Aliased key-value store IDs for this run.
-              properties:
-                default:
-                  type: string
-                  description: ID of the default key-value store for this run.
-                  example: eJNzqsbPiopwJcgGQ
-              additionalProperties:
-                type: string
-            requestQueues:
-              type: object
-              description: Aliased request queue IDs for this run.
-              properties:
-                default:
-                  type: string
-                  description: ID of the default request queue for this run.
-                  example: FL35cSF7jrxr3BY39
-              additionalProperties:
-                type: string
-        buildNumber:
+          - ME6oKecqy5kXDS4KQ
+        inputKey:
           type:
           - string
           - 'null'
-          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
+          description: Key of the input record in the key-value store.
           examples:
-          - 0.0.36
-          description: Build number of the Actor build used for this run.
-        containerUrl:
-          type: string
-          format: uri
-          examples:
-          - https://g8kd8kbc5ge8.runs.apify.net
-          description: URL of the container running the Actor.
-        isContainerServerReady:
-          type:
-          - boolean
-          - 'null'
-          examples:
-          - true
-          description: Whether the container's HTTP server is ready to accept requests.
-        gitBranchName:
-          type:
-          - string
-          - 'null'
-          examples:
-          - master
-          description: Name of the git branch used for the Actor build.
-        usage:
-          description: Resource usage statistics for the run.
-          anyOf:
-          - $ref: '#/components/schemas/RunUsage'
-          - type: 'null'
-        usageTotalUsd:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.2654
-          description: 'Total cost in USD for this run. Represents what you actually pay. For run owners: includes platform usage (compute units) and/or event costs depending on the Actor''s pricing model. For run non-owners: only available for Pay-Per-Event Actors (event costs only). Requires authentication token to access.'
-        usageUsd:
-          description: Platform usage costs breakdown in USD. Only present if you own the run AND are paying for platform usage (Pay-Per-Usage, Rental, or Pay-Per-Event with usage costs like standby Actors). Not available for standard Pay-Per-Event Actors. Requires authentication token to access.
-          anyOf:
-          - $ref: '#/components/schemas/RunUsageUsd'
-          - type: 'null'
-        metamorphs:
-          description: List of metamorph events that occurred during the run.
-          anyOf:
-          - type: array
-            items:
-              $ref: '#/components/schemas/RunMetamorphEvent'
-          - type: 'null'
-        platformUsageBillingModel:
-          type: string
-          description: Indicates which party covers platform usage costs for this run.
-          examples:
-          - USER
-    PricePerDatasetItemActorPricingInfo:
-      title: PricePerDatasetItemActorPricingInfo
-      allOf:
-      - $ref: '#/components/schemas/CommonActorPricingInfo'
-      - type: object
-        required:
-        - pricingModel
-        - unitName
-        properties:
-          pricingModel:
-            type: string
-            const: PRICE_PER_DATASET_ITEM
-          unitName:
-            type: string
-            description: Name of the unit that is being charged
-          pricePerUnitUsd:
-            type: number
-            description: 'Price per unit in USD. Mutually exclusive with `tieredPricing` - exactly one of the two is present
-
-              on a pricing record.
-
-              '
-          tieredPricing:
-            $ref: '#/components/schemas/TieredPricingPerDatasetItem'
+          - INPUT-METAMORPH-1
   parameters:
+    actorTaskId:
+      name: actorTaskId
+      in: path
+      description: Task ID or a tilde-separated owner's username and task's name.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: janedoe~my-task
     status-2:
       name: status
       in: query
@@ -1508,15 +1456,67 @@ components:
       explode: true
       schema:
         $ref: '#/components/schemas/RunOrigin'
-    actorTaskId:
-      name: actorTaskId
-      in: path
-      description: Task ID or a tilde-separated owner's username and task's name.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: janedoe~my-task
+  responses:
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
   securitySchemes:
     httpBearer:
       type: http

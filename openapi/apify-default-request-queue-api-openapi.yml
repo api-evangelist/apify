@@ -761,567 +761,13 @@ paths:
       - $ref: '#/components/parameters/headLockLimit'
       - $ref: '#/components/parameters/clientKey'
 components:
-  responses:
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    PaymentRequired:
-      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: x402-payment-required
-              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
-    NoContent:
-      description: No content
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    UnsupportedMediaType:
-      description: Unsupported media type - the Content-Encoding of the request is not supported.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: unsupported-content-encoding
-              message: Content-Encoding "bla" is not supported.
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    PayloadTooLarge:
-      description: Payload too large - the request body exceeds the size limit.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: request-too-large
-              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
-  parameters:
-    requestId:
-      name: requestId
-      in: path
-      description: Request ID.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: xpsmkDlspokDSmklS
-    headLimit:
-      name: limit
-      in: query
-      description: How many items from queue should be returned.
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 100
-    forefront:
-      name: forefront
-      in: query
-      description: 'Determines if request should be added to the head of the queue or to the
-
-        end. Default value is `false` (end of queue).
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 'false'
-    exclusiveStartId:
-      name: exclusiveStartId
-      in: query
-      description: All requests up to this one (including) are skipped from the result. (Deprecated, use `cursor` instead.)
-      deprecated: true
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: Ihnsp8YrvJ8102Kj
-    filter:
-      name: filter
-      in: query
-      description: Filter requests by their state. Possible values are `locked` and `pending`. You can combine multiple values separated by commas, which will mean the union of these filters – requests matching any of the specified states will be returned. (Not compatible with deprecated `exclusiveStartId` parameter.)
-      style: form
-      explode: false
-      schema:
-        type: array
-        items:
-          type: string
-          enum:
-          - locked
-          - pending
-        example:
-        - locked
-    listLimit:
-      name: limit
-      in: query
-      description: Number of keys to be returned. Maximum value is `10000`.
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 100
-    lockSecs:
-      name: lockSecs
-      in: query
-      description: How long the requests will be locked for (in seconds).
-      required: true
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 60
-    cursor:
-      name: cursor
-      in: query
-      description: A cursor string for pagination, returned in the previous response as `nextCursor`. Use this to retrieve the next page of requests.
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: eyJyZXF1ZXN0SWQiOiI2OFRqQ2RaTDNvM2hiUU0ifQ
-    runId:
-      name: runId
-      in: path
-      description: Actor run ID.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: 3KH8gEpp4d8uQSe8T
-    contentTypeJson:
-      name: Content-Type
-      in: header
-      description: ''
-      required: true
-      style: simple
-      schema:
-        type: string
-        const: application/json
-    headLockLimit:
-      name: limit
-      in: query
-      description: How many items from the queue should be returned.
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 25
-        maximum: 25
-    lockForefront:
-      name: forefront
-      in: query
-      description: 'Determines if request should be added to the head of the queue or to the
-
-        end after lock expires.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 'false'
-    clientKey:
-      name: clientKey
-      in: query
-      description: 'A unique identifier of the client accessing the request queue. It must
-
-        be a string between 1 and 32 characters long. This identifier is used to
-
-        determine whether the queue was accessed by multiple clients. If
-
-        `clientKey` is not provided,
-
-        the system considers this API call to come from a new client. For
-
-        details, see the `hadMultipleClients` field returned by the [Get
-
-        head](#/reference/request-queues/queue-head) operation.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: client-abc
-    deleteForefront:
-      name: forefront
-      in: query
-      description: 'Determines if request should be added to the head of the queue or to the
-
-        end after lock was removed.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 'false'
   schemas:
-    UpdateRequestQueueRequest:
-      title: UpdateRequestQueueRequest
-      description: Request object for updating a request queue.
-      type: object
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-          description: The new name for the request queue.
-        generalAccess:
-          $ref: '#/components/schemas/GeneralAccess'
-      example:
-        name: new-request-queue-name
-        generalAccess: RESTRICTED
-    HadMultipleClients:
-      type: boolean
-      description: Whether the request queue has been accessed by multiple different clients.
-      examples:
-      - true
-    UniqueKey:
-      type: string
-      description: A unique key used for request de-duplication. Requests with the same unique key are considered identical.
-      examples:
-      - GET|60d83e70|e3b0c442|https://apify.com
-    DeletedRequestById:
-      title: DeletedRequestById
-      description: Confirmation of a request that was successfully deleted, identified by its ID.
-      type: object
-      required:
-      - id
-      properties:
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-        id:
-          $ref: '#/components/schemas/RequestId'
-    GeneralAccess:
-      title: GeneralAccess
-      type: string
-      enum:
-      - ANYONE_WITH_ID_CAN_READ
-      - ANYONE_WITH_NAME_CAN_READ
-      - FOLLOW_USER_SETTING
-      - RESTRICTED
-      examples:
-      - RESTRICTED
-      description: Defines the general access level for the resource.
-    RetryCount:
+    TotalRequestCount:
       type: integer
-      description: The number of times this request has been retried.
+      description: The total number of requests in the request queue.
+      minimum: 0
       examples:
-      - 0
-    UpdateRequestResponse:
-      title: UpdateRequestResponse
-      description: Response containing the result of updating a request in the request queue.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestRegistration'
-    BatchAddResponse:
-      title: BatchAddResponse
-      description: Response containing the result of a batch add operation.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/BatchAddResult'
-      example:
-        data:
-          processedRequests:
-          - requestId: YiKoxjkaS9gjGTqhF
-            uniqueKey: http://example.com
-            wasAlreadyPresent: true
-            wasAlreadyHandled: false
-          unprocessedRequests:
-          - uniqueKey: http://example.com/2
-            url: http://example.com/2
-            method: GET
-    RequestQueueResponse:
-      title: RequestQueueResponse
-      description: Response containing request queue data.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestQueueResource'
-    RequestUserData:
-      title: RequestUserData
-      description: Custom user data attached to the request. Can contain arbitrary fields.
-      type: object
-      additionalProperties: true
-      example:
-        label: DETAIL
-        customField: custom-value
-    RequestWithoutId:
-      title: RequestWithoutId
-      description: A request stored in the request queue, including its metadata and processing state, without the assigned ID.
-      allOf:
-      - $ref: '#/components/schemas/RequestBase'
-    RequestToDeleteById:
-      title: RequestToDeleteById
-      description: A request that should be deleted, identified by its ID.
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          $ref: '#/components/schemas/RequestId'
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-    RequestQueueHeadItem:
-      title: RequestQueueHeadItem
-      description: A request from the request queue head without lock information.
-      type: object
-      required:
-      - id
-      - uniqueKey
-      - url
-      properties:
-        id:
-          $ref: '#/components/schemas/RequestId'
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-        url:
-          $ref: '#/components/schemas/RequestUrl'
-        method:
-          $ref: '#/components/schemas/RequestMethod'
-        retryCount:
-          $ref: '#/components/schemas/RetryCount'
-    BatchDeleteResult:
-      title: BatchDeleteResult
-      description: Result of a batch delete operation containing successfully deleted and failed requests.
-      type: object
-      required:
-      - processedRequests
-      - unprocessedRequests
-      properties:
-        processedRequests:
-          type: array
-          description: Requests that were successfully deleted from the request queue.
-          items:
-            $ref: '#/components/schemas/DeletedRequest'
-        unprocessedRequests:
-          type: array
-          description: Requests that failed to be deleted and can be retried.
-          items:
-            $ref: '#/components/schemas/UnprocessedRequest'
-    RequestQueueResource:
-      title: RequestQueueResource
-      description: A request queue object containing metadata and statistics.
-      required:
-      - id
-      - userId
-      - createdAt
-      - modifiedAt
-      - accessedAt
-      - totalRequestCount
-      - handledRequestCount
-      - pendingRequestCount
-      - hadMultipleClients
-      - consoleUrl
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/QueueId'
-        name:
-          type:
-          - string
-          - 'null'
-          description: The name of the request queue.
-          examples:
-          - some-name
-        userId:
-          $ref: '#/components/schemas/QueueUserId'
-        actId:
-          type:
-          - string
-          - 'null'
-          description: The ID of the Actor that created this request queue.
-        actRunId:
-          type:
-          - string
-          - 'null'
-          description: The ID of the Actor run that created this request queue.
-        createdAt:
-          $ref: '#/components/schemas/QueueCreatedAt'
-        modifiedAt:
-          $ref: '#/components/schemas/QueueModifiedAt'
-        accessedAt:
-          $ref: '#/components/schemas/QueueAccessedAt'
-        totalRequestCount:
-          $ref: '#/components/schemas/TotalRequestCount'
-        handledRequestCount:
-          $ref: '#/components/schemas/HandledRequestCount'
-        pendingRequestCount:
-          $ref: '#/components/schemas/PendingRequestCount'
-        hadMultipleClients:
-          $ref: '#/components/schemas/HadMultipleClients'
-        consoleUrl:
-          type: string
-          description: The URL to view the request queue in the Apify console.
-          format: uri
-          examples:
-          - https://api.apify.com/v2/request-queues/27TmTznX9YPeAYhkC
-        stats:
-          $ref: '#/components/schemas/RequestQueueStats'
-        generalAccess:
-          anyOf:
-          - $ref: '#/components/schemas/GeneralAccess'
-          - type: 'null'
-    WasAlreadyPresent:
-      type: boolean
-      description: Indicates whether a request with the same unique key already existed in the request queue. If true, no new request was created.
-      examples:
-      - false
-    RequestResource:
-      title: RequestResource
-      description: A request stored in the request queue, including its metadata and processing state.
-      allOf:
-      - $ref: '#/components/schemas/RequestBase'
-        required:
-        - id
-      - properties:
-          id:
-            $ref: '#/components/schemas/RequestId'
-    RequestMethod:
-      description: The HTTP method of the request.
-      $ref: '#/components/schemas/HttpMethod'
-    HeadLimit:
-      type: integer
-      description: The maximum number of requests returned.
-      examples:
-      - 1000
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
-    RequestToDelete:
-      title: RequestToDelete
-      description: A request that should be deleted.
-      anyOf:
-      - $ref: '#/components/schemas/RequestToDeleteById'
-      - $ref: '#/components/schemas/RequestToDeleteByUniqueKey'
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
-    LockExpiresAt:
-      type: string
-      format: date-time
-      description: The timestamp when the lock on this request expires.
-      examples:
-      - '2022-06-14T23:00:00.000Z'
-    ProlongRequestLockResponse:
-      title: ProlongRequestLockResponse
-      description: Response containing updated lock information after prolonging a request lock.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestLockInfo'
-    QueueId:
-      type: string
-      description: A unique identifier assigned to the request queue.
-      examples:
-      - WkzbQMuFYuamGv3YF
-    UnprocessedRequest:
-      title: UnprocessedRequest
-      description: A request that failed to be processed during a request queue operation and can be retried.
-      required:
-      - uniqueKey
-      - url
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/RequestId'
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-        url:
-          $ref: '#/components/schemas/RequestUrl'
-        method:
-          $ref: '#/components/schemas/RequestMethod'
-    RequestId:
-      type: string
-      description: A unique identifier assigned to the request.
-      examples:
-      - sbJ7klsdf7ujN9l
+      - 870
     LockedRequestQueueHeadResponse:
       title: LockedRequestQueueHeadResponse
       description: Response containing locked requests from the request queue head.
@@ -1356,215 +802,11 @@ components:
             url: http://example.com/a/b
             method: GET
             lockExpiresAt: '2022-06-14T23:00:00.000Z'
-    WasAlreadyHandled:
-      type: boolean
-      description: Indicates whether a request with the same unique key has already been processed by the request queue.
-      examples:
-      - false
-    RequestQueueHeadResponse:
-      title: RequestQueueHeadResponse
-      description: Response containing requests from the request queue head without locking.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestQueueHead'
-      example:
-        data:
-          limit: 1000
-          queueModifiedAt: '2018-03-14T23:00:00.000Z'
-          hadMultipleClients: false
-          items:
-          - id: 8OamqXBCpPHxyH9
-            retryCount: 0
-            uniqueKey: http://example.com
-            url: http://example.com
-            method: GET
-          - id: ZJAoqlRijenMQIn
-            retryCount: 0
-            uniqueKey: http://example.com/a/b
-            url: http://example.com/a/b
-            method: GET
-          - id: hAhkwyk5oOBHKQC
-            retryCount: 1
-            uniqueKey: http://example.com/c/d
-            url: http://example.com/c/d
-            method: GET
-    RequestQueueStats:
-      title: RequestQueueStats
-      description: Statistics about request queue operations and storage.
-      type: object
-      properties:
-        deleteCount:
-          type: integer
-          description: The number of delete operations performed on the request queue.
-          examples:
-          - 0
-        headItemReadCount:
-          type: integer
-          description: The number of times requests from the head were read.
-          examples:
-          - 5
-        readCount:
-          type: integer
-          description: The total number of read operations performed on the request queue.
-          examples:
-          - 100
-        storageBytes:
-          type: integer
-          description: The total storage size in bytes used by the request queue.
-          examples:
-          - 1024
-        writeCount:
-          type: integer
-          description: The total number of write operations performed on the request queue.
-          examples:
-          - 10
-    RequestQueueHead:
-      title: RequestQueueHead
-      description: A batch of requests from the request queue head without locking.
-      type: object
-      required:
-      - limit
-      - queueModifiedAt
-      - hadMultipleClients
-      - items
-      properties:
-        limit:
-          $ref: '#/components/schemas/HeadLimit'
-        queueModifiedAt:
-          $ref: '#/components/schemas/QueueModifiedAt'
-        hadMultipleClients:
-          $ref: '#/components/schemas/HadMultipleClients'
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/RequestQueueHeadItem'
-          description: The array of requests from the request queue head.
-    RequestRegistration:
-      title: RequestRegistration
-      description: Result of registering a request in the request queue, either by adding a new request or updating an existing one.
-      required:
-      - requestId
-      - wasAlreadyPresent
-      - wasAlreadyHandled
-      type: object
-      properties:
-        requestId:
-          $ref: '#/components/schemas/RequestId'
-        wasAlreadyPresent:
-          $ref: '#/components/schemas/WasAlreadyPresent'
-        wasAlreadyHandled:
-          $ref: '#/components/schemas/WasAlreadyHandled'
-    DeletedRequest:
-      title: DeletedRequest
-      description: Confirmation of a request that was successfully deleted from a request queue.
-      anyOf:
-      - $ref: '#/components/schemas/DeletedRequestById'
-      - $ref: '#/components/schemas/DeletedRequestByUniqueKey'
-    AddRequestResponse:
-      title: AddRequestResponse
-      description: Response containing the result of adding a request to the request queue.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestRegistration'
-    RequestBase:
-      title: RequestBase
-      type: object
-      required:
-      - uniqueKey
-      - url
-      properties:
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-        url:
-          $ref: '#/components/schemas/RequestUrl'
-        method:
-          $ref: '#/components/schemas/RequestMethod'
-        retryCount:
-          $ref: '#/components/schemas/RetryCount'
-        loadedUrl:
-          type:
-          - string
-          - 'null'
-          description: The final URL that was loaded, after redirects (if any).
-          examples:
-          - https://apify.com/jobs
-        payload:
-          type:
-          - string
-          - object
-          - 'null'
-          description: The request payload, typically used with POST or PUT requests.
-          examples:
-          - null
-        headers:
-          type:
-          - object
-          - 'null'
-          description: HTTP headers sent with the request.
-          examples:
-          - null
-        userData:
-          $ref: '#/components/schemas/RequestUserData'
-        noRetry:
-          type:
-          - boolean
-          - 'null'
-          description: Indicates whether the request should not be retried if processing fails.
-          examples:
-          - false
-        errorMessages:
-          type:
-          - array
-          - 'null'
-          description: Error messages recorded from failed processing attempts.
-          items:
-            type: string
-          examples:
-          - null
-        handledAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: The timestamp when the request was marked as handled, if applicable.
-          examples:
-          - '2019-06-16T10:23:31.607Z'
-    TotalRequestCount:
-      type: integer
-      description: The total number of requests in the request queue.
-      minimum: 0
-      examples:
-      - 870
-    RequestLockInfo:
-      title: RequestLockInfo
-      description: Information about a request lock.
-      type: object
-      required:
-      - lockExpiresAt
-      properties:
-        lockExpiresAt:
-          $ref: '#/components/schemas/LockExpiresAt'
-    QueueUserId:
+    RequestId:
       type: string
-      description: The ID of the user who owns the request queue.
+      description: A unique identifier assigned to the request.
       examples:
-      - wRsJZtadYvn4mBZmm
-    PendingRequestCount:
-      type: integer
-      description: The number of requests that are pending and have not been handled yet.
-      examples:
-      - 670
-    RequestUrl:
-      type: string
-      description: The URL of the request.
-      examples:
-      - https://apify.com
+      - sbJ7klsdf7ujN9l
     ListOfRequests:
       title: ListOfRequests
       description: A paginated list of requests from the request queue.
@@ -1599,6 +841,34 @@ components:
           description: A cursor string to be used to continue pagination.
           examples:
           - eyJyZXF1ZXN0SWQiOiI5eFNNc1BrN1J6VUxTNXoifQ
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
+    QueueUserId:
+      type: string
+      description: The ID of the user who owns the request queue.
+      examples:
+      - wRsJZtadYvn4mBZmm
+    RequestMethod:
+      description: The HTTP method of the request.
+      $ref: '#/components/schemas/HttpMethod'
+    LockExpiresAt:
+      type: string
+      format: date-time
+      description: The timestamp when the lock on this request expires.
+      examples:
+      - '2022-06-14T23:00:00.000Z'
+    RequestUrl:
+      type: string
+      description: The URL of the request.
+      examples:
+      - https://apify.com
     LockedRequestQueueHeadItem:
       title: LockedRequestQueueHeadItem
       description: A request from the request queue head that has been locked for processing.
@@ -1621,181 +891,93 @@ components:
           $ref: '#/components/schemas/RetryCount'
         lockExpiresAt:
           $ref: '#/components/schemas/LockExpiresAt'
-    BatchDeleteResponse:
-      title: BatchDeleteResponse
-      description: Response containing the result of a batch delete operation.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/BatchDeleteResult'
-    LockedRequestQueueHead:
-      title: LockedRequestQueueHead
-      description: A batch of locked requests from the request queue head.
-      type: object
-      required:
-      - limit
-      - queueModifiedAt
-      - hadMultipleClients
-      - lockSecs
-      - items
-      properties:
-        limit:
-          $ref: '#/components/schemas/HeadLimit'
-        queueModifiedAt:
-          $ref: '#/components/schemas/QueueModifiedAt'
-        queueHasLockedRequests:
-          type: boolean
-          description: Whether the request queue contains requests locked by any client (either the one calling the endpoint or a different one).
-          examples:
-          - true
-        clientKey:
-          type: string
-          description: The client key used for locking the requests.
-          examples:
-          - client-one
-        hadMultipleClients:
-          $ref: '#/components/schemas/HadMultipleClients'
-        lockSecs:
-          type: integer
-          description: The number of seconds the locks will be held.
-          examples:
-          - 60
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/LockedRequestQueueHeadItem'
-          description: The array of locked requests from the request queue head.
-    RequestToDeleteByUniqueKey:
-      title: RequestToDeleteByUniqueKey
-      description: A request that should be deleted, identified by its unique key.
-      type: object
+    UnprocessedRequest:
+      title: UnprocessedRequest
+      description: A request that failed to be processed during a request queue operation and can be retried.
       required:
       - uniqueKey
+      - url
+      type: object
       properties:
         id:
           $ref: '#/components/schemas/RequestId'
         uniqueKey:
           $ref: '#/components/schemas/UniqueKey'
-    AddedRequest:
-      title: AddedRequest
-      description: Information about a request that was successfully added to a request queue.
+        url:
+          $ref: '#/components/schemas/RequestUrl'
+        method:
+          $ref: '#/components/schemas/RequestMethod'
+    RequestRegistration:
+      title: RequestRegistration
+      description: Result of registering a request in the request queue, either by adding a new request or updating an existing one.
       required:
       - requestId
-      - uniqueKey
-      - wasAlreadyHandled
       - wasAlreadyPresent
+      - wasAlreadyHandled
       type: object
       properties:
         requestId:
           $ref: '#/components/schemas/RequestId'
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
         wasAlreadyPresent:
           $ref: '#/components/schemas/WasAlreadyPresent'
         wasAlreadyHandled:
           $ref: '#/components/schemas/WasAlreadyHandled'
-    DeletedRequestByUniqueKey:
-      title: DeletedRequestByUniqueKey
-      description: Confirmation of a request that was successfully deleted, identified by its unique key.
-      type: object
-      required:
-      - uniqueKey
-      properties:
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-        id:
-          $ref: '#/components/schemas/RequestId'
-    QueueAccessedAt:
+    HeadLimit:
+      type: integer
+      description: The maximum number of requests returned.
+      examples:
+      - 1000
+    PendingRequestCount:
+      type: integer
+      description: The number of requests that are pending and have not been handled yet.
+      examples:
+      - 670
+    QueueCreatedAt:
       type: string
       format: date-time
-      description: The timestamp when the request queue was last accessed.
+      description: The timestamp when the request queue was created.
       examples:
-      - '2019-12-14T08:36:13.202Z'
-    UnlockRequestsResponse:
-      title: UnlockRequestsResponse
-      description: Response containing the result of unlocking requests.
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          $ref: '#/components/schemas/UnlockRequestsResult'
-    HttpMethod:
-      type: string
-      enum:
-      - GET
-      - HEAD
-      - POST
-      - PUT
-      - DELETE
-      - CONNECT
-      - OPTIONS
-      - TRACE
-      - PATCH
-      examples:
-      - GET
-    ListOfRequestsResponse:
-      title: ListOfRequestsResponse
-      description: Response containing a list of requests from the request queue.
-      required:
-      - data
+      - '2019-12-12T07:34:14.202Z'
+    UpdateRequestQueueRequest:
+      title: UpdateRequestQueueRequest
+      description: Request object for updating a request queue.
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/ListOfRequests'
+        name:
+          type:
+          - string
+          - 'null'
+          description: The new name for the request queue.
+        generalAccess:
+          $ref: '#/components/schemas/GeneralAccess'
       example:
+        name: new-request-queue-name
+        generalAccess: RESTRICTED
+    AddRequestResponse:
+      title: AddRequestResponse
+      description: Response containing the result of adding a request to the request queue.
+      required:
+      - data
+      type: object
+      properties:
         data:
-          items:
-          - id: dnjkDMKLmdlkmlkmld
-            retryCount: 0
-            uniqueKey: http://example.com
-            url: http://example.com
-            method: GET
-            loadedUrl: http://example.com/example-1
-            payload: null
-            noRetry: false
-            errorMessages: null
-            headers: null
-            userData:
-              label: DETAIL
-              image: https://picserver1.eu
-            handledAt: '2019-06-16T10:23:31.607Z'
-          - id: dnjkDMKLmdlkmlkmld
-            retryCount: 0
-            uniqueKey: http://example.com
-            url: http://example.com
-            method: GET
-            loadedUrl: http://example.com/example-1
-            payload: null
-            noRetry: false
-            errorMessages: null
-            headers: null
-            userData:
-              label: DETAIL
-              image: https://picserver1.eu
-            handledAt: '2019-06-16T10:23:31.607Z'
-          limit: 2
-          exclusiveStartId: Ihnsp8YrvJ8102Kj
-    BatchAddResult:
-      title: BatchAddResult
-      description: Result of a batch add operation containing successfully processed and failed requests.
+          $ref: '#/components/schemas/RequestRegistration'
+    RequestToDeleteById:
+      title: RequestToDeleteById
+      description: A request that should be deleted, identified by its ID.
       type: object
       required:
-      - processedRequests
-      - unprocessedRequests
+      - id
       properties:
-        processedRequests:
-          type: array
-          description: Requests that were successfully added to the request queue.
-          items:
-            $ref: '#/components/schemas/AddedRequest'
-        unprocessedRequests:
-          type: array
-          description: Requests that failed to be added and can be retried.
-          items:
-            $ref: '#/components/schemas/UnprocessedRequest'
+        id:
+          $ref: '#/components/schemas/RequestId'
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+    RequestWithoutId:
+      title: RequestWithoutId
+      description: A request stored in the request queue, including its metadata and processing state, without the assigned ID.
+      allOf:
+      - $ref: '#/components/schemas/RequestBase'
     ErrorType:
       title: ErrorType
       type: string
@@ -2196,33 +1378,90 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    QueueModifiedAt:
-      type: string
-      format: date-time
-      description: The timestamp when the request queue was last modified. Modifications include adding, updating, or removing requests, as well as locking or unlocking requests in the request queue.
-      examples:
-      - '2019-12-13T08:36:13.202Z'
-    RequestResponse:
-      title: RequestResponse
-      description: Response containing a single request from the request queue.
+    RequestQueueHead:
+      title: RequestQueueHead
+      description: A batch of requests from the request queue head without locking.
+      type: object
       required:
-      - data
+      - limit
+      - queueModifiedAt
+      - hadMultipleClients
+      - items
+      properties:
+        limit:
+          $ref: '#/components/schemas/HeadLimit'
+        queueModifiedAt:
+          $ref: '#/components/schemas/QueueModifiedAt'
+        hadMultipleClients:
+          $ref: '#/components/schemas/HadMultipleClients'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestQueueHeadItem'
+          description: The array of requests from the request queue head.
+    RequestQueueResource:
+      title: RequestQueueResource
+      description: A request queue object containing metadata and statistics.
+      required:
+      - id
+      - userId
+      - createdAt
+      - modifiedAt
+      - accessedAt
+      - totalRequestCount
+      - handledRequestCount
+      - pendingRequestCount
+      - hadMultipleClients
+      - consoleUrl
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/RequestResource'
-    HandledRequestCount:
-      type: integer
-      description: The number of requests that have been handled.
-      minimum: 0
-      examples:
-      - 100
-    QueueCreatedAt:
-      type: string
-      format: date-time
-      description: The timestamp when the request queue was created.
-      examples:
-      - '2019-12-12T07:34:14.202Z'
+        id:
+          $ref: '#/components/schemas/QueueId'
+        name:
+          type:
+          - string
+          - 'null'
+          description: The name of the request queue.
+          examples:
+          - some-name
+        userId:
+          $ref: '#/components/schemas/QueueUserId'
+        actId:
+          type:
+          - string
+          - 'null'
+          description: The ID of the Actor that created this request queue.
+        actRunId:
+          type:
+          - string
+          - 'null'
+          description: The ID of the Actor run that created this request queue.
+        createdAt:
+          $ref: '#/components/schemas/QueueCreatedAt'
+        modifiedAt:
+          $ref: '#/components/schemas/QueueModifiedAt'
+        accessedAt:
+          $ref: '#/components/schemas/QueueAccessedAt'
+        totalRequestCount:
+          $ref: '#/components/schemas/TotalRequestCount'
+        handledRequestCount:
+          $ref: '#/components/schemas/HandledRequestCount'
+        pendingRequestCount:
+          $ref: '#/components/schemas/PendingRequestCount'
+        hadMultipleClients:
+          $ref: '#/components/schemas/HadMultipleClients'
+        consoleUrl:
+          type: string
+          description: The URL to view the request queue in the Apify console.
+          format: uri
+          examples:
+          - https://api.apify.com/v2/request-queues/27TmTznX9YPeAYhkC
+        stats:
+          $ref: '#/components/schemas/RequestQueueStats'
+        generalAccess:
+          anyOf:
+          - $ref: '#/components/schemas/GeneralAccess'
+          - type: 'null'
     UnlockRequestsResult:
       title: UnlockRequestsResult
       description: Result of unlocking requests in the request queue.
@@ -2235,6 +1474,767 @@ components:
           description: Number of requests that were successfully unlocked.
           examples:
           - 10
+    RetryCount:
+      type: integer
+      description: The number of times this request has been retried.
+      examples:
+      - 0
+    DeletedRequestByUniqueKey:
+      title: DeletedRequestByUniqueKey
+      description: Confirmation of a request that was successfully deleted, identified by its unique key.
+      type: object
+      required:
+      - uniqueKey
+      properties:
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+        id:
+          $ref: '#/components/schemas/RequestId'
+    WasAlreadyPresent:
+      type: boolean
+      description: Indicates whether a request with the same unique key already existed in the request queue. If true, no new request was created.
+      examples:
+      - false
+    RequestQueueHeadItem:
+      title: RequestQueueHeadItem
+      description: A request from the request queue head without lock information.
+      type: object
+      required:
+      - id
+      - uniqueKey
+      - url
+      properties:
+        id:
+          $ref: '#/components/schemas/RequestId'
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+        url:
+          $ref: '#/components/schemas/RequestUrl'
+        method:
+          $ref: '#/components/schemas/RequestMethod'
+        retryCount:
+          $ref: '#/components/schemas/RetryCount'
+    GeneralAccess:
+      title: GeneralAccess
+      type: string
+      enum:
+      - ANYONE_WITH_ID_CAN_READ
+      - ANYONE_WITH_NAME_CAN_READ
+      - FOLLOW_USER_SETTING
+      - RESTRICTED
+      examples:
+      - RESTRICTED
+      description: Defines the general access level for the resource.
+    RequestToDeleteByUniqueKey:
+      title: RequestToDeleteByUniqueKey
+      description: A request that should be deleted, identified by its unique key.
+      type: object
+      required:
+      - uniqueKey
+      properties:
+        id:
+          $ref: '#/components/schemas/RequestId'
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+    RequestQueueHeadResponse:
+      title: RequestQueueHeadResponse
+      description: Response containing requests from the request queue head without locking.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestQueueHead'
+      example:
+        data:
+          limit: 1000
+          queueModifiedAt: '2018-03-14T23:00:00.000Z'
+          hadMultipleClients: false
+          items:
+          - id: 8OamqXBCpPHxyH9
+            retryCount: 0
+            uniqueKey: http://example.com
+            url: http://example.com
+            method: GET
+          - id: ZJAoqlRijenMQIn
+            retryCount: 0
+            uniqueKey: http://example.com/a/b
+            url: http://example.com/a/b
+            method: GET
+          - id: hAhkwyk5oOBHKQC
+            retryCount: 1
+            uniqueKey: http://example.com/c/d
+            url: http://example.com/c/d
+            method: GET
+    HadMultipleClients:
+      type: boolean
+      description: Whether the request queue has been accessed by multiple different clients.
+      examples:
+      - true
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    RequestBase:
+      title: RequestBase
+      type: object
+      required:
+      - uniqueKey
+      - url
+      properties:
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+        url:
+          $ref: '#/components/schemas/RequestUrl'
+        method:
+          $ref: '#/components/schemas/RequestMethod'
+        retryCount:
+          $ref: '#/components/schemas/RetryCount'
+        loadedUrl:
+          type:
+          - string
+          - 'null'
+          description: The final URL that was loaded, after redirects (if any).
+          examples:
+          - https://apify.com/jobs
+        payload:
+          type:
+          - string
+          - object
+          - 'null'
+          description: The request payload, typically used with POST or PUT requests.
+          examples:
+          - null
+        headers:
+          type:
+          - object
+          - 'null'
+          description: HTTP headers sent with the request.
+          examples:
+          - null
+        userData:
+          $ref: '#/components/schemas/RequestUserData'
+        noRetry:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the request should not be retried if processing fails.
+          examples:
+          - false
+        errorMessages:
+          type:
+          - array
+          - 'null'
+          description: Error messages recorded from failed processing attempts.
+          items:
+            type: string
+          examples:
+          - null
+        handledAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The timestamp when the request was marked as handled, if applicable.
+          examples:
+          - '2019-06-16T10:23:31.607Z'
+    HandledRequestCount:
+      type: integer
+      description: The number of requests that have been handled.
+      minimum: 0
+      examples:
+      - 100
+    UnlockRequestsResponse:
+      title: UnlockRequestsResponse
+      description: Response containing the result of unlocking requests.
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          $ref: '#/components/schemas/UnlockRequestsResult'
+    UniqueKey:
+      type: string
+      description: A unique key used for request de-duplication. Requests with the same unique key are considered identical.
+      examples:
+      - GET|60d83e70|e3b0c442|https://apify.com
+    AddedRequest:
+      title: AddedRequest
+      description: Information about a request that was successfully added to a request queue.
+      required:
+      - requestId
+      - uniqueKey
+      - wasAlreadyHandled
+      - wasAlreadyPresent
+      type: object
+      properties:
+        requestId:
+          $ref: '#/components/schemas/RequestId'
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+        wasAlreadyPresent:
+          $ref: '#/components/schemas/WasAlreadyPresent'
+        wasAlreadyHandled:
+          $ref: '#/components/schemas/WasAlreadyHandled'
+    BatchAddResult:
+      title: BatchAddResult
+      description: Result of a batch add operation containing successfully processed and failed requests.
+      type: object
+      required:
+      - processedRequests
+      - unprocessedRequests
+      properties:
+        processedRequests:
+          type: array
+          description: Requests that were successfully added to the request queue.
+          items:
+            $ref: '#/components/schemas/AddedRequest'
+        unprocessedRequests:
+          type: array
+          description: Requests that failed to be added and can be retried.
+          items:
+            $ref: '#/components/schemas/UnprocessedRequest'
+    RequestQueueResponse:
+      title: RequestQueueResponse
+      description: Response containing request queue data.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestQueueResource'
+    ProlongRequestLockResponse:
+      title: ProlongRequestLockResponse
+      description: Response containing updated lock information after prolonging a request lock.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestLockInfo'
+    RequestResource:
+      title: RequestResource
+      description: A request stored in the request queue, including its metadata and processing state.
+      allOf:
+      - $ref: '#/components/schemas/RequestBase'
+        required:
+        - id
+      - properties:
+          id:
+            $ref: '#/components/schemas/RequestId'
+    DeletedRequestById:
+      title: DeletedRequestById
+      description: Confirmation of a request that was successfully deleted, identified by its ID.
+      type: object
+      required:
+      - id
+      properties:
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+        id:
+          $ref: '#/components/schemas/RequestId'
+    HttpMethod:
+      type: string
+      enum:
+      - GET
+      - HEAD
+      - POST
+      - PUT
+      - DELETE
+      - CONNECT
+      - OPTIONS
+      - TRACE
+      - PATCH
+      examples:
+      - GET
+    DeletedRequest:
+      title: DeletedRequest
+      description: Confirmation of a request that was successfully deleted from a request queue.
+      anyOf:
+      - $ref: '#/components/schemas/DeletedRequestById'
+      - $ref: '#/components/schemas/DeletedRequestByUniqueKey'
+    QueueModifiedAt:
+      type: string
+      format: date-time
+      description: The timestamp when the request queue was last modified. Modifications include adding, updating, or removing requests, as well as locking or unlocking requests in the request queue.
+      examples:
+      - '2019-12-13T08:36:13.202Z'
+    LockedRequestQueueHead:
+      title: LockedRequestQueueHead
+      description: A batch of locked requests from the request queue head.
+      type: object
+      required:
+      - limit
+      - queueModifiedAt
+      - hadMultipleClients
+      - lockSecs
+      - items
+      properties:
+        limit:
+          $ref: '#/components/schemas/HeadLimit'
+        queueModifiedAt:
+          $ref: '#/components/schemas/QueueModifiedAt'
+        queueHasLockedRequests:
+          type: boolean
+          description: Whether the request queue contains requests locked by any client (either the one calling the endpoint or a different one).
+          examples:
+          - true
+        clientKey:
+          type: string
+          description: The client key used for locking the requests.
+          examples:
+          - client-one
+        hadMultipleClients:
+          $ref: '#/components/schemas/HadMultipleClients'
+        lockSecs:
+          type: integer
+          description: The number of seconds the locks will be held.
+          examples:
+          - 60
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LockedRequestQueueHeadItem'
+          description: The array of locked requests from the request queue head.
+    RequestQueueStats:
+      title: RequestQueueStats
+      description: Statistics about request queue operations and storage.
+      type: object
+      properties:
+        deleteCount:
+          type: integer
+          description: The number of delete operations performed on the request queue.
+          examples:
+          - 0
+        headItemReadCount:
+          type: integer
+          description: The number of times requests from the head were read.
+          examples:
+          - 5
+        readCount:
+          type: integer
+          description: The total number of read operations performed on the request queue.
+          examples:
+          - 100
+        storageBytes:
+          type: integer
+          description: The total storage size in bytes used by the request queue.
+          examples:
+          - 1024
+        writeCount:
+          type: integer
+          description: The total number of write operations performed on the request queue.
+          examples:
+          - 10
+    BatchDeleteResult:
+      title: BatchDeleteResult
+      description: Result of a batch delete operation containing successfully deleted and failed requests.
+      type: object
+      required:
+      - processedRequests
+      - unprocessedRequests
+      properties:
+        processedRequests:
+          type: array
+          description: Requests that were successfully deleted from the request queue.
+          items:
+            $ref: '#/components/schemas/DeletedRequest'
+        unprocessedRequests:
+          type: array
+          description: Requests that failed to be deleted and can be retried.
+          items:
+            $ref: '#/components/schemas/UnprocessedRequest'
+    ListOfRequestsResponse:
+      title: ListOfRequestsResponse
+      description: Response containing a list of requests from the request queue.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfRequests'
+      example:
+        data:
+          items:
+          - id: dnjkDMKLmdlkmlkmld
+            retryCount: 0
+            uniqueKey: http://example.com
+            url: http://example.com
+            method: GET
+            loadedUrl: http://example.com/example-1
+            payload: null
+            noRetry: false
+            errorMessages: null
+            headers: null
+            userData:
+              label: DETAIL
+              image: https://picserver1.eu
+            handledAt: '2019-06-16T10:23:31.607Z'
+          - id: dnjkDMKLmdlkmlkmld
+            retryCount: 0
+            uniqueKey: http://example.com
+            url: http://example.com
+            method: GET
+            loadedUrl: http://example.com/example-1
+            payload: null
+            noRetry: false
+            errorMessages: null
+            headers: null
+            userData:
+              label: DETAIL
+              image: https://picserver1.eu
+            handledAt: '2019-06-16T10:23:31.607Z'
+          limit: 2
+          exclusiveStartId: Ihnsp8YrvJ8102Kj
+    BatchAddResponse:
+      title: BatchAddResponse
+      description: Response containing the result of a batch add operation.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BatchAddResult'
+      example:
+        data:
+          processedRequests:
+          - requestId: YiKoxjkaS9gjGTqhF
+            uniqueKey: http://example.com
+            wasAlreadyPresent: true
+            wasAlreadyHandled: false
+          unprocessedRequests:
+          - uniqueKey: http://example.com/2
+            url: http://example.com/2
+            method: GET
+    QueueId:
+      type: string
+      description: A unique identifier assigned to the request queue.
+      examples:
+      - WkzbQMuFYuamGv3YF
+    RequestUserData:
+      title: RequestUserData
+      description: Custom user data attached to the request. Can contain arbitrary fields.
+      type: object
+      additionalProperties: true
+      example:
+        label: DETAIL
+        customField: custom-value
+    WasAlreadyHandled:
+      type: boolean
+      description: Indicates whether a request with the same unique key has already been processed by the request queue.
+      examples:
+      - false
+    BatchDeleteResponse:
+      title: BatchDeleteResponse
+      description: Response containing the result of a batch delete operation.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BatchDeleteResult'
+    RequestToDelete:
+      title: RequestToDelete
+      description: A request that should be deleted.
+      anyOf:
+      - $ref: '#/components/schemas/RequestToDeleteById'
+      - $ref: '#/components/schemas/RequestToDeleteByUniqueKey'
+    RequestLockInfo:
+      title: RequestLockInfo
+      description: Information about a request lock.
+      type: object
+      required:
+      - lockExpiresAt
+      properties:
+        lockExpiresAt:
+          $ref: '#/components/schemas/LockExpiresAt'
+    UpdateRequestResponse:
+      title: UpdateRequestResponse
+      description: Response containing the result of updating a request in the request queue.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestRegistration'
+    RequestResponse:
+      title: RequestResponse
+      description: Response containing a single request from the request queue.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestResource'
+    QueueAccessedAt:
+      type: string
+      format: date-time
+      description: The timestamp when the request queue was last accessed.
+      examples:
+      - '2019-12-14T08:36:13.202Z'
+  parameters:
+    headLockLimit:
+      name: limit
+      in: query
+      description: How many items from the queue should be returned.
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 25
+        maximum: 25
+    forefront:
+      name: forefront
+      in: query
+      description: 'Determines if request should be added to the head of the queue or to the
+
+        end. Default value is `false` (end of queue).
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 'false'
+    clientKey:
+      name: clientKey
+      in: query
+      description: 'A unique identifier of the client accessing the request queue. It must
+
+        be a string between 1 and 32 characters long. This identifier is used to
+
+        determine whether the queue was accessed by multiple clients. If
+
+        `clientKey` is not provided,
+
+        the system considers this API call to come from a new client. For
+
+        details, see the `hadMultipleClients` field returned by the [Get
+
+        head](#/reference/request-queues/queue-head) operation.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: client-abc
+    headLimit:
+      name: limit
+      in: query
+      description: How many items from queue should be returned.
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 100
+    lockForefront:
+      name: forefront
+      in: query
+      description: 'Determines if request should be added to the head of the queue or to the
+
+        end after lock expires.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 'false'
+    lockSecs:
+      name: lockSecs
+      in: query
+      description: How long the requests will be locked for (in seconds).
+      required: true
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 60
+    filter:
+      name: filter
+      in: query
+      description: Filter requests by their state. Possible values are `locked` and `pending`. You can combine multiple values separated by commas, which will mean the union of these filters – requests matching any of the specified states will be returned. (Not compatible with deprecated `exclusiveStartId` parameter.)
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - locked
+          - pending
+        example:
+        - locked
+    exclusiveStartId:
+      name: exclusiveStartId
+      in: query
+      description: All requests up to this one (including) are skipped from the result. (Deprecated, use `cursor` instead.)
+      deprecated: true
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: Ihnsp8YrvJ8102Kj
+    runId:
+      name: runId
+      in: path
+      description: Actor run ID.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: 3KH8gEpp4d8uQSe8T
+    deleteForefront:
+      name: forefront
+      in: query
+      description: 'Determines if request should be added to the head of the queue or to the
+
+        end after lock was removed.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 'false'
+    listLimit:
+      name: limit
+      in: query
+      description: Number of keys to be returned. Maximum value is `10000`.
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 100
+    cursor:
+      name: cursor
+      in: query
+      description: A cursor string for pagination, returned in the previous response as `nextCursor`. Use this to retrieve the next page of requests.
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: eyJyZXF1ZXN0SWQiOiI2OFRqQ2RaTDNvM2hiUU0ifQ
+    requestId:
+      name: requestId
+      in: path
+      description: Request ID.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: xpsmkDlspokDSmklS
+    contentTypeJson:
+      name: Content-Type
+      in: header
+      description: ''
+      required: true
+      style: simple
+      schema:
+        type: string
+        const: application/json
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    PaymentRequired:
+      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: x402-payment-required
+              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    NoContent:
+      description: No content
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
   securitySchemes:
     httpBearer:
       type: http

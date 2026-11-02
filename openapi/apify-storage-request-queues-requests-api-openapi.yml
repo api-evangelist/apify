@@ -421,214 +421,41 @@ paths:
       x-js-name: delete
       x-js-doc-url: https://docs.apify.com/api/client/js/reference/class/RequestQueueClient#delete
 components:
-  responses:
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    PaymentRequired:
-      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: x402-payment-required
-              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    PayloadTooLarge:
-      description: Payload too large - the request body exceeds the size limit.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: request-too-large
-              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    UnsupportedMediaType:
-      description: Unsupported media type - the Content-Encoding of the request is not supported.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: unsupported-content-encoding
-              message: Content-Encoding "bla" is not supported.
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
-    NoContent:
-      description: No content
-  parameters:
-    filter:
-      name: filter
-      in: query
-      description: Filter requests by their state. Possible values are `locked` and `pending`. You can combine multiple values separated by commas, which will mean the union of these filters – requests matching any of the specified states will be returned. (Not compatible with deprecated `exclusiveStartId` parameter.)
-      style: form
-      explode: false
-      schema:
-        type: array
-        items:
-          type: string
-          enum:
-          - locked
-          - pending
-        example:
-        - locked
-    requestId:
-      name: requestId
-      in: path
-      description: Request ID.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: xpsmkDlspokDSmklS
-    queueId:
-      name: queueId
-      in: path
-      description: Queue ID or `username~queue-name`.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: WkzbQMuFYuamGv3YF
-    listLimit:
-      name: limit
-      in: query
-      description: Number of keys to be returned. Maximum value is `10000`.
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 100
-    forefront:
-      name: forefront
-      in: query
-      description: 'Determines if request should be added to the head of the queue or to the
-
-        end. Default value is `false` (end of queue).
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: 'false'
-    cursor:
-      name: cursor
-      in: query
-      description: A cursor string for pagination, returned in the previous response as `nextCursor`. Use this to retrieve the next page of requests.
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: eyJyZXF1ZXN0SWQiOiI2OFRqQ2RaTDNvM2hiUU0ifQ
-    exclusiveStartId:
-      name: exclusiveStartId
-      in: query
-      description: All requests up to this one (including) are skipped from the result. (Deprecated, use `cursor` instead.)
-      deprecated: true
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: Ihnsp8YrvJ8102Kj
-    clientKey:
-      name: clientKey
-      in: query
-      description: 'A unique identifier of the client accessing the request queue. It must
-
-        be a string between 1 and 32 characters long. This identifier is used to
-
-        determine whether the queue was accessed by multiple clients. If
-
-        `clientKey` is not provided,
-
-        the system considers this API call to come from a new client. For
-
-        details, see the `hadMultipleClients` field returned by the [Get
-
-        head](#/reference/request-queues/queue-head) operation.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: client-abc
   schemas:
-    RequestRegistration:
-      title: RequestRegistration
-      description: Result of registering a request in the request queue, either by adding a new request or updating an existing one.
-      required:
-      - requestId
-      - wasAlreadyPresent
-      - wasAlreadyHandled
-      type: object
-      properties:
-        requestId:
-          $ref: '#/components/schemas/RequestId'
-        wasAlreadyPresent:
-          $ref: '#/components/schemas/WasAlreadyPresent'
-        wasAlreadyHandled:
-          $ref: '#/components/schemas/WasAlreadyHandled'
+    RetryCount:
+      type: integer
+      description: The number of times this request has been retried.
+      examples:
+      - 0
+    WasAlreadyPresent:
+      type: boolean
+      description: Indicates whether a request with the same unique key already existed in the request queue. If true, no new request was created.
+      examples:
+      - false
+    RequestResource:
+      title: RequestResource
+      description: A request stored in the request queue, including its metadata and processing state.
+      allOf:
+      - $ref: '#/components/schemas/RequestBase'
+        required:
+        - id
+      - properties:
+          id:
+            $ref: '#/components/schemas/RequestId'
+    HttpMethod:
+      type: string
+      enum:
+      - GET
+      - HEAD
+      - POST
+      - PUT
+      - DELETE
+      - CONNECT
+      - OPTIONS
+      - TRACE
+      - PATCH
+      examples:
+      - GET
     AddRequestResponse:
       title: AddRequestResponse
       description: Response containing the result of adding a request to the request queue.
@@ -638,11 +465,109 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/RequestRegistration'
-    UniqueKey:
+    RequestId:
       type: string
-      description: A unique key used for request de-duplication. Requests with the same unique key are considered identical.
+      description: A unique identifier assigned to the request.
       examples:
-      - GET|60d83e70|e3b0c442|https://apify.com
+      - sbJ7klsdf7ujN9l
+    RequestWithoutId:
+      title: RequestWithoutId
+      description: A request stored in the request queue, including its metadata and processing state, without the assigned ID.
+      allOf:
+      - $ref: '#/components/schemas/RequestBase'
+    ListOfRequests:
+      title: ListOfRequests
+      description: A paginated list of requests from the request queue.
+      type: object
+      required:
+      - items
+      - limit
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestResource'
+          description: The array of requests.
+        limit:
+          type: integer
+          description: The maximum number of requests returned in this response.
+          examples:
+          - 2
+        exclusiveStartId:
+          deprecated: true
+          type: string
+          description: The ID of the last request from the previous page, used for pagination.
+          examples:
+          - Ihnsp8YrvJ8102Kj
+        cursor:
+          type: string
+          description: A cursor string used for current page of results.
+          examples:
+          - eyJyZXF1ZXN0SWQiOiI0SVlLUWFXZ2FKUUlWNlMifQ
+        nextCursor:
+          type: string
+          description: A cursor string to be used to continue pagination.
+          examples:
+          - eyJyZXF1ZXN0SWQiOiI5eFNNc1BrN1J6VUxTNXoifQ
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    ListOfRequestsResponse:
+      title: ListOfRequestsResponse
+      description: Response containing a list of requests from the request queue.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfRequests'
+      example:
+        data:
+          items:
+          - id: dnjkDMKLmdlkmlkmld
+            retryCount: 0
+            uniqueKey: http://example.com
+            url: http://example.com
+            method: GET
+            loadedUrl: http://example.com/example-1
+            payload: null
+            noRetry: false
+            errorMessages: null
+            headers: null
+            userData:
+              label: DETAIL
+              image: https://picserver1.eu
+            handledAt: '2019-06-16T10:23:31.607Z'
+          - id: dnjkDMKLmdlkmlkmld
+            retryCount: 0
+            uniqueKey: http://example.com
+            url: http://example.com
+            method: GET
+            loadedUrl: http://example.com/example-1
+            payload: null
+            noRetry: false
+            errorMessages: null
+            headers: null
+            userData:
+              label: DETAIL
+              image: https://picserver1.eu
+            handledAt: '2019-06-16T10:23:31.607Z'
+          limit: 2
+          exclusiveStartId: Ihnsp8YrvJ8102Kj
     RequestBase:
       title: RequestBase
       type: object
@@ -706,137 +631,14 @@ components:
           description: The timestamp when the request was marked as handled, if applicable.
           examples:
           - '2019-06-16T10:23:31.607Z'
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
-    RetryCount:
-      type: integer
-      description: The number of times this request has been retried.
-      examples:
-      - 0
-    UpdateRequestResponse:
-      title: UpdateRequestResponse
-      description: Response containing the result of updating a request in the request queue.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestRegistration'
+    RequestMethod:
+      description: The HTTP method of the request.
+      $ref: '#/components/schemas/HttpMethod'
     RequestUrl:
       type: string
       description: The URL of the request.
       examples:
       - https://apify.com
-    RequestUserData:
-      title: RequestUserData
-      description: Custom user data attached to the request. Can contain arbitrary fields.
-      type: object
-      additionalProperties: true
-      example:
-        label: DETAIL
-        customField: custom-value
-    RequestWithoutId:
-      title: RequestWithoutId
-      description: A request stored in the request queue, including its metadata and processing state, without the assigned ID.
-      allOf:
-      - $ref: '#/components/schemas/RequestBase'
-    ListOfRequests:
-      title: ListOfRequests
-      description: A paginated list of requests from the request queue.
-      type: object
-      required:
-      - items
-      - limit
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/RequestResource'
-          description: The array of requests.
-        limit:
-          type: integer
-          description: The maximum number of requests returned in this response.
-          examples:
-          - 2
-        exclusiveStartId:
-          deprecated: true
-          type: string
-          description: The ID of the last request from the previous page, used for pagination.
-          examples:
-          - Ihnsp8YrvJ8102Kj
-        cursor:
-          type: string
-          description: A cursor string used for current page of results.
-          examples:
-          - eyJyZXF1ZXN0SWQiOiI0SVlLUWFXZ2FKUUlWNlMifQ
-        nextCursor:
-          type: string
-          description: A cursor string to be used to continue pagination.
-          examples:
-          - eyJyZXF1ZXN0SWQiOiI5eFNNc1BrN1J6VUxTNXoifQ
-    HttpMethod:
-      type: string
-      enum:
-      - GET
-      - HEAD
-      - POST
-      - PUT
-      - DELETE
-      - CONNECT
-      - OPTIONS
-      - TRACE
-      - PATCH
-      examples:
-      - GET
-    ListOfRequestsResponse:
-      title: ListOfRequestsResponse
-      description: Response containing a list of requests from the request queue.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ListOfRequests'
-      example:
-        data:
-          items:
-          - id: dnjkDMKLmdlkmlkmld
-            retryCount: 0
-            uniqueKey: http://example.com
-            url: http://example.com
-            method: GET
-            loadedUrl: http://example.com/example-1
-            payload: null
-            noRetry: false
-            errorMessages: null
-            headers: null
-            userData:
-              label: DETAIL
-              image: https://picserver1.eu
-            handledAt: '2019-06-16T10:23:31.607Z'
-          - id: dnjkDMKLmdlkmlkmld
-            retryCount: 0
-            uniqueKey: http://example.com
-            url: http://example.com
-            method: GET
-            loadedUrl: http://example.com/example-1
-            payload: null
-            noRetry: false
-            errorMessages: null
-            headers: null
-            userData:
-              label: DETAIL
-              image: https://picserver1.eu
-            handledAt: '2019-06-16T10:23:31.607Z'
-          limit: 2
-          exclusiveStartId: Ihnsp8YrvJ8102Kj
     ErrorType:
       title: ErrorType
       type: string
@@ -1237,6 +1039,48 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
+    RequestUserData:
+      title: RequestUserData
+      description: Custom user data attached to the request. Can contain arbitrary fields.
+      type: object
+      additionalProperties: true
+      example:
+        label: DETAIL
+        customField: custom-value
+    UniqueKey:
+      type: string
+      description: A unique key used for request de-duplication. Requests with the same unique key are considered identical.
+      examples:
+      - GET|60d83e70|e3b0c442|https://apify.com
+    RequestRegistration:
+      title: RequestRegistration
+      description: Result of registering a request in the request queue, either by adding a new request or updating an existing one.
+      required:
+      - requestId
+      - wasAlreadyPresent
+      - wasAlreadyHandled
+      type: object
+      properties:
+        requestId:
+          $ref: '#/components/schemas/RequestId'
+        wasAlreadyPresent:
+          $ref: '#/components/schemas/WasAlreadyPresent'
+        wasAlreadyHandled:
+          $ref: '#/components/schemas/WasAlreadyHandled'
+    WasAlreadyHandled:
+      type: boolean
+      description: Indicates whether a request with the same unique key has already been processed by the request queue.
+      examples:
+      - false
+    UpdateRequestResponse:
+      title: UpdateRequestResponse
+      description: Response containing the result of updating a request in the request queue.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestRegistration'
     RequestResponse:
       title: RequestResponse
       description: Response containing a single request from the request queue.
@@ -1246,42 +1090,198 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/RequestResource'
-    RequestId:
-      type: string
-      description: A unique identifier assigned to the request.
-      examples:
-      - sbJ7klsdf7ujN9l
-    WasAlreadyPresent:
-      type: boolean
-      description: Indicates whether a request with the same unique key already existed in the request queue. If true, no new request was created.
-      examples:
-      - false
-    RequestResource:
-      title: RequestResource
-      description: A request stored in the request queue, including its metadata and processing state.
-      allOf:
-      - $ref: '#/components/schemas/RequestBase'
-        required:
-        - id
-      - properties:
-          id:
-            $ref: '#/components/schemas/RequestId'
-    RequestMethod:
-      description: The HTTP method of the request.
-      $ref: '#/components/schemas/HttpMethod'
-    WasAlreadyHandled:
-      type: boolean
-      description: Indicates whether a request with the same unique key has already been processed by the request queue.
-      examples:
-      - false
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
+  parameters:
+    cursor:
+      name: cursor
+      in: query
+      description: A cursor string for pagination, returned in the previous response as `nextCursor`. Use this to retrieve the next page of requests.
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: eyJyZXF1ZXN0SWQiOiI2OFRqQ2RaTDNvM2hiUU0ifQ
+    exclusiveStartId:
+      name: exclusiveStartId
+      in: query
+      description: All requests up to this one (including) are skipped from the result. (Deprecated, use `cursor` instead.)
+      deprecated: true
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: Ihnsp8YrvJ8102Kj
+    requestId:
+      name: requestId
+      in: path
+      description: Request ID.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: xpsmkDlspokDSmklS
+    forefront:
+      name: forefront
+      in: query
+      description: 'Determines if request should be added to the head of the queue or to the
+
+        end. Default value is `false` (end of queue).
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: 'false'
+    queueId:
+      name: queueId
+      in: path
+      description: Queue ID or `username~queue-name`.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: WkzbQMuFYuamGv3YF
+    clientKey:
+      name: clientKey
+      in: query
+      description: 'A unique identifier of the client accessing the request queue. It must
+
+        be a string between 1 and 32 characters long. This identifier is used to
+
+        determine whether the queue was accessed by multiple clients. If
+
+        `clientKey` is not provided,
+
+        the system considers this API call to come from a new client. For
+
+        details, see the `hadMultipleClients` field returned by the [Get
+
+        head](#/reference/request-queues/queue-head) operation.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: client-abc
+    filter:
+      name: filter
+      in: query
+      description: Filter requests by their state. Possible values are `locked` and `pending`. You can combine multiple values separated by commas, which will mean the union of these filters – requests matching any of the specified states will be returned. (Not compatible with deprecated `exclusiveStartId` parameter.)
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - locked
+          - pending
+        example:
+        - locked
+    listLimit:
+      name: limit
+      in: query
+      description: Number of keys to be returned. Maximum value is `10000`.
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 100
+  responses:
+    NoContent:
+      description: No content
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    PaymentRequired:
+      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: x402-payment-required
+              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
   securitySchemes:
     httpBearer:
       type: http

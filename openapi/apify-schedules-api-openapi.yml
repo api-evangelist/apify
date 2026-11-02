@@ -534,190 +534,31 @@ paths:
       x-py-name: get_log
       x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/ScheduleClientAsync#get_log
 components:
-  responses:
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    PayloadTooLarge:
-      description: Payload too large - the request body exceeds the size limit.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: request-too-large
-              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
-    Conflict:
-      description: Conflict - the request could not be completed due to a conflict with the current state of the resource.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: actor-name-not-unique
-              message: Record with the given name already exists.
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    UnsupportedMediaType:
-      description: Unsupported media type - the Content-Encoding of the request is not supported.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: unsupported-content-encoding
-              message: Content-Encoding "bla" is not supported.
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
   schemas:
-    ScheduleActionRunActor:
-      title: ScheduleActionRunActor
+    ListOfSchedules:
+      title: ListOfSchedules
+      allOf:
+      - $ref: '#/components/schemas/PaginationResponse'
+      - type: object
+        required:
+        - items
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/ScheduleListItem'
+    ScheduleActionRunActorTask:
+      title: ScheduleActionRunActorTask
       required:
       - id
       - type
-      - actorId
+      - actorTaskId
       type: object
       properties:
         id:
           type: string
           examples:
           - c6KfSgoQzFhMk3etc
-        type:
-          const: RUN_ACTOR
-        actorId:
-          type: string
-          examples:
-          - jF8GGEvbEg4Au3NLA
-        runInput:
-          anyOf:
-          - $ref: '#/components/schemas/ScheduleActionRunInput'
-          - type: 'null'
-        runOptions:
-          anyOf:
-          - $ref: '#/components/schemas/TaskOptions'
-          - type: 'null'
-    ScheduleCreateAction:
-      title: ScheduleCreateAction
-      oneOf:
-      - $ref: '#/components/schemas/ScheduleCreateActionRunActor'
-      - $ref: '#/components/schemas/ScheduleCreateActionRunActorTask'
-      discriminator:
-        propertyName: type
-        mapping:
-          RUN_ACTOR: '#/components/schemas/ScheduleCreateActionRunActor'
-          RUN_ACTOR_TASK: '#/components/schemas/ScheduleCreateActionRunActorTask'
-    ScheduleNotifications:
-      title: ScheduleNotifications
-      type: object
-      description: Notification settings for this schedule.
-      properties:
-        email:
-          type: boolean
-          examples:
-          - true
-    PaginationResponse:
-      title: PaginationResponse
-      description: Common pagination fields for list responses.
-      required:
-      - total
-      - offset
-      - limit
-      - desc
-      - count
-      type: object
-      properties:
-        total:
-          type: integer
-          description: The total number of items available across all pages.
-          minimum: 0
-          examples:
-          - 1
-        offset:
-          type: integer
-          description: The starting position for this page of results.
-          minimum: 0
-          examples:
-          - 0
-        limit:
-          type: integer
-          description: The maximum number of items returned per page.
-          minimum: 1
-          examples:
-          - 1000
-        desc:
-          type: boolean
-          description: Whether the results are sorted in descending order.
-          examples:
-          - false
-        count:
-          type: integer
-          description: The number of items returned in this response.
-          minimum: 0
-          examples:
-          - 1
-    ScheduleCreateActionRunActorTask:
-      title: ScheduleCreateActionRunActorTask
-      required:
-      - type
-      - actorTaskId
-      type: object
-      properties:
         type:
           const: RUN_ACTOR_TASK
         actorTaskId:
@@ -728,28 +569,6 @@ components:
           anyOf:
           - type: object
           - type: 'null'
-    ScheduleListItem:
-      title: ScheduleListItem
-      allOf:
-      - $ref: '#/components/schemas/ScheduleBase'
-      - type: object
-        required:
-        - actions
-        properties:
-          actions:
-            type: array
-            items:
-              $ref: '#/components/schemas/ScheduleListItemAction'
-            description: ''
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
     ScheduleResponse:
       title: ScheduleResponse
       required:
@@ -758,39 +577,27 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Schedule'
-    ListOfSchedulesResponse:
-      title: ListOfSchedulesResponse
+    ScheduleListItemAction:
+      title: ScheduleListItemAction
+      oneOf:
+      - $ref: '#/components/schemas/ScheduleListItemActionRunActor'
+      - $ref: '#/components/schemas/ScheduleListItemActionRunActorTask'
+      discriminator:
+        propertyName: type
+        mapping:
+          RUN_ACTOR: '#/components/schemas/ScheduleListItemActionRunActor'
+          RUN_ACTOR_TASK: '#/components/schemas/ScheduleListItemActionRunActorTask'
+    ScheduleLogResponse:
+      title: ScheduleLogResponse
       required:
       - data
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/ListOfSchedules'
-    Schedule:
-      title: Schedule
-      allOf:
-      - $ref: '#/components/schemas/ScheduleBase'
-      - type: object
-        required:
-        - actions
-        properties:
-          description:
-            type:
-            - string
-            - 'null'
-            examples:
-            - Schedule of actor ...
-          title:
-            type:
-            - string
-            - 'null'
-          notifications:
-            $ref: '#/components/schemas/ScheduleNotifications'
-          actions:
-            type: array
-            items:
-              $ref: '#/components/schemas/ScheduleAction'
-            description: ''
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleLogEntry'
+          description: ''
     ScheduleBase:
       title: ScheduleBase
       required:
@@ -857,6 +664,86 @@ components:
           format: date-time
           examples:
           - '2019-04-12T07:33:10.202Z'
+    PaginationResponse:
+      title: PaginationResponse
+      description: Common pagination fields for list responses.
+      required:
+      - total
+      - offset
+      - limit
+      - desc
+      - count
+      type: object
+      properties:
+        total:
+          type: integer
+          description: The total number of items available across all pages.
+          minimum: 0
+          examples:
+          - 1
+        offset:
+          type: integer
+          description: The starting position for this page of results.
+          minimum: 0
+          examples:
+          - 0
+        limit:
+          type: integer
+          description: The maximum number of items returned per page.
+          minimum: 1
+          examples:
+          - 1000
+        desc:
+          type: boolean
+          description: Whether the results are sorted in descending order.
+          examples:
+          - false
+        count:
+          type: integer
+          description: The number of items returned in this response.
+          minimum: 0
+          examples:
+          - 1
+    ScheduleCreateAction:
+      title: ScheduleCreateAction
+      oneOf:
+      - $ref: '#/components/schemas/ScheduleCreateActionRunActor'
+      - $ref: '#/components/schemas/ScheduleCreateActionRunActorTask'
+      discriminator:
+        propertyName: type
+        mapping:
+          RUN_ACTOR: '#/components/schemas/ScheduleCreateActionRunActor'
+          RUN_ACTOR_TASK: '#/components/schemas/ScheduleCreateActionRunActorTask'
+    ScheduleListItem:
+      title: ScheduleListItem
+      allOf:
+      - $ref: '#/components/schemas/ScheduleBase'
+      - type: object
+        required:
+        - actions
+        properties:
+          actions:
+            type: array
+            items:
+              $ref: '#/components/schemas/ScheduleListItemAction'
+            description: ''
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
     CreateOrUpdateScheduleRequest:
       title: CreateOrUpdateScheduleRequest
       type: object
@@ -910,6 +797,37 @@ components:
           items:
             $ref: '#/components/schemas/ScheduleCreateAction'
           description: ''
+    ScheduleCreateActionRunActor:
+      title: ScheduleCreateActionRunActor
+      required:
+      - type
+      - actorId
+      type: object
+      properties:
+        type:
+          const: RUN_ACTOR
+        actorId:
+          type: string
+          examples:
+          - jF8GGEvbEg4Au3NLA
+        runInput:
+          anyOf:
+          - $ref: '#/components/schemas/ScheduleActionRunInput'
+          - type: 'null'
+        runOptions:
+          anyOf:
+          - $ref: '#/components/schemas/TaskOptions'
+          - type: 'null'
+    ScheduleAction:
+      title: ScheduleAction
+      oneOf:
+      - $ref: '#/components/schemas/ScheduleActionRunActor'
+      - $ref: '#/components/schemas/ScheduleActionRunActorTask'
+      discriminator:
+        propertyName: type
+        mapping:
+          RUN_ACTOR: '#/components/schemas/ScheduleActionRunActor'
+          RUN_ACTOR_TASK: '#/components/schemas/ScheduleActionRunActorTask'
     ErrorType:
       title: ErrorType
       type: string
@@ -1310,28 +1228,164 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    ScheduleAction:
-      title: ScheduleAction
-      oneOf:
-      - $ref: '#/components/schemas/ScheduleActionRunActor'
-      - $ref: '#/components/schemas/ScheduleActionRunActorTask'
-      discriminator:
-        propertyName: type
-        mapping:
-          RUN_ACTOR: '#/components/schemas/ScheduleActionRunActor'
-          RUN_ACTOR_TASK: '#/components/schemas/ScheduleActionRunActorTask'
-    ListOfSchedules:
-      title: ListOfSchedules
+    ListOfSchedulesResponse:
+      title: ListOfSchedulesResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfSchedules'
+    ScheduleActionRunInput:
+      title: ScheduleActionRunInput
+      type: object
+      properties:
+        body:
+          type:
+          - string
+          - 'null'
+          examples:
+          - '{\n   "foo": "actor"\n}'
+        contentType:
+          type:
+          - string
+          - 'null'
+          examples:
+          - application/json; charset=utf-8
+    ScheduleLogEntry:
+      title: ScheduleLogEntry
+      required:
+      - message
+      - level
+      - createdAt
+      type: object
+      properties:
+        message:
+          type: string
+          examples:
+          - Schedule invoked
+        level:
+          type: string
+          examples:
+          - INFO
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-03-26T12:28:00.370Z'
+    ScheduleCreateActionRunActorTask:
+      title: ScheduleCreateActionRunActorTask
+      required:
+      - type
+      - actorTaskId
+      type: object
+      properties:
+        type:
+          const: RUN_ACTOR_TASK
+        actorTaskId:
+          type: string
+          examples:
+          - jF8GGEvbEg4Au3NLA
+        input:
+          anyOf:
+          - type: object
+          - type: 'null'
+    ScheduleListItemActionRunActor:
+      title: ScheduleListItemActionRunActor
+      required:
+      - id
+      - type
+      - actorId
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - ZReCs7hkdieq8ZUki
+        type:
+          const: RUN_ACTOR
+        actorId:
+          type: string
+          examples:
+          - HKhKmiCMrDgu9eXeE
+    ScheduleActionRunActor:
+      title: ScheduleActionRunActor
+      required:
+      - id
+      - type
+      - actorId
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - c6KfSgoQzFhMk3etc
+        type:
+          const: RUN_ACTOR
+        actorId:
+          type: string
+          examples:
+          - jF8GGEvbEg4Au3NLA
+        runInput:
+          anyOf:
+          - $ref: '#/components/schemas/ScheduleActionRunInput'
+          - type: 'null'
+        runOptions:
+          anyOf:
+          - $ref: '#/components/schemas/TaskOptions'
+          - type: 'null'
+    ScheduleListItemActionRunActorTask:
+      title: ScheduleListItemActionRunActorTask
+      required:
+      - id
+      - type
+      - actorTaskId
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - ZReCs7hkdieq8ZUki
+        type:
+          const: RUN_ACTOR_TASK
+        actorTaskId:
+          type: string
+          examples:
+          - HKhKmiCMrDgu9eXeE
+    ScheduleNotifications:
+      title: ScheduleNotifications
+      type: object
+      description: Notification settings for this schedule.
+      properties:
+        email:
+          type: boolean
+          examples:
+          - true
+    Schedule:
+      title: Schedule
       allOf:
-      - $ref: '#/components/schemas/PaginationResponse'
+      - $ref: '#/components/schemas/ScheduleBase'
       - type: object
         required:
-        - items
+        - actions
         properties:
-          items:
+          description:
+            type:
+            - string
+            - 'null'
+            examples:
+            - Schedule of actor ...
+          title:
+            type:
+            - string
+            - 'null'
+          notifications:
+            $ref: '#/components/schemas/ScheduleNotifications'
+          actions:
             type: array
             items:
-              $ref: '#/components/schemas/ScheduleListItem'
+              $ref: '#/components/schemas/ScheduleAction'
+            description: ''
     TaskOptions:
       title: TaskOptions
       type: object
@@ -1372,164 +1426,98 @@ components:
           - 'null'
           examples:
           - false
-    ScheduleActionRunActorTask:
-      title: ScheduleActionRunActorTask
-      required:
-      - id
-      - type
-      - actorTaskId
-      type: object
-      properties:
-        id:
-          type: string
-          examples:
-          - c6KfSgoQzFhMk3etc
-        type:
-          const: RUN_ACTOR_TASK
-        actorTaskId:
-          type: string
-          examples:
-          - jF8GGEvbEg4Au3NLA
-        input:
-          anyOf:
-          - type: object
-          - type: 'null'
-    ScheduleListItemActionRunActorTask:
-      title: ScheduleListItemActionRunActorTask
-      required:
-      - id
-      - type
-      - actorTaskId
-      type: object
-      properties:
-        id:
-          type: string
-          examples:
-          - ZReCs7hkdieq8ZUki
-        type:
-          const: RUN_ACTOR_TASK
-        actorTaskId:
-          type: string
-          examples:
-          - HKhKmiCMrDgu9eXeE
-    ScheduleActionRunInput:
-      title: ScheduleActionRunInput
-      type: object
-      properties:
-        body:
-          type:
-          - string
-          - 'null'
-          examples:
-          - '{\n   "foo": "actor"\n}'
-        contentType:
-          type:
-          - string
-          - 'null'
-          examples:
-          - application/json; charset=utf-8
-    ScheduleLogResponse:
-      title: ScheduleLogResponse
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ScheduleLogEntry'
-          description: ''
-    ScheduleLogEntry:
-      title: ScheduleLogEntry
-      required:
-      - message
-      - level
-      - createdAt
-      type: object
-      properties:
-        message:
-          type: string
-          examples:
-          - Schedule invoked
-        level:
-          type: string
-          examples:
-          - INFO
-        createdAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-03-26T12:28:00.370Z'
-    ScheduleListItemAction:
-      title: ScheduleListItemAction
-      oneOf:
-      - $ref: '#/components/schemas/ScheduleListItemActionRunActor'
-      - $ref: '#/components/schemas/ScheduleListItemActionRunActorTask'
-      discriminator:
-        propertyName: type
-        mapping:
-          RUN_ACTOR: '#/components/schemas/ScheduleListItemActionRunActor'
-          RUN_ACTOR_TASK: '#/components/schemas/ScheduleListItemActionRunActorTask'
-    ScheduleCreateActionRunActor:
-      title: ScheduleCreateActionRunActor
-      required:
-      - type
-      - actorId
-      type: object
-      properties:
-        type:
-          const: RUN_ACTOR
-        actorId:
-          type: string
-          examples:
-          - jF8GGEvbEg4Au3NLA
-        runInput:
-          anyOf:
-          - $ref: '#/components/schemas/ScheduleActionRunInput'
-          - type: 'null'
-        runOptions:
-          anyOf:
-          - $ref: '#/components/schemas/TaskOptions'
-          - type: 'null'
-    ScheduleListItemActionRunActor:
-      title: ScheduleListItemActionRunActor
-      required:
-      - id
-      - type
-      - actorId
-      type: object
-      properties:
-        id:
-          type: string
-          examples:
-          - ZReCs7hkdieq8ZUki
-        type:
-          const: RUN_ACTOR
-        actorId:
-          type: string
-          examples:
-          - HKhKmiCMrDgu9eXeE
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
+  responses:
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    Conflict:
+      description: Conflict - the request could not be completed due to a conflict with the current state of the resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: actor-name-not-unique
+              message: Record with the given name already exists.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
   parameters:
-    limit:
-      name: limit
-      in: query
-      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 1000
     descCreatedAt:
       name: desc
       in: query
@@ -1564,6 +1552,18 @@ components:
         type: number
         format: double
         example: 0
+    limit:
+      name: limit
+      in: query
+      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 1000
   securitySchemes:
     httpBearer:
       type: http
