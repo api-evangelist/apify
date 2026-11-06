@@ -498,7 +498,143 @@ paths:
       x-py-name: get_open_api_definition
       x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/BuildClient#get_open_api_definition
 components:
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    Timeout:
+      description: The HTTP request exceeded the timeout limit
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: run-timeout-exceeded
+              message: Actor run exceeded the timeout of 300 seconds for this API endpoint
+    NoContent:
+      description: No content
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
   schemas:
+    BuildMeta:
+      title: BuildMeta
+      required:
+      - origin
+      type: object
+      properties:
+        origin:
+          $ref: '#/components/schemas/RunOrigin'
+        clientIp:
+          type:
+          - string
+          description: IP address of the client that started the build.
+          examples:
+          - 172.234.12.34
+        userAgent:
+          type:
+          - string
+          description: User agent of the client that started the build.
+          examples:
+          - Mozilla/5.0 (iPad)
+    BuildStats:
+      title: BuildStats
+      type: object
+      properties:
+        durationMillis:
+          type: integer
+          examples:
+          - 1000
+        runTimeSecs:
+          type: number
+          examples:
+          - 45.718
+        computeUnits:
+          type: number
+          examples:
+          - 0.0126994444444444
+        imageSizeBytes:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 975770223
+    VersionSourceType:
+      title: VersionSourceType
+      enum:
+      - SOURCE_FILES
+      - GIT_REPO
+      - TARBALL
+      - GITHUB_GIST
+      - SOURCE_CODE
+      type: string
+    ListOfBuilds:
+      title: ListOfBuilds
+      allOf:
+      - $ref: '#/components/schemas/PaginationResponse'
+      - type: object
+        required:
+        - items
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/BuildListItem'
     RunOrigin:
       title: RunOrigin
       type: string
@@ -514,43 +650,6 @@ components:
       - CI
       - STANDBY
       - MCP
-    BuildResponse:
-      title: BuildResponse
-      description: Response containing Actor build data.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Build'
-    ListOfBuildsResponse:
-      title: ListOfBuildsResponse
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          $ref: '#/components/schemas/ListOfBuilds'
-    ActorJobStatus:
-      title: ActorJobStatus
-      type: string
-      enum:
-      - READY
-      - RUNNING
-      - SUCCEEDED
-      - FAILED
-      - TIMING-OUT
-      - TIMED-OUT
-      - ABORTING
-      - ABORTED
-      description: Status of an Actor job (run or build).
-    SourceCodeFileFormat:
-      type: string
-      enum:
-      - BASE64
-      - TEXT
-      examples:
-      - TEXT
     PaginationResponse:
       title: PaginationResponse
       description: Common pagination fields for list responses.
@@ -591,13 +690,23 @@ components:
           minimum: 0
           examples:
           - 1
-    BuildListItem:
-      title: BuildListItem
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    Build:
+      title: Build
       required:
       - id
-      - status
+      - actId
+      - userId
       - startedAt
-      - usageTotalUsd
+      - status
+      - meta
       - buildNumber
       type: object
       properties:
@@ -613,8 +722,6 @@ components:
           type: string
           examples:
           - klmdEpoiojmdEMlk3
-        status:
-          $ref: '#/components/schemas/ActorJobStatus'
         startedAt:
           type: string
           format: date-time
@@ -627,41 +734,154 @@ components:
           format: date-time
           examples:
           - '2019-12-12T09:30:12.202Z'
+        status:
+          $ref: '#/components/schemas/ActorJobStatus'
+        meta:
+          $ref: '#/components/schemas/BuildMeta'
+        stats:
+          anyOf:
+          - $ref: '#/components/schemas/BuildStats'
+          - type: 'null'
+        options:
+          anyOf:
+          - $ref: '#/components/schemas/BuildOptions'
+          - type: 'null'
+        usage:
+          anyOf:
+          - $ref: '#/components/schemas/BuildUsage'
+          - type: 'null'
         usageTotalUsd:
-          type: number
+          type:
+          - number
+          - 'null'
           examples:
           - 0.02
+          description: Total cost in USD for this build. Requires authentication token to access.
+        usageUsd:
+          description: Platform usage costs breakdown in USD for this build. Requires authentication token to access.
+          anyOf:
+          - $ref: '#/components/schemas/BuildUsage'
+          - type: 'null'
+        inputSchema:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+          examples:
+          - '{\n  "title": "Schema for ... }'
+        readme:
+          type:
+          - string
+          - 'null'
+          deprecated: true
+          examples:
+          - '# Magic Actor\nThis Actor is magic.'
         buildNumber:
           type: string
           pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
           examples:
           - 0.1.1
-        buildNumberInt:
-          type: integer
+        imageDigest:
+          type:
+          - string
+          - 'null'
+          description: Digest of the built Docker image manifest, without the `sha256:` prefix. Compare digests of two builds to find out whether their image contents differ. `null` if the digest is not available.
           examples:
-          - 10000
+          - 1b2f1e8c0d5a4c7f9e3b6a2d8c4e0f7a5b9d3c1e6f8a2b4d0c7e9f1a3b5d7c9e
+        actVersion:
+          title: BuildActVersion
+          type: object
+          description: Snapshot of the Actor version that this build was created from.
+          properties:
+            sourceType:
+              $ref: '#/components/schemas/VersionSourceType'
+            buildTag:
+              type: string
+              examples:
+              - experimental
+            versionNumber:
+              type: string
+              pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])$
+              examples:
+              - '0.0'
+            gitRepoUrl:
+              type: string
+              description: URL of the git repository, present when sourceType is GIT_REPO.
+              examples:
+              - https://github.com/apifytech/actor-crawler.git#experimental:web-scraper
+            sourceFiles:
+              type: array
+              description: Inline source files, present when sourceType is SOURCE_FILES.
+              items:
+                $ref: '#/components/schemas/SourceCodeFile'
+        actorDefinition:
+          anyOf:
+          - $ref: '#/components/schemas/ActorDefinition'
+          - type: 'null'
+      example:
+        id: HG7ML7M8z78YcAPEB
+        actId: janedoe~my-actor
+        userId: klmdEpoiojmdEMlk3
+        startedAt: '2019-11-30T07:34:24.202Z'
+        finishedAt: '2019-12-12T09:30:12.202Z'
+        status: SUCCEEDED
         meta:
-          $ref: '#/components/schemas/BuildMeta'
-    BuildMeta:
-      title: BuildMeta
-      required:
-      - origin
-      type: object
-      properties:
-        origin:
-          $ref: '#/components/schemas/RunOrigin'
-        clientIp:
-          type:
-          - string
-          description: IP address of the client that started the build.
-          examples:
-          - 172.234.12.34
-        userAgent:
-          type:
-          - string
-          description: User agent of the client that started the build.
-          examples:
-          - Mozilla/5.0 (iPad)
+          origin: WEB
+          clientIp: 172.234.12.34
+          userAgent: Mozilla/5.0 (iPad)
+        stats:
+          durationMillis: 1000
+          runTimeSecs: 45.718
+          computeUnits: 0.012699444444444444
+        options:
+          useCache: false
+          betaPackages: false
+          memoryMbytes: 1024
+          diskMbytes: 2048
+        usage:
+          ACTOR_COMPUTE_UNITS: 0.08
+        usageTotalUsd: 0.02
+        usageUsd:
+          ACTOR_COMPUTE_UNITS: 0.02
+        inputSchema: '{\n  "title": "Schema for ..."}'
+        readme: '# Magic Actor\nThis Actor is magic.'
+        buildNumber: 0.1.1
+        imageDigest: 1b2f1e8c0d5a4c7f9e3b6a2d8c4e0f7a5b9d3c1e6f8a2b4d0c7e9f1a3b5d7c9e
+        actorDefinition:
+          actorSpecification: 1
+          name: example-actor
+          version: '1.0'
+          buildTag: latest
+          environmentVariables:
+            DEBUG_MODE: 'false'
+          input:
+            type: object
+            properties:
+              prompt:
+                type: string
+                description: The text prompt to generate completions for.
+              maxTokens:
+                type: integer
+                description: The maximum number of tokens to generate.
+            required:
+            - prompt
+          storages:
+            dataset:
+              type: object
+              $schema: http://json-schema.org/draft-07/schema#
+              properties:
+                id:
+                  type: string
+                  description: Unique identifier for the generated text.
+                text:
+                  type: string
+                  description: The generated text output from the model.
+              required:
+              - id
+              - text
+          minMemoryMbytes: 512
+          maxMemoryMbytes: 2048
+          usesStandbyMode: false
     ErrorDetail:
       title: ErrorDetail
       type: object
@@ -671,14 +891,108 @@ components:
         message:
           type: string
           description: Human-readable error message describing what went wrong.
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
+    ActorDefinition:
+      title: ActorDefinition
+      description: The definition of the Actor, the full specification of this field can be found in [Apify docs](https://docs.apify.com/platform/actors/development/actor-definition/actor-json)
       type: object
       properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
+        actorSpecification:
+          type: integer
+          const: 1
+          description: The Actor specification version that this Actor follows. This property must be set to 1.
+        name:
+          type: string
+          description: The name of the Actor.
+        version:
+          type: string
+          pattern: ^[0-9]+(\.[0-9]+)+$
+          description: The version of the Actor, typically a dot-separated sequence of numbers (e.g., `0.1`, `1.0`, or `0.0.1`).
+        buildTag:
+          type: string
+          description: The tag name to be applied to a successful build of the Actor. Defaults to 'latest' if not specified.
+        environmentVariables:
+          type: object
+          additionalProperties:
+            type: string
+          description: A map of environment variables to be used during local development and deployment.
+        dockerfile:
+          type: string
+          description: The path to the Dockerfile used for building the Actor on the platform.
+        dockerContextDir:
+          type: string
+          description: The path to the directory used as the Docker context when building the Actor.
+        readme:
+          type:
+          - string
+          - 'null'
+          description: The path to the README file for the Actor.
+        input:
+          type:
+          - object
+          - 'null'
+          description: The input schema object, the full specification can be found in [Apify docs](https://docs.apify.com/platform/actors/development/actor-definition/input-schema)
+        changelog:
+          type:
+          - string
+          - 'null'
+          description: The path to the CHANGELOG file displayed in the Actor's information tab.
+        storages:
+          type: object
+          properties:
+            dataset:
+              type: object
+              description: Defines the schema of items in your dataset, the full specification can be found in [Apify docs](https://docs.apify.com/platform/actors/development/actor-definition/dataset-schema)
+        defaultMemoryMbytes:
+          oneOf:
+          - type: string
+            examples:
+            - get(input
+            - startUrls.length
+            - 1) * 1024
+          - type: integer
+            examples:
+            - 1024
+          description: Specifies the default amount of memory in megabytes to be used when the Actor is started. Can be an integer or a [dynamic memory expression](/actors/development/actor-definition/dynamic-actor-memory).
+        minMemoryMbytes:
+          type: integer
+          minimum: 128
+          description: Specifies the minimum amount of memory in megabytes required by the Actor.
+        maxMemoryMbytes:
+          type: integer
+          minimum: 128
+          description: Specifies the maximum amount of memory in megabytes required by the Actor.
+        usesStandbyMode:
+          type: boolean
+          description: Specifies whether Standby mode is enabled for the Actor.
+    SourceCodeFileFormat:
+      type: string
+      enum:
+      - BASE64
+      - TEXT
+      examples:
+      - TEXT
+    ActorJobStatus:
+      title: ActorJobStatus
+      type: string
+      enum:
+      - READY
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+      - TIMING-OUT
+      - TIMED-OUT
+      - ABORTING
+      - ABORTED
+      description: Status of an Actor job (run or build).
+    BuildResponse:
+      title: BuildResponse
+      description: Response containing Actor build data.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Build'
     BuildUsage:
       title: BuildUsage
       type: object
@@ -689,6 +1003,42 @@ components:
           - 'null'
           examples:
           - 0.08
+    BuildOptions:
+      title: BuildOptions
+      type: object
+      properties:
+        useCache:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+        betaPackages:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+        memoryMbytes:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 1024
+        diskMbytes:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 2048
+    ListOfBuildsResponse:
+      title: ListOfBuildsResponse
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfBuilds'
     ErrorType:
       title: ErrorType
       type: string
@@ -1089,325 +1439,6 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    ListOfBuilds:
-      title: ListOfBuilds
-      allOf:
-      - $ref: '#/components/schemas/PaginationResponse'
-      - type: object
-        required:
-        - items
-        properties:
-          items:
-            type: array
-            items:
-              $ref: '#/components/schemas/BuildListItem'
-    Build:
-      title: Build
-      required:
-      - id
-      - actId
-      - userId
-      - startedAt
-      - status
-      - meta
-      - buildNumber
-      type: object
-      properties:
-        id:
-          type: string
-          examples:
-          - HG7ML7M8z78YcAPEB
-        actId:
-          type: string
-          examples:
-          - janedoe~my-actor
-        userId:
-          type: string
-          examples:
-          - klmdEpoiojmdEMlk3
-        startedAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-11-30T07:34:24.202Z'
-        finishedAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          examples:
-          - '2019-12-12T09:30:12.202Z'
-        status:
-          $ref: '#/components/schemas/ActorJobStatus'
-        meta:
-          $ref: '#/components/schemas/BuildMeta'
-        stats:
-          anyOf:
-          - $ref: '#/components/schemas/BuildStats'
-          - type: 'null'
-        options:
-          anyOf:
-          - $ref: '#/components/schemas/BuildOptions'
-          - type: 'null'
-        usage:
-          anyOf:
-          - $ref: '#/components/schemas/BuildUsage'
-          - type: 'null'
-        usageTotalUsd:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.02
-          description: Total cost in USD for this build. Requires authentication token to access.
-        usageUsd:
-          description: Platform usage costs breakdown in USD for this build. Requires authentication token to access.
-          anyOf:
-          - $ref: '#/components/schemas/BuildUsage'
-          - type: 'null'
-        inputSchema:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-          examples:
-          - '{\n  "title": "Schema for ... }'
-        readme:
-          type:
-          - string
-          - 'null'
-          deprecated: true
-          examples:
-          - '# Magic Actor\nThis Actor is magic.'
-        buildNumber:
-          type: string
-          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
-          examples:
-          - 0.1.1
-        imageDigest:
-          type:
-          - string
-          - 'null'
-          description: Digest of the built Docker image manifest, without the `sha256:` prefix. Compare digests of two builds to find out whether their image contents differ. `null` if the digest is not available.
-          examples:
-          - 1b2f1e8c0d5a4c7f9e3b6a2d8c4e0f7a5b9d3c1e6f8a2b4d0c7e9f1a3b5d7c9e
-        actVersion:
-          title: BuildActVersion
-          type: object
-          description: Snapshot of the Actor version that this build was created from.
-          properties:
-            sourceType:
-              $ref: '#/components/schemas/VersionSourceType'
-            buildTag:
-              type: string
-              examples:
-              - experimental
-            versionNumber:
-              type: string
-              pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])$
-              examples:
-              - '0.0'
-            gitRepoUrl:
-              type: string
-              description: URL of the git repository, present when sourceType is GIT_REPO.
-              examples:
-              - https://github.com/apifytech/actor-crawler.git#experimental:web-scraper
-            sourceFiles:
-              type: array
-              description: Inline source files, present when sourceType is SOURCE_FILES.
-              items:
-                $ref: '#/components/schemas/SourceCodeFile'
-        actorDefinition:
-          anyOf:
-          - $ref: '#/components/schemas/ActorDefinition'
-          - type: 'null'
-      example:
-        id: HG7ML7M8z78YcAPEB
-        actId: janedoe~my-actor
-        userId: klmdEpoiojmdEMlk3
-        startedAt: '2019-11-30T07:34:24.202Z'
-        finishedAt: '2019-12-12T09:30:12.202Z'
-        status: SUCCEEDED
-        meta:
-          origin: WEB
-          clientIp: 172.234.12.34
-          userAgent: Mozilla/5.0 (iPad)
-        stats:
-          durationMillis: 1000
-          runTimeSecs: 45.718
-          computeUnits: 0.012699444444444444
-        options:
-          useCache: false
-          betaPackages: false
-          memoryMbytes: 1024
-          diskMbytes: 2048
-        usage:
-          ACTOR_COMPUTE_UNITS: 0.08
-        usageTotalUsd: 0.02
-        usageUsd:
-          ACTOR_COMPUTE_UNITS: 0.02
-        inputSchema: '{\n  "title": "Schema for ..."}'
-        readme: '# Magic Actor\nThis Actor is magic.'
-        buildNumber: 0.1.1
-        imageDigest: 1b2f1e8c0d5a4c7f9e3b6a2d8c4e0f7a5b9d3c1e6f8a2b4d0c7e9f1a3b5d7c9e
-        actorDefinition:
-          actorSpecification: 1
-          name: example-actor
-          version: '1.0'
-          buildTag: latest
-          environmentVariables:
-            DEBUG_MODE: 'false'
-          input:
-            type: object
-            properties:
-              prompt:
-                type: string
-                description: The text prompt to generate completions for.
-              maxTokens:
-                type: integer
-                description: The maximum number of tokens to generate.
-            required:
-            - prompt
-          storages:
-            dataset:
-              type: object
-              $schema: http://json-schema.org/draft-07/schema#
-              properties:
-                id:
-                  type: string
-                  description: Unique identifier for the generated text.
-                text:
-                  type: string
-                  description: The generated text output from the model.
-              required:
-              - id
-              - text
-          minMemoryMbytes: 512
-          maxMemoryMbytes: 2048
-          usesStandbyMode: false
-    ActorDefinition:
-      title: ActorDefinition
-      description: The definition of the Actor, the full specification of this field can be found in [Apify docs](https://docs.apify.com/platform/actors/development/actor-definition/actor-json)
-      type: object
-      properties:
-        actorSpecification:
-          type: integer
-          const: 1
-          description: The Actor specification version that this Actor follows. This property must be set to 1.
-        name:
-          type: string
-          description: The name of the Actor.
-        version:
-          type: string
-          pattern: ^[0-9]+(\.[0-9]+)+$
-          description: The version of the Actor, typically a dot-separated sequence of numbers (e.g., `0.1`, `1.0`, or `0.0.1`).
-        buildTag:
-          type: string
-          description: The tag name to be applied to a successful build of the Actor. Defaults to 'latest' if not specified.
-        environmentVariables:
-          type: object
-          additionalProperties:
-            type: string
-          description: A map of environment variables to be used during local development and deployment.
-        dockerfile:
-          type: string
-          description: The path to the Dockerfile used for building the Actor on the platform.
-        dockerContextDir:
-          type: string
-          description: The path to the directory used as the Docker context when building the Actor.
-        readme:
-          type:
-          - string
-          - 'null'
-          description: The path to the README file for the Actor.
-        input:
-          type:
-          - object
-          - 'null'
-          description: The input schema object, the full specification can be found in [Apify docs](https://docs.apify.com/platform/actors/development/actor-definition/input-schema)
-        changelog:
-          type:
-          - string
-          - 'null'
-          description: The path to the CHANGELOG file displayed in the Actor's information tab.
-        storages:
-          type: object
-          properties:
-            dataset:
-              type: object
-              description: Defines the schema of items in your dataset, the full specification can be found in [Apify docs](https://docs.apify.com/platform/actors/development/actor-definition/dataset-schema)
-        defaultMemoryMbytes:
-          oneOf:
-          - type: string
-            examples:
-            - get(input
-            - startUrls.length
-            - 1) * 1024
-          - type: integer
-            examples:
-            - 1024
-          description: Specifies the default amount of memory in megabytes to be used when the Actor is started. Can be an integer or a [dynamic memory expression](/actors/development/actor-definition/dynamic-actor-memory).
-        minMemoryMbytes:
-          type: integer
-          minimum: 128
-          description: Specifies the minimum amount of memory in megabytes required by the Actor.
-        maxMemoryMbytes:
-          type: integer
-          minimum: 128
-          description: Specifies the maximum amount of memory in megabytes required by the Actor.
-        usesStandbyMode:
-          type: boolean
-          description: Specifies whether Standby mode is enabled for the Actor.
-    BuildStats:
-      title: BuildStats
-      type: object
-      properties:
-        durationMillis:
-          type: integer
-          examples:
-          - 1000
-        runTimeSecs:
-          type: number
-          examples:
-          - 45.718
-        computeUnits:
-          type: number
-          examples:
-          - 0.0126994444444444
-        imageSizeBytes:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 975770223
-    BuildOptions:
-      title: BuildOptions
-      type: object
-      properties:
-        useCache:
-          type:
-          - boolean
-          - 'null'
-          examples:
-          - false
-        betaPackages:
-          type:
-          - boolean
-          - 'null'
-          examples:
-          - false
-        memoryMbytes:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 1024
-        diskMbytes:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 2048
     SourceCodeFile:
       title: SourceCodeFile
       type: object
@@ -1428,34 +1459,58 @@ components:
           examples:
           - src/main.js
           description: The path of the file relative to the Actor's root directory.
-    VersionSourceType:
-      title: VersionSourceType
-      enum:
-      - SOURCE_FILES
-      - GIT_REPO
-      - TARBALL
-      - GITHUB_GIST
-      - SOURCE_CODE
-      type: string
+    BuildListItem:
+      title: BuildListItem
+      required:
+      - id
+      - status
+      - startedAt
+      - usageTotalUsd
+      - buildNumber
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - HG7ML7M8z78YcAPEB
+        actId:
+          type: string
+          examples:
+          - janedoe~my-actor
+        userId:
+          type: string
+          examples:
+          - klmdEpoiojmdEMlk3
+        status:
+          $ref: '#/components/schemas/ActorJobStatus'
+        startedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-11-30T07:34:24.202Z'
+        finishedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - '2019-12-12T09:30:12.202Z'
+        usageTotalUsd:
+          type: number
+          examples:
+          - 0.02
+        buildNumber:
+          type: string
+          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])(\.[1-9][0-9]{0,4})$
+          examples:
+          - 0.1.1
+        buildNumberInt:
+          type: integer
+          examples:
+          - 10000
+        meta:
+          $ref: '#/components/schemas/BuildMeta'
   parameters:
-    waitForFinishBuild:
-      name: waitForFinish
-      in: query
-      description: 'The maximum number of seconds the server waits for the build to finish.
-
-        By default it is `0`, the maximum value is `60`. <!-- MAX_ACTOR_JOB_ASYNC_WAIT_SECS -->
-
-        If the build finishes in time then the returned build object will have a
-
-        terminal status (e.g. `SUCCEEDED`), otherwise it will have a transitional status (e.g. `RUNNING`).
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 60
     buildId:
       name: buildId
       in: path
@@ -1465,18 +1520,19 @@ components:
       schema:
         type: string
         example: soSkq9ekdmfOslopH
-    stream:
-      name: stream
+    descStartedAt:
+      name: desc
       in: query
-      description: 'If `true` or `1` then the logs will be streamed as long as the run or build is running.
+      description: 'If `true` or `1` then the objects are sorted by the `startedAt` field in
+
+        descending order. By default, they are sorted in ascending order.
 
         '
-      required: false
       style: form
       explode: true
       schema:
         type: boolean
-        example: false
+        example: true
     download:
       name: download
       in: query
@@ -1502,10 +1558,28 @@ components:
       schema:
         type: string
         example: soSkq9ekdmfOslopH
-    offset:
-      name: offset
+    stream:
+      name: stream
       in: query
-      description: 'Number of items that should be skipped at the start. The default value is `0`.
+      description: 'If `true` or `1` then the logs will be streamed as long as the run or build is running.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    waitForFinishBuild:
+      name: waitForFinish
+      in: query
+      description: 'The maximum number of seconds the server waits for the build to finish.
+
+        By default it is `0`, the maximum value is `60`. <!-- MAX_ACTOR_JOB_ASYNC_WAIT_SECS -->
+
+        If the build finishes in time then the returned build object will have a
+
+        terminal status (e.g. `SUCCEEDED`), otherwise it will have a transitional status (e.g. `RUNNING`).
 
         '
       style: form
@@ -1513,7 +1587,7 @@ components:
       schema:
         type: number
         format: double
-        example: 0
+        example: 60
     limit:
       name: limit
       in: query
@@ -1526,92 +1600,18 @@ components:
         type: number
         format: double
         example: 1000
-    descStartedAt:
-      name: desc
+    offset:
+      name: offset
       in: query
-      description: 'If `true` or `1` then the objects are sorted by the `startedAt` field in
-
-        descending order. By default, they are sorted in ascending order.
+      description: 'Number of items that should be skipped at the start. The default value is `0`.
 
         '
       style: form
       explode: true
       schema:
-        type: boolean
-        example: true
-  responses:
-    NoContent:
-      description: No content
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    Timeout:
-      description: The HTTP request exceeded the timeout limit
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: run-timeout-exceeded
-              message: Actor run exceeded the timeout of 300 seconds for this API endpoint
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
+        type: number
+        format: double
+        example: 0
   securitySchemes:
     httpBearer:
       type: http

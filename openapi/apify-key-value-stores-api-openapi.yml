@@ -133,39 +133,6 @@ paths:
         delay: 0
         dispatcher: FALLBACK
 components:
-  schemas:
-    KeyValueStore:
-      type: object
-      description: An Apify key-value store.
-      properties:
-        id:
-          type: string
-          example: WkzbQMuFYuamGv3YQ
-        name:
-          type: string
-          example: my-store
-    Error:
-      type: object
-      properties:
-        error:
-          type: object
-          properties:
-            type:
-              type: string
-            message:
-              type: string
-    KeyValueStoreList:
-      type: object
-      properties:
-        data:
-          type: object
-          properties:
-            items:
-              type: array
-              items:
-                $ref: '#/components/schemas/KeyValueStore'
-            total:
-              type: integer
   responses:
     Unauthorized:
       description: Authentication failed.
@@ -179,6 +146,39 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+  schemas:
+    KeyValueStoreList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/KeyValueStore'
+            total:
+              type: integer
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
+    KeyValueStore:
+      type: object
+      description: An Apify key-value store.
+      properties:
+        id:
+          type: string
+          example: WkzbQMuFYuamGv3YQ
+        name:
+          type: string
+          example: my-store
   securitySchemes:
     bearerAuth:
       type: http

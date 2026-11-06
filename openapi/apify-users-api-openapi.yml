@@ -158,7 +158,197 @@ paths:
     - url: https://api.apify.com/v2
       description: Apify Production API
 components:
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    Unauthorized_2:
+      description: Authentication failed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    UserPublicInfo:
+      title: UserPublicInfo
+      required:
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          examples:
+          - d7b9MDYsbtX5L7XAj
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+    ProxyResource:
+      title: ProxyResource
+      required:
+      - password
+      - groups
+      type: object
+      properties:
+        password:
+          type: string
+          examples:
+          - ad78knd9Jkjd86
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProxyGroup'
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    UserPrivateInfo:
+      title: UserPrivateInfo
+      required:
+      - username
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - YiKoxjkaS9gjGTqhF
+        username:
+          type: string
+          examples:
+          - myusername
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+        email:
+          type: string
+          format: email
+          examples:
+          - bob@example.com
+        proxy:
+          $ref: '#/components/schemas/ProxyResource'
+        plan:
+          $ref: '#/components/schemas/UserPlan'
+        effectivePlatformFeatures:
+          $ref: '#/components/schemas/EffectivePlatformFeatures'
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2022-11-29T14:48:29.381Z'
+        isPaying:
+          type: boolean
+          examples:
+          - true
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
+    EffectivePlatformFeatures:
+      title: EffectivePlatformFeatures
+      required:
+      - ACTORS
+      - STORAGE
+      - SCHEDULER
+      - PROXY
+      - PROXY_EXTERNAL_ACCESS
+      - PROXY_RESIDENTIAL
+      - PROXY_SERPS
+      - WEBHOOKS
+      - ACTORS_PUBLIC_ALL
+      - ACTORS_PUBLIC_DEVELOPER
+      type: object
+      properties:
+        ACTORS:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        STORAGE:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        SCHEDULER:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        PROXY:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        PROXY_EXTERNAL_ACCESS:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        PROXY_RESIDENTIAL:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        PROXY_SERPS:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        WEBHOOKS:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        ACTORS_PUBLIC_ALL:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+        ACTORS_PUBLIC_DEVELOPER:
+          $ref: '#/components/schemas/EffectivePlatformFeature'
+    UserPublicInfoResponse:
+      title: UserPublicInfoResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserPublicInfo'
     ProxyGroup:
       title: ProxyGroup
       required:
@@ -198,229 +388,14 @@ components:
         RESIDENTIAL: 1000
         DATACENTER: 500
         GOOGLE_SERP: 200
-    EffectivePlatformFeature:
-      title: EffectivePlatformFeature
-      required:
-      - isEnabled
-      - disabledReason
-      - disabledReasonType
-      - isTrial
-      - trialExpirationAt
-      type: object
-      properties:
-        isEnabled:
-          type: boolean
-          examples:
-          - true
-        disabledReason:
-          type:
-          - string
-          - 'null'
-          examples:
-          - The "Selected public Actors for developers" feature is not enabled for your account. Please upgrade your plan or contact support@apify.com
-        disabledReasonType:
-          type:
-          - string
-          - 'null'
-          examples:
-          - DISABLED
-        isTrial:
-          type: boolean
-          examples:
-          - false
-        trialExpirationAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          examples:
-          - '2025-01-01T14:00:00.000Z'
-    UserProfile:
-      title: UserProfile
-      type: object
-      properties:
-        bio:
-          type:
-          - string
-          - 'null'
-          examples:
-          - I started web scraping in 1985 using Altair BASIC.
-        readme:
-          type:
-          - string
-          - 'null'
-          description: Markdown README shown on the user's public profile page.
-          examples:
-          - '### Hello world 👋🏻
-
-            I build web scrapers.'
-        name:
-          type: string
-          examples:
-          - Jane Doe
-        pictureUrl:
-          type:
-          - string
-          - 'null'
-          format: uri
-          examples:
-          - https://apify.com/img/anonymous_user_picture.png
-        githubUsername:
-          type:
-          - string
-          - 'null'
-          examples:
-          - torvalds.
-        websiteUrl:
-          type:
-          - string
-          - 'null'
-          format: uri
-          examples:
-          - http://www.example.com
-        twitterUsername:
-          type:
-          - string
-          - 'null'
-          examples:
-          - '@BillGates'
-    UserPublicInfoResponse:
-      title: UserPublicInfoResponse
+    UserPrivateInfoResponse:
+      title: UserPrivateInfoResponse
       required:
       - data
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/UserPublicInfo'
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
-    UserPlan:
-      title: UserPlan
-      required:
-      - availableProxyGroups
-      type: object
-      properties:
-        id:
-          type: string
-          examples:
-          - Personal
-        description:
-          type: string
-          examples:
-          - Cost-effective plan for freelancers, developers and students.
-        isEnabled:
-          type: boolean
-          examples:
-          - true
-        monthlyBasePriceUsd:
-          type: number
-          examples:
-          - 49
-        monthlyUsageCreditsUsd:
-          type: number
-          examples:
-          - 49
-        usageDiscountPercent:
-          type: number
-          examples:
-          - 0
-        enabledPlatformFeatures:
-          type: array
-          items:
-            type: string
-          example:
-          - ACTORS
-          - STORAGE
-          - PROXY_SERPS
-          - SCHEDULER
-          - WEBHOOKS
-        maxMonthlyUsageUsd:
-          type: number
-          examples:
-          - 9999
-        maxActorMemoryGbytes:
-          type: number
-          examples:
-          - 32
-        maxMonthlyActorComputeUnits:
-          type: number
-          examples:
-          - 1000
-        maxMonthlyResidentialProxyGbytes:
-          type: number
-          examples:
-          - 10
-        maxMonthlyProxySerps:
-          type: integer
-          examples:
-          - 30000
-        maxMonthlyExternalDataTransferGbytes:
-          type: number
-          examples:
-          - 1000
-        maxActorCount:
-          type: integer
-          examples:
-          - 100
-        maxActorTaskCount:
-          type: integer
-          examples:
-          - 1000
-        dataRetentionDays:
-          type: integer
-          examples:
-          - 14
-        availableProxyGroups:
-          $ref: '#/components/schemas/AvailableProxyGroups'
-        teamAccountSeatCount:
-          type: integer
-          examples:
-          - 1
-        supportLevel:
-          type: string
-          examples:
-          - COMMUNITY
-        availableAddOns:
-          type: array
-          items:
-            type: string
-          examples:
-          - []
-        tier:
-          type: string
-          examples:
-          - FREE
-        apiRateLimitBoosts:
-          type: integer
-          examples:
-          - 0
-        maxScheduleCount:
-          type: integer
-          examples:
-          - 100
-        maxConcurrentActorRuns:
-          type: integer
-          examples:
-          - 25
-        planPricing:
-          type: object
-          description: Pricing details for this plan.
-          additionalProperties: true
+          $ref: '#/components/schemas/UserPrivateInfo'
     ErrorType:
       title: ErrorType
       type: string
@@ -821,122 +796,204 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    ProxyResource:
-      title: ProxyResource
-      required:
-      - password
-      - groups
+    UserProfile:
+      title: UserProfile
       type: object
       properties:
-        password:
+        bio:
+          type:
+          - string
+          - 'null'
+          examples:
+          - I started web scraping in 1985 using Altair BASIC.
+        readme:
+          type:
+          - string
+          - 'null'
+          description: Markdown README shown on the user's public profile page.
+          examples:
+          - '### Hello world 👋🏻
+
+            I build web scrapers.'
+        name:
           type: string
           examples:
-          - ad78knd9Jkjd86
-        groups:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProxyGroup'
-    UserPrivateInfoResponse:
-      title: UserPrivateInfoResponse
+          - Jane Doe
+        pictureUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+          examples:
+          - https://apify.com/img/anonymous_user_picture.png
+        githubUsername:
+          type:
+          - string
+          - 'null'
+          examples:
+          - torvalds.
+        websiteUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+          examples:
+          - http://www.example.com
+        twitterUsername:
+          type:
+          - string
+          - 'null'
+          examples:
+          - '@BillGates'
+    EffectivePlatformFeature:
+      title: EffectivePlatformFeature
       required:
-      - data
+      - isEnabled
+      - disabledReason
+      - disabledReasonType
+      - isTrial
+      - trialExpirationAt
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/UserPrivateInfo'
-    UserPrivateInfo:
-      title: UserPrivateInfo
+        isEnabled:
+          type: boolean
+          examples:
+          - true
+        disabledReason:
+          type:
+          - string
+          - 'null'
+          examples:
+          - The "Selected public Actors for developers" feature is not enabled for your account. Please upgrade your plan or contact support@apify.com
+        disabledReasonType:
+          type:
+          - string
+          - 'null'
+          examples:
+          - DISABLED
+        isTrial:
+          type: boolean
+          examples:
+          - false
+        trialExpirationAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          examples:
+          - '2025-01-01T14:00:00.000Z'
+    UserPlan:
+      title: UserPlan
       required:
-      - username
+      - availableProxyGroups
       type: object
       properties:
         id:
           type: string
           examples:
-          - YiKoxjkaS9gjGTqhF
-        username:
+          - Personal
+        description:
           type: string
           examples:
-          - myusername
-        profile:
-          $ref: '#/components/schemas/UserProfile'
-        email:
-          type: string
-          format: email
-          examples:
-          - bob@example.com
-        proxy:
-          $ref: '#/components/schemas/ProxyResource'
-        plan:
-          $ref: '#/components/schemas/UserPlan'
-        effectivePlatformFeatures:
-          $ref: '#/components/schemas/EffectivePlatformFeatures'
-        createdAt:
-          type: string
-          format: date-time
-          examples:
-          - '2022-11-29T14:48:29.381Z'
-        isPaying:
+          - Cost-effective plan for freelancers, developers and students.
+        isEnabled:
           type: boolean
           examples:
           - true
-    UserPublicInfo:
-      title: UserPublicInfo
-      required:
-      - username
-      type: object
-      properties:
-        username:
+        monthlyBasePriceUsd:
+          type: number
+          examples:
+          - 49
+        monthlyUsageCreditsUsd:
+          type: number
+          examples:
+          - 49
+        usageDiscountPercent:
+          type: number
+          examples:
+          - 0
+        enabledPlatformFeatures:
+          type: array
+          items:
+            type: string
+          example:
+          - ACTORS
+          - STORAGE
+          - PROXY_SERPS
+          - SCHEDULER
+          - WEBHOOKS
+        maxMonthlyUsageUsd:
+          type: number
+          examples:
+          - 9999
+        maxActorMemoryGbytes:
+          type: number
+          examples:
+          - 32
+        maxMonthlyActorComputeUnits:
+          type: number
+          examples:
+          - 1000
+        maxMonthlyResidentialProxyGbytes:
+          type: number
+          examples:
+          - 10
+        maxMonthlyProxySerps:
+          type: integer
+          examples:
+          - 30000
+        maxMonthlyExternalDataTransferGbytes:
+          type: number
+          examples:
+          - 1000
+        maxActorCount:
+          type: integer
+          examples:
+          - 100
+        maxActorTaskCount:
+          type: integer
+          examples:
+          - 1000
+        dataRetentionDays:
+          type: integer
+          examples:
+          - 14
+        availableProxyGroups:
+          $ref: '#/components/schemas/AvailableProxyGroups'
+        teamAccountSeatCount:
+          type: integer
+          examples:
+          - 1
+        supportLevel:
           type: string
           examples:
-          - d7b9MDYsbtX5L7XAj
-        profile:
-          $ref: '#/components/schemas/UserProfile'
-    EffectivePlatformFeatures:
-      title: EffectivePlatformFeatures
-      required:
-      - ACTORS
-      - STORAGE
-      - SCHEDULER
-      - PROXY
-      - PROXY_EXTERNAL_ACCESS
-      - PROXY_RESIDENTIAL
-      - PROXY_SERPS
-      - WEBHOOKS
-      - ACTORS_PUBLIC_ALL
-      - ACTORS_PUBLIC_DEVELOPER
-      type: object
-      properties:
-        ACTORS:
-          $ref: '#/components/schemas/EffectivePlatformFeature'
-        STORAGE:
-          $ref: '#/components/schemas/EffectivePlatformFeature'
-        SCHEDULER:
-          $ref: '#/components/schemas/EffectivePlatformFeature'
-        PROXY:
-          $ref: '#/components/schemas/EffectivePlatformFeature'
-        PROXY_EXTERNAL_ACCESS:
-          $ref: '#/components/schemas/EffectivePlatformFeature'
-        PROXY_RESIDENTIAL:
-          $ref: '#/components/schemas/EffectivePlatformFeature'
-        PROXY_SERPS:
-          $ref: '#/components/schemas/EffectivePlatformFeature'
-        WEBHOOKS:
-          $ref: '#/components/schemas/EffectivePlatformFeature'
-        ACTORS_PUBLIC_ALL:
-          $ref: '#/components/schemas/EffectivePlatformFeature'
-        ACTORS_PUBLIC_DEVELOPER:
-          $ref: '#/components/schemas/EffectivePlatformFeature'
-    Error:
-      type: object
-      properties:
-        error:
+          - COMMUNITY
+        availableAddOns:
+          type: array
+          items:
+            type: string
+          examples:
+          - []
+        tier:
+          type: string
+          examples:
+          - FREE
+        apiRateLimitBoosts:
+          type: integer
+          examples:
+          - 0
+        maxScheduleCount:
+          type: integer
+          examples:
+          - 100
+        maxConcurrentActorRuns:
+          type: integer
+          examples:
+          - 25
+        planPricing:
           type: object
-          properties:
-            type:
-              type: string
-            message:
-              type: string
+          description: Pricing details for this plan.
+          additionalProperties: true
     User:
       type: object
       description: An Apify user account.
@@ -963,73 +1020,16 @@ components:
               - BUSINESS
               - ENTERPRISE
               example: STARTER
-  responses:
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
-    Unauthorized_2:
-      description: Authentication failed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+            message:
+              type: string
   securitySchemes:
     httpBearer:
       type: http

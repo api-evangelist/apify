@@ -642,23 +642,118 @@ paths:
       x-py-name: batch_delete_requests
       x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/RequestQueueClientAsync#batch_delete_requests
 components:
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    NoContent:
+      description: No content
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    PaymentRequired:
+      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: x402-payment-required
+              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
   schemas:
-    RetryCount:
-      type: integer
-      description: The number of times this request has been retried.
-      examples:
-      - 0
-    DeletedRequestByUniqueKey:
-      title: DeletedRequestByUniqueKey
-      description: Confirmation of a request that was successfully deleted, identified by its unique key.
+    BatchAddResult:
+      title: BatchAddResult
+      description: Result of a batch add operation containing successfully processed and failed requests.
       type: object
       required:
-      - uniqueKey
+      - processedRequests
+      - unprocessedRequests
       properties:
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-        id:
-          $ref: '#/components/schemas/RequestId'
+        processedRequests:
+          type: array
+          description: Requests that were successfully added to the request queue.
+          items:
+            $ref: '#/components/schemas/AddedRequest'
+        unprocessedRequests:
+          type: array
+          description: Requests that failed to be added and can be retried.
+          items:
+            $ref: '#/components/schemas/UnprocessedRequest'
     UpdateRequestQueueRequest:
       title: UpdateRequestQueueRequest
       description: Request object for updating a request queue.
@@ -674,330 +769,11 @@ components:
       example:
         name: new-request-queue-name
         generalAccess: RESTRICTED
-    RequestQueueResponse:
-      title: RequestQueueResponse
-      description: Response containing request queue data.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/RequestQueueResource'
-    TotalRequestCount:
-      type: integer
-      description: The total number of requests in the request queue.
-      minimum: 0
-      examples:
-      - 870
-    WasAlreadyPresent:
-      type: boolean
-      description: Indicates whether a request with the same unique key already existed in the request queue. If true, no new request was created.
-      examples:
-      - false
-    StorageOwnership:
-      type: string
-      enum:
-      - ownedByMe
-      - sharedWithMe
-      examples:
-      - ownedByMe
-    PaginationResponse:
-      title: PaginationResponse
-      description: Common pagination fields for list responses.
-      required:
-      - total
-      - offset
-      - limit
-      - desc
-      - count
-      type: object
-      properties:
-        total:
-          type: integer
-          description: The total number of items available across all pages.
-          minimum: 0
-          examples:
-          - 1
-        offset:
-          type: integer
-          description: The starting position for this page of results.
-          minimum: 0
-          examples:
-          - 0
-        limit:
-          type: integer
-          description: The maximum number of items returned per page.
-          minimum: 1
-          examples:
-          - 1000
-        desc:
-          type: boolean
-          description: Whether the results are sorted in descending order.
-          examples:
-          - false
-        count:
-          type: integer
-          description: The number of items returned in this response.
-          minimum: 0
-          examples:
-          - 1
-    DeletedRequestById:
-      title: DeletedRequestById
-      description: Confirmation of a request that was successfully deleted, identified by its ID.
-      type: object
-      required:
-      - id
-      properties:
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-        id:
-          $ref: '#/components/schemas/RequestId'
-    GeneralAccess:
-      title: GeneralAccess
-      type: string
-      enum:
-      - ANYONE_WITH_ID_CAN_READ
-      - ANYONE_WITH_NAME_CAN_READ
-      - FOLLOW_USER_SETTING
-      - RESTRICTED
-      examples:
-      - RESTRICTED
-      description: Defines the general access level for the resource.
-    HttpMethod:
-      type: string
-      enum:
-      - GET
-      - HEAD
-      - POST
-      - PUT
-      - DELETE
-      - CONNECT
-      - OPTIONS
-      - TRACE
-      - PATCH
-      examples:
-      - GET
-    DeletedRequest:
-      title: DeletedRequest
-      description: Confirmation of a request that was successfully deleted from a request queue.
-      anyOf:
-      - $ref: '#/components/schemas/DeletedRequestById'
-      - $ref: '#/components/schemas/DeletedRequestByUniqueKey'
     RequestId:
       type: string
       description: A unique identifier assigned to the request.
       examples:
       - sbJ7klsdf7ujN9l
-    QueueModifiedAt:
-      type: string
-      format: date-time
-      description: The timestamp when the request queue was last modified. Modifications include adding, updating, or removing requests, as well as locking or unlocking requests in the request queue.
-      examples:
-      - '2019-12-13T08:36:13.202Z'
-    RequestToDeleteById:
-      title: RequestToDeleteById
-      description: A request that should be deleted, identified by its ID.
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          $ref: '#/components/schemas/RequestId'
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-    RequestWithoutId:
-      title: RequestWithoutId
-      description: A request stored in the request queue, including its metadata and processing state, without the assigned ID.
-      allOf:
-      - $ref: '#/components/schemas/RequestBase'
-    RequestToDeleteByUniqueKey:
-      title: RequestToDeleteByUniqueKey
-      description: A request that should be deleted, identified by its unique key.
-      type: object
-      required:
-      - uniqueKey
-      properties:
-        id:
-          $ref: '#/components/schemas/RequestId'
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-    HadMultipleClients:
-      type: boolean
-      description: Whether the request queue has been accessed by multiple different clients.
-      examples:
-      - true
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
-    RequestQueueStats:
-      title: RequestQueueStats
-      description: Statistics about request queue operations and storage.
-      type: object
-      properties:
-        deleteCount:
-          type: integer
-          description: The number of delete operations performed on the request queue.
-          examples:
-          - 0
-        headItemReadCount:
-          type: integer
-          description: The number of times requests from the head were read.
-          examples:
-          - 5
-        readCount:
-          type: integer
-          description: The total number of read operations performed on the request queue.
-          examples:
-          - 100
-        storageBytes:
-          type: integer
-          description: The total storage size in bytes used by the request queue.
-          examples:
-          - 1024
-        writeCount:
-          type: integer
-          description: The total number of write operations performed on the request queue.
-          examples:
-          - 10
-    BatchDeleteResult:
-      title: BatchDeleteResult
-      description: Result of a batch delete operation containing successfully deleted and failed requests.
-      type: object
-      required:
-      - processedRequests
-      - unprocessedRequests
-      properties:
-        processedRequests:
-          type: array
-          description: Requests that were successfully deleted from the request queue.
-          items:
-            $ref: '#/components/schemas/DeletedRequest'
-        unprocessedRequests:
-          type: array
-          description: Requests that failed to be deleted and can be retried.
-          items:
-            $ref: '#/components/schemas/UnprocessedRequest'
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
-    HandledRequestCount:
-      type: integer
-      description: The number of requests that have been handled.
-      minimum: 0
-      examples:
-      - 100
-    QueueUserId:
-      type: string
-      description: The ID of the user who owns the request queue.
-      examples:
-      - wRsJZtadYvn4mBZmm
-    RequestMethod:
-      description: The HTTP method of the request.
-      $ref: '#/components/schemas/HttpMethod'
-    BatchAddResponse:
-      title: BatchAddResponse
-      description: Response containing the result of a batch add operation.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/BatchAddResult'
-      example:
-        data:
-          processedRequests:
-          - requestId: YiKoxjkaS9gjGTqhF
-            uniqueKey: http://example.com
-            wasAlreadyPresent: true
-            wasAlreadyHandled: false
-          unprocessedRequests:
-          - uniqueKey: http://example.com/2
-            url: http://example.com/2
-            method: GET
-    RequestBase:
-      title: RequestBase
-      type: object
-      required:
-      - uniqueKey
-      - url
-      properties:
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-        url:
-          $ref: '#/components/schemas/RequestUrl'
-        method:
-          $ref: '#/components/schemas/RequestMethod'
-        retryCount:
-          $ref: '#/components/schemas/RetryCount'
-        loadedUrl:
-          type:
-          - string
-          - 'null'
-          description: The final URL that was loaded, after redirects (if any).
-          examples:
-          - https://apify.com/jobs
-        payload:
-          type:
-          - string
-          - object
-          - 'null'
-          description: The request payload, typically used with POST or PUT requests.
-          examples:
-          - null
-        headers:
-          type:
-          - object
-          - 'null'
-          description: HTTP headers sent with the request.
-          examples:
-          - null
-        userData:
-          $ref: '#/components/schemas/RequestUserData'
-        noRetry:
-          type:
-          - boolean
-          - 'null'
-          description: Indicates whether the request should not be retried if processing fails.
-          examples:
-          - false
-        errorMessages:
-          type:
-          - array
-          - 'null'
-          description: Error messages recorded from failed processing attempts.
-          items:
-            type: string
-          examples:
-          - null
-        handledAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: The timestamp when the request was marked as handled, if applicable.
-          examples:
-          - '2019-06-16T10:23:31.607Z'
-    QueueId:
-      type: string
-      description: A unique identifier assigned to the request queue.
-      examples:
-      - WkzbQMuFYuamGv3YF
-    RequestUrl:
-      type: string
-      description: The URL of the request.
-      examples:
-      - https://apify.com
     RequestQueueListItem:
       title: RequestQueueListItem
       description: A shortened request queue object for list responses.
@@ -1065,6 +841,484 @@ components:
           - type: 'null'
         stats:
           $ref: '#/components/schemas/RequestQueueStats'
+    RequestToDeleteByUniqueKey:
+      title: RequestToDeleteByUniqueKey
+      description: A request that should be deleted, identified by its unique key.
+      type: object
+      required:
+      - uniqueKey
+      properties:
+        id:
+          $ref: '#/components/schemas/RequestId'
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+    BatchAddResponse:
+      title: BatchAddResponse
+      description: Response containing the result of a batch add operation.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/BatchAddResult'
+      example:
+        data:
+          processedRequests:
+          - requestId: YiKoxjkaS9gjGTqhF
+            uniqueKey: http://example.com
+            wasAlreadyPresent: true
+            wasAlreadyHandled: false
+          unprocessedRequests:
+          - uniqueKey: http://example.com/2
+            url: http://example.com/2
+            method: GET
+    RequestToDelete:
+      title: RequestToDelete
+      description: A request that should be deleted.
+      anyOf:
+      - $ref: '#/components/schemas/RequestToDeleteById'
+      - $ref: '#/components/schemas/RequestToDeleteByUniqueKey'
+    WasAlreadyHandled:
+      type: boolean
+      description: Indicates whether a request with the same unique key has already been processed by the request queue.
+      examples:
+      - false
+    HadMultipleClients:
+      type: boolean
+      description: Whether the request queue has been accessed by multiple different clients.
+      examples:
+      - true
+    PaginationResponse:
+      title: PaginationResponse
+      description: Common pagination fields for list responses.
+      required:
+      - total
+      - offset
+      - limit
+      - desc
+      - count
+      type: object
+      properties:
+        total:
+          type: integer
+          description: The total number of items available across all pages.
+          minimum: 0
+          examples:
+          - 1
+        offset:
+          type: integer
+          description: The starting position for this page of results.
+          minimum: 0
+          examples:
+          - 0
+        limit:
+          type: integer
+          description: The maximum number of items returned per page.
+          minimum: 1
+          examples:
+          - 1000
+        desc:
+          type: boolean
+          description: Whether the results are sorted in descending order.
+          examples:
+          - false
+        count:
+          type: integer
+          description: The number of items returned in this response.
+          minimum: 0
+          examples:
+          - 1
+    UniqueKey:
+      type: string
+      description: A unique key used for request de-duplication. Requests with the same unique key are considered identical.
+      examples:
+      - GET|60d83e70|e3b0c442|https://apify.com
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    HandledRequestCount:
+      type: integer
+      description: The number of requests that have been handled.
+      minimum: 0
+      examples:
+      - 100
+    RequestUserData:
+      title: RequestUserData
+      description: Custom user data attached to the request. Can contain arbitrary fields.
+      type: object
+      additionalProperties: true
+      example:
+        label: DETAIL
+        customField: custom-value
+    StorageOwnership:
+      type: string
+      enum:
+      - ownedByMe
+      - sharedWithMe
+      examples:
+      - ownedByMe
+    RequestUrl:
+      type: string
+      description: The URL of the request.
+      examples:
+      - https://apify.com
+    QueueId:
+      type: string
+      description: A unique identifier assigned to the request queue.
+      examples:
+      - WkzbQMuFYuamGv3YF
+    RequestQueueStats:
+      title: RequestQueueStats
+      description: Statistics about request queue operations and storage.
+      type: object
+      properties:
+        deleteCount:
+          type: integer
+          description: The number of delete operations performed on the request queue.
+          examples:
+          - 0
+        headItemReadCount:
+          type: integer
+          description: The number of times requests from the head were read.
+          examples:
+          - 5
+        readCount:
+          type: integer
+          description: The total number of read operations performed on the request queue.
+          examples:
+          - 100
+        storageBytes:
+          type: integer
+          description: The total storage size in bytes used by the request queue.
+          examples:
+          - 1024
+        writeCount:
+          type: integer
+          description: The total number of write operations performed on the request queue.
+          examples:
+          - 10
+    RetryCount:
+      type: integer
+      description: The number of times this request has been retried.
+      examples:
+      - 0
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
+    HttpMethod:
+      type: string
+      enum:
+      - GET
+      - HEAD
+      - POST
+      - PUT
+      - DELETE
+      - CONNECT
+      - OPTIONS
+      - TRACE
+      - PATCH
+      examples:
+      - GET
+    TotalRequestCount:
+      type: integer
+      description: The total number of requests in the request queue.
+      minimum: 0
+      examples:
+      - 870
+    QueueAccessedAt:
+      type: string
+      format: date-time
+      description: The timestamp when the request queue was last accessed.
+      examples:
+      - '2019-12-14T08:36:13.202Z'
+    QueueUserId:
+      type: string
+      description: The ID of the user who owns the request queue.
+      examples:
+      - wRsJZtadYvn4mBZmm
+    RequestQueueResponse:
+      title: RequestQueueResponse
+      description: Response containing request queue data.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/RequestQueueResource'
+    RequestMethod:
+      description: The HTTP method of the request.
+      $ref: '#/components/schemas/HttpMethod'
+    RequestBase:
+      title: RequestBase
+      type: object
+      required:
+      - uniqueKey
+      - url
+      properties:
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+        url:
+          $ref: '#/components/schemas/RequestUrl'
+        method:
+          $ref: '#/components/schemas/RequestMethod'
+        retryCount:
+          $ref: '#/components/schemas/RetryCount'
+        loadedUrl:
+          type:
+          - string
+          - 'null'
+          description: The final URL that was loaded, after redirects (if any).
+          examples:
+          - https://apify.com/jobs
+        payload:
+          type:
+          - string
+          - object
+          - 'null'
+          description: The request payload, typically used with POST or PUT requests.
+          examples:
+          - null
+        headers:
+          type:
+          - object
+          - 'null'
+          description: HTTP headers sent with the request.
+          examples:
+          - null
+        userData:
+          $ref: '#/components/schemas/RequestUserData'
+        noRetry:
+          type:
+          - boolean
+          - 'null'
+          description: Indicates whether the request should not be retried if processing fails.
+          examples:
+          - false
+        errorMessages:
+          type:
+          - array
+          - 'null'
+          description: Error messages recorded from failed processing attempts.
+          items:
+            type: string
+          examples:
+          - null
+        handledAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: The timestamp when the request was marked as handled, if applicable.
+          examples:
+          - '2019-06-16T10:23:31.607Z'
+    ListOfRequestQueues:
+      title: ListOfRequestQueues
+      description: A paginated list of request queues.
+      allOf:
+      - $ref: '#/components/schemas/PaginationResponse'
+      - type: object
+        required:
+        - items
+        properties:
+          unnamed:
+            type: boolean
+            description: Whether the listing was filtered to only unnamed request queues.
+            examples:
+            - false
+          items:
+            type: array
+            description: The array of request queues.
+            items:
+              $ref: '#/components/schemas/RequestQueueListItem'
+    QueueCreatedAt:
+      type: string
+      format: date-time
+      description: The timestamp when the request queue was created.
+      examples:
+      - '2019-12-12T07:34:14.202Z'
+    GeneralAccess:
+      title: GeneralAccess
+      type: string
+      enum:
+      - ANYONE_WITH_ID_CAN_READ
+      - ANYONE_WITH_NAME_CAN_READ
+      - FOLLOW_USER_SETTING
+      - RESTRICTED
+      examples:
+      - RESTRICTED
+      description: Defines the general access level for the resource.
+    DeletedRequestById:
+      title: DeletedRequestById
+      description: Confirmation of a request that was successfully deleted, identified by its ID.
+      type: object
+      required:
+      - id
+      properties:
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+        id:
+          $ref: '#/components/schemas/RequestId'
+    QueueModifiedAt:
+      type: string
+      format: date-time
+      description: The timestamp when the request queue was last modified. Modifications include adding, updating, or removing requests, as well as locking or unlocking requests in the request queue.
+      examples:
+      - '2019-12-13T08:36:13.202Z'
+    UnprocessedRequest:
+      title: UnprocessedRequest
+      description: A request that failed to be processed during a request queue operation and can be retried.
+      required:
+      - uniqueKey
+      - url
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/RequestId'
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+        url:
+          $ref: '#/components/schemas/RequestUrl'
+        method:
+          $ref: '#/components/schemas/RequestMethod'
+    RequestToDeleteById:
+      title: RequestToDeleteById
+      description: A request that should be deleted, identified by its ID.
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          $ref: '#/components/schemas/RequestId'
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+    AddedRequest:
+      title: AddedRequest
+      description: Information about a request that was successfully added to a request queue.
+      required:
+      - requestId
+      - uniqueKey
+      - wasAlreadyHandled
+      - wasAlreadyPresent
+      type: object
+      properties:
+        requestId:
+          $ref: '#/components/schemas/RequestId'
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+        wasAlreadyPresent:
+          $ref: '#/components/schemas/WasAlreadyPresent'
+        wasAlreadyHandled:
+          $ref: '#/components/schemas/WasAlreadyHandled'
+    PendingRequestCount:
+      type: integer
+      description: The number of requests that are pending and have not been handled yet.
+      examples:
+      - 670
+    DeletedRequestByUniqueKey:
+      title: DeletedRequestByUniqueKey
+      description: Confirmation of a request that was successfully deleted, identified by its unique key.
+      type: object
+      required:
+      - uniqueKey
+      properties:
+        uniqueKey:
+          $ref: '#/components/schemas/UniqueKey'
+        id:
+          $ref: '#/components/schemas/RequestId'
+    RequestQueueResource:
+      title: RequestQueueResource
+      description: A request queue object containing metadata and statistics.
+      required:
+      - id
+      - userId
+      - createdAt
+      - modifiedAt
+      - accessedAt
+      - totalRequestCount
+      - handledRequestCount
+      - pendingRequestCount
+      - hadMultipleClients
+      - consoleUrl
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/QueueId'
+        name:
+          type:
+          - string
+          - 'null'
+          description: The name of the request queue.
+          examples:
+          - some-name
+        userId:
+          $ref: '#/components/schemas/QueueUserId'
+        actId:
+          type:
+          - string
+          - 'null'
+          description: The ID of the Actor that created this request queue.
+        actRunId:
+          type:
+          - string
+          - 'null'
+          description: The ID of the Actor run that created this request queue.
+        createdAt:
+          $ref: '#/components/schemas/QueueCreatedAt'
+        modifiedAt:
+          $ref: '#/components/schemas/QueueModifiedAt'
+        accessedAt:
+          $ref: '#/components/schemas/QueueAccessedAt'
+        totalRequestCount:
+          $ref: '#/components/schemas/TotalRequestCount'
+        handledRequestCount:
+          $ref: '#/components/schemas/HandledRequestCount'
+        pendingRequestCount:
+          $ref: '#/components/schemas/PendingRequestCount'
+        hadMultipleClients:
+          $ref: '#/components/schemas/HadMultipleClients'
+        consoleUrl:
+          type: string
+          description: The URL to view the request queue in the Apify console.
+          format: uri
+          examples:
+          - https://api.apify.com/v2/request-queues/27TmTznX9YPeAYhkC
+        stats:
+          $ref: '#/components/schemas/RequestQueueStats'
+        generalAccess:
+          anyOf:
+          - $ref: '#/components/schemas/GeneralAccess'
+          - type: 'null'
+    WasAlreadyPresent:
+      type: boolean
+      description: Indicates whether a request with the same unique key already existed in the request queue. If true, no new request was created.
+      examples:
+      - false
+    ListOfRequestQueuesResponse:
+      title: ListOfRequestQueuesResponse
+      description: Response containing a list of request queues.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfRequestQueues'
+    DeletedRequest:
+      title: DeletedRequest
+      description: Confirmation of a request that was successfully deleted from a request queue.
+      anyOf:
+      - $ref: '#/components/schemas/DeletedRequestById'
+      - $ref: '#/components/schemas/DeletedRequestByUniqueKey'
     ErrorType:
       title: ErrorType
       type: string
@@ -1465,135 +1719,11 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    RequestUserData:
-      title: RequestUserData
-      description: Custom user data attached to the request. Can contain arbitrary fields.
-      type: object
-      additionalProperties: true
-      example:
-        label: DETAIL
-        customField: custom-value
-    RequestQueueResource:
-      title: RequestQueueResource
-      description: A request queue object containing metadata and statistics.
-      required:
-      - id
-      - userId
-      - createdAt
-      - modifiedAt
-      - accessedAt
-      - totalRequestCount
-      - handledRequestCount
-      - pendingRequestCount
-      - hadMultipleClients
-      - consoleUrl
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/QueueId'
-        name:
-          type:
-          - string
-          - 'null'
-          description: The name of the request queue.
-          examples:
-          - some-name
-        userId:
-          $ref: '#/components/schemas/QueueUserId'
-        actId:
-          type:
-          - string
-          - 'null'
-          description: The ID of the Actor that created this request queue.
-        actRunId:
-          type:
-          - string
-          - 'null'
-          description: The ID of the Actor run that created this request queue.
-        createdAt:
-          $ref: '#/components/schemas/QueueCreatedAt'
-        modifiedAt:
-          $ref: '#/components/schemas/QueueModifiedAt'
-        accessedAt:
-          $ref: '#/components/schemas/QueueAccessedAt'
-        totalRequestCount:
-          $ref: '#/components/schemas/TotalRequestCount'
-        handledRequestCount:
-          $ref: '#/components/schemas/HandledRequestCount'
-        pendingRequestCount:
-          $ref: '#/components/schemas/PendingRequestCount'
-        hadMultipleClients:
-          $ref: '#/components/schemas/HadMultipleClients'
-        consoleUrl:
-          type: string
-          description: The URL to view the request queue in the Apify console.
-          format: uri
-          examples:
-          - https://api.apify.com/v2/request-queues/27TmTznX9YPeAYhkC
-        stats:
-          $ref: '#/components/schemas/RequestQueueStats'
-        generalAccess:
-          anyOf:
-          - $ref: '#/components/schemas/GeneralAccess'
-          - type: 'null'
-    UnprocessedRequest:
-      title: UnprocessedRequest
-      description: A request that failed to be processed during a request queue operation and can be retried.
-      required:
-      - uniqueKey
-      - url
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/RequestId'
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-        url:
-          $ref: '#/components/schemas/RequestUrl'
-        method:
-          $ref: '#/components/schemas/RequestMethod'
-    UniqueKey:
-      type: string
-      description: A unique key used for request de-duplication. Requests with the same unique key are considered identical.
-      examples:
-      - GET|60d83e70|e3b0c442|https://apify.com
-    PendingRequestCount:
-      type: integer
-      description: The number of requests that are pending and have not been handled yet.
-      examples:
-      - 670
-    ListOfRequestQueuesResponse:
-      title: ListOfRequestQueuesResponse
-      description: Response containing a list of request queues.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ListOfRequestQueues'
-    AddedRequest:
-      title: AddedRequest
-      description: Information about a request that was successfully added to a request queue.
-      required:
-      - requestId
-      - uniqueKey
-      - wasAlreadyHandled
-      - wasAlreadyPresent
-      type: object
-      properties:
-        requestId:
-          $ref: '#/components/schemas/RequestId'
-        uniqueKey:
-          $ref: '#/components/schemas/UniqueKey'
-        wasAlreadyPresent:
-          $ref: '#/components/schemas/WasAlreadyPresent'
-        wasAlreadyHandled:
-          $ref: '#/components/schemas/WasAlreadyHandled'
-    WasAlreadyHandled:
-      type: boolean
-      description: Indicates whether a request with the same unique key has already been processed by the request queue.
-      examples:
-      - false
+    RequestWithoutId:
+      title: RequestWithoutId
+      description: A request stored in the request queue, including its metadata and processing state, without the assigned ID.
+      allOf:
+      - $ref: '#/components/schemas/RequestBase'
     BatchDeleteResponse:
       title: BatchDeleteResponse
       description: Response containing the result of a batch delete operation.
@@ -1603,40 +1733,9 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/BatchDeleteResult'
-    RequestToDelete:
-      title: RequestToDelete
-      description: A request that should be deleted.
-      anyOf:
-      - $ref: '#/components/schemas/RequestToDeleteById'
-      - $ref: '#/components/schemas/RequestToDeleteByUniqueKey'
-    ListOfRequestQueues:
-      title: ListOfRequestQueues
-      description: A paginated list of request queues.
-      allOf:
-      - $ref: '#/components/schemas/PaginationResponse'
-      - type: object
-        required:
-        - items
-        properties:
-          unnamed:
-            type: boolean
-            description: Whether the listing was filtered to only unnamed request queues.
-            examples:
-            - false
-          items:
-            type: array
-            description: The array of request queues.
-            items:
-              $ref: '#/components/schemas/RequestQueueListItem'
-    QueueCreatedAt:
-      type: string
-      format: date-time
-      description: The timestamp when the request queue was created.
-      examples:
-      - '2019-12-12T07:34:14.202Z'
-    BatchAddResult:
-      title: BatchAddResult
-      description: Result of a batch add operation containing successfully processed and failed requests.
+    BatchDeleteResult:
+      title: BatchDeleteResult
+      description: Result of a batch delete operation containing successfully deleted and failed requests.
       type: object
       required:
       - processedRequests
@@ -1644,140 +1743,15 @@ components:
       properties:
         processedRequests:
           type: array
-          description: Requests that were successfully added to the request queue.
+          description: Requests that were successfully deleted from the request queue.
           items:
-            $ref: '#/components/schemas/AddedRequest'
+            $ref: '#/components/schemas/DeletedRequest'
         unprocessedRequests:
           type: array
-          description: Requests that failed to be added and can be retried.
+          description: Requests that failed to be deleted and can be retried.
           items:
             $ref: '#/components/schemas/UnprocessedRequest'
-    QueueAccessedAt:
-      type: string
-      format: date-time
-      description: The timestamp when the request queue was last accessed.
-      examples:
-      - '2019-12-14T08:36:13.202Z'
-  responses:
-    NoContent:
-      description: No content
-    UnsupportedMediaType:
-      description: Unsupported media type - the Content-Encoding of the request is not supported.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: unsupported-content-encoding
-              message: Content-Encoding "bla" is not supported.
-    PayloadTooLarge:
-      description: Payload too large - the request body exceeds the size limit.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: request-too-large
-              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
-    PaymentRequired:
-      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: x402-payment-required
-              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
   parameters:
-    unnamed:
-      name: unnamed
-      in: query
-      description: 'If `true` or `1` then all the storages are returned. By default, only
-
-        named storages are returned.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: true
-    descCreatedAt:
-      name: desc
-      in: query
-      description: 'If `true` or `1` then the objects are sorted by the `createdAt` field in
-
-        descending order. By default, they are sorted in ascending order.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: true
     forefront:
       name: forefront
       in: query
@@ -1791,6 +1765,32 @@ components:
       schema:
         type: string
         example: 'false'
+    descCreatedAt:
+      name: desc
+      in: query
+      description: 'If `true` or `1` then the objects are sorted by the `createdAt` field in
+
+        descending order. By default, they are sorted in ascending order.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    unnamed:
+      name: unnamed
+      in: query
+      description: 'If `true` or `1` then all the storages are returned. By default, only
+
+        named storages are returned.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
     queueId:
       name: queueId
       in: path
@@ -1823,18 +1823,6 @@ components:
       schema:
         type: string
         example: client-abc
-    offset:
-      name: offset
-      in: query
-      description: 'Number of items that should be skipped at the start. The default value is `0`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 0
     contentTypeJson:
       name: Content-Type
       in: header
@@ -1856,6 +1844,18 @@ components:
         type: number
         format: double
         example: 1000
+    offset:
+      name: offset
+      in: query
+      description: 'Number of items that should be skipped at the start. The default value is `0`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 0
   securitySchemes:
     httpBearer:
       type: http

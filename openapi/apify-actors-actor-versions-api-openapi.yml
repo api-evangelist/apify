@@ -989,50 +989,93 @@ paths:
       - https://docs.apify.com/api/v2#/reference/actors/delete-environment-variable
       - https://docs.apify.com/api/v2#tag/ActorsEnvironment-variable-object/operation/act_version_envVar_delete
 components:
-  parameters:
-    versionNumber:
-      name: versionNumber
-      in: path
-      description: Actor version.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: '0.1'
-    actorId:
-      name: actorId
-      in: path
-      description: Actor ID or the username of the Actor owner and the Actor name, separated by a tilde (`~`).
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: compass~google-maps-extractor
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
   schemas:
-    SourceCodeFolder:
-      title: SourceCodeFolder
-      description: 'Represents a folder in the Actor''s source code structure. Distinguished from
-
-        SourceCodeFile by the presence of the `folder` property set to `true`.
-
-        '
-      type: object
+    CreateVersionRequest:
+      title: CreateVersionRequest
       required:
-      - name
-      - folder
-      properties:
-        name:
-          type: string
-          description: The path of the folder relative to the Actor's root directory.
-          examples:
-          - src/utils
-        folder:
-          type: boolean
-          description: Whether it's a folder. Distinguishes folders from files.
-          examples:
-          - true
-    UpdateVersionRequest:
-      title: UpdateVersionRequest
+      - versionNumber
+      - sourceType
       type: object
       properties:
         versionNumber:
@@ -1075,53 +1118,36 @@ components:
         gitHubGistUrl:
           type: string
           description: URL of the GitHub Gist to clone the source code from. Applies when the `sourceType` is `GITHUB_GIST`.
-    SourceCodeFileFormat:
-      type: string
-      enum:
-      - BASE64
-      - TEXT
-      examples:
-      - TEXT
-    ListOfVersions:
-      title: ListOfVersions
-      type: object
+    ListOfEnvVarsResponse:
+      title: ListOfEnvVarsResponse
       required:
-      - total
-      - items
+      - data
+      type: object
       properties:
-        total:
-          type: integer
-          examples:
-          - 5
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Version'
-          description: ''
-    EnvVarRequest:
-      title: EnvVarRequest
+        data:
+          $ref: '#/components/schemas/ListOfEnvVars'
+    SourceCodeFolder:
+      title: SourceCodeFolder
+      description: 'Represents a folder in the Actor''s source code structure. Distinguished from
+
+        SourceCodeFile by the presence of the `folder` property set to `true`.
+
+        '
+      type: object
       required:
       - name
-      - value
-      type: object
+      - folder
       properties:
         name:
           type: string
+          description: The path of the folder relative to the Actor's root directory.
           examples:
-          - MY_ENV_VAR
-          description: The name of the environment variable. Can't contain `=`.
-        value:
-          type: string
+          - src/utils
+        folder:
+          type: boolean
+          description: Whether it's a folder. Distinguishes folders from files.
           examples:
-          - my-value
-          description: The value of the environment variable.
-        isSecret:
-          type:
-          - boolean
-          - 'null'
-          examples:
-          - false
-          description: Whether the environment variable is encrypted. Secret values aren't returned by the API.
+          - true
     Version:
       title: Version
       type: object
@@ -1179,22 +1205,72 @@ components:
           - string
           - 'null'
           description: URL of the GitHub Gist to clone the source code from. Applies when the `sourceType` is `GITHUB_GIST`.
-    ListOfEnvVarsResponse:
-      title: ListOfEnvVarsResponse
+    VersionSourceType:
+      title: VersionSourceType
+      enum:
+      - SOURCE_FILES
+      - GIT_REPO
+      - TARBALL
+      - GITHUB_GIST
+      - SOURCE_CODE
+      type: string
+    WritableVersionSourceType:
+      title: WritableVersionSourceType
+      description: The version source types accepted in request bodies. Same as `VersionSourceType`, without `SOURCE_CODE`.
+      enum:
+      - SOURCE_FILES
+      - GIT_REPO
+      - TARBALL
+      - GITHUB_GIST
+      type: string
+    ListOfVersions:
+      title: ListOfVersions
+      type: object
       required:
-      - data
+      - total
+      - items
+      properties:
+        total:
+          type: integer
+          examples:
+          - 5
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Version'
+          description: ''
+    EnvVarRequest:
+      title: EnvVarRequest
+      required:
+      - name
+      - value
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/ListOfEnvVars'
-    EnvVarResponse:
-      title: EnvVarResponse
+        name:
+          type: string
+          examples:
+          - MY_ENV_VAR
+          description: The name of the environment variable. Can't contain `=`.
+        value:
+          type: string
+          examples:
+          - my-value
+          description: The value of the environment variable.
+        isSecret:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+          description: Whether the environment variable is encrypted. Secret values aren't returned by the API.
+    ErrorResponse:
+      title: ErrorResponse
       required:
-      - data
+      - error
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/EnvVar'
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
     ErrorDetail:
       title: ErrorDetail
       type: object
@@ -1204,21 +1280,112 @@ components:
         message:
           type: string
           description: Human-readable error message describing what went wrong.
-    ErrorResponse:
-      title: ErrorResponse
+    SourceCodeFileFormat:
+      type: string
+      enum:
+      - BASE64
+      - TEXT
+      examples:
+      - TEXT
+    ListOfVersionsResponse:
+      title: ListOfVersionsResponse
       required:
-      - error
+      - data
       type: object
       properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
-    VersionSourceFiles:
-      title: VersionSourceFiles
-      type: array
-      items:
-        anyOf:
-        - $ref: '#/components/schemas/SourceCodeFile'
-        - $ref: '#/components/schemas/SourceCodeFolder'
+        data:
+          $ref: '#/components/schemas/ListOfVersions'
+    EnvVar:
+      title: EnvVar
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+          examples:
+          - MY_ENV_VAR
+          description: The name of the environment variable.
+        value:
+          type: string
+          examples:
+          - my-value
+          description: The value of the environment variable. If `isSecret` is `true`, this value isn't returned by the API.
+        isSecret:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+          description: Whether the environment variable is encrypted. Secret values aren't returned by the API.
+    ListOfEnvVars:
+      title: ListOfEnvVars
+      type: object
+      required:
+      - total
+      - items
+      properties:
+        total:
+          type: integer
+          examples:
+          - 5
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvVar'
+          description: ''
+    VersionResponse:
+      title: VersionResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Version'
+    UpdateVersionRequest:
+      title: UpdateVersionRequest
+      type: object
+      properties:
+        versionNumber:
+          type: string
+          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])$
+          examples:
+          - '1.6'
+          description: The version number of the Actor. Two numbers separated by a dot, that represent the `MAJOR.MINOR` part of the semantic versioning.
+        sourceType:
+          $ref: '#/components/schemas/WritableVersionSourceType'
+          description: Where the source code of the version lives.
+        envVars:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvVarRequest'
+          description: Environment variables for the version.
+        applyEnvVarsToBuild:
+          type:
+          - boolean
+          - 'null'
+          examples:
+          - false
+          description: Whether to inject the environment variables at build time.
+        buildTag:
+          type:
+          - string
+          - 'null'
+          examples:
+          - latest
+          description: The tag name to apply to a successful build of this version. Can be `null` when the version has no build tag.
+        sourceFiles:
+          $ref: '#/components/schemas/VersionSourceFiles'
+          description: Applies when the `sourceType` is `SOURCE_FILES`. Represents the Actor's file structure as an array of files and folders.
+        gitRepoUrl:
+          type: string
+          description: URL of the Git repository to clone the source code from. Applies when the `sourceType` is `GIT_REPO`.
+        tarballUrl:
+          type: string
+          description: URL of the tarball to download the source code from. Applies when the `sourceType` is `TARBALL`.
+        gitHubGistUrl:
+          type: string
+          description: URL of the GitHub Gist to clone the source code from. Applies when the `sourceType` is `GITHUB_GIST`.
     ErrorType:
       title: ErrorType
       type: string
@@ -1619,117 +1786,13 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    CreateVersionRequest:
-      title: CreateVersionRequest
-      required:
-      - versionNumber
-      - sourceType
-      type: object
-      properties:
-        versionNumber:
-          type: string
-          pattern: ^([0-9]|[1-9][0-9])\.([0-9]|[1-9][0-9])$
-          examples:
-          - '1.6'
-          description: The version number of the Actor. Two numbers separated by a dot, that represent the `MAJOR.MINOR` part of the semantic versioning.
-        sourceType:
-          $ref: '#/components/schemas/WritableVersionSourceType'
-          description: Where the source code of the version lives.
-        envVars:
-          type: array
-          items:
-            $ref: '#/components/schemas/EnvVarRequest'
-          description: Environment variables for the version.
-        applyEnvVarsToBuild:
-          type:
-          - boolean
-          - 'null'
-          examples:
-          - false
-          description: Whether to inject the environment variables at build time.
-        buildTag:
-          type:
-          - string
-          - 'null'
-          examples:
-          - latest
-          description: The tag name to apply to a successful build of this version. Can be `null` when the version has no build tag.
-        sourceFiles:
-          $ref: '#/components/schemas/VersionSourceFiles'
-          description: Applies when the `sourceType` is `SOURCE_FILES`. Represents the Actor's file structure as an array of files and folders.
-        gitRepoUrl:
-          type: string
-          description: URL of the Git repository to clone the source code from. Applies when the `sourceType` is `GIT_REPO`.
-        tarballUrl:
-          type: string
-          description: URL of the tarball to download the source code from. Applies when the `sourceType` is `TARBALL`.
-        gitHubGistUrl:
-          type: string
-          description: URL of the GitHub Gist to clone the source code from. Applies when the `sourceType` is `GITHUB_GIST`.
-    EnvVar:
-      title: EnvVar
-      required:
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-          examples:
-          - MY_ENV_VAR
-          description: The name of the environment variable.
-        value:
-          type: string
-          examples:
-          - my-value
-          description: The value of the environment variable. If `isSecret` is `true`, this value isn't returned by the API.
-        isSecret:
-          type:
-          - boolean
-          - 'null'
-          examples:
-          - false
-          description: Whether the environment variable is encrypted. Secret values aren't returned by the API.
-    ListOfEnvVars:
-      title: ListOfEnvVars
-      type: object
-      required:
-      - total
-      - items
-      properties:
-        total:
-          type: integer
-          examples:
-          - 5
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/EnvVar'
-          description: ''
-    WritableVersionSourceType:
-      title: WritableVersionSourceType
-      description: The version source types accepted in request bodies. Same as `VersionSourceType`, without `SOURCE_CODE`.
-      enum:
-      - SOURCE_FILES
-      - GIT_REPO
-      - TARBALL
-      - GITHUB_GIST
-      type: string
-    VersionResponse:
-      title: VersionResponse
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Version'
-    ListOfVersionsResponse:
-      title: ListOfVersionsResponse
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ListOfVersions'
+    VersionSourceFiles:
+      title: VersionSourceFiles
+      type: array
+      items:
+        anyOf:
+        - $ref: '#/components/schemas/SourceCodeFile'
+        - $ref: '#/components/schemas/SourceCodeFolder'
     SourceCodeFile:
       title: SourceCodeFile
       type: object
@@ -1750,96 +1813,33 @@ components:
           examples:
           - src/main.js
           description: The path of the file relative to the Actor's root directory.
-    VersionSourceType:
-      title: VersionSourceType
-      enum:
-      - SOURCE_FILES
-      - GIT_REPO
-      - TARBALL
-      - GITHUB_GIST
-      - SOURCE_CODE
-      type: string
-  responses:
-    UnsupportedMediaType:
-      description: Unsupported media type - the Content-Encoding of the request is not supported.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: unsupported-content-encoding
-              message: Content-Encoding "bla" is not supported.
-    PayloadTooLarge:
-      description: Payload too large - the request body exceeds the size limit.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: request-too-large
-              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
+    EnvVarResponse:
+      title: EnvVarResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/EnvVar'
+  parameters:
+    actorId:
+      name: actorId
+      in: path
+      description: Actor ID or the username of the Actor owner and the Actor name, separated by a tilde (`~`).
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: compass~google-maps-extractor
+    versionNumber:
+      name: versionNumber
+      in: path
+      description: Actor version.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: '0.1'
   securitySchemes:
     httpBearer:
       type: http

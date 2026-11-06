@@ -226,55 +226,17 @@ paths:
       x-py-name: stream
       x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/LogClientAsync#stream
 components:
-  parameters:
-    buildOrRunId:
-      name: buildOrRunId
-      in: path
-      description: ID of the Actor build or run.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: HG7ML7M8z78YcAPE
-    raw:
-      name: raw
-      in: query
-      description: 'If `true` or `1`, the logs will be kept verbatim. By default, the API removes
-
-        ANSI escape codes from the logs, keeping only printable characters.
-
-        '
-      required: false
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    download:
-      name: download
-      in: query
-      description: 'If `true` or `1` then the web browser will download the log file rather than open it in a tab.
-
-        '
-      required: false
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    stream:
-      name: stream
-      in: query
-      description: 'If `true` or `1` then the logs will be streamed as long as the run or build is running.
-
-        '
-      required: false
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
   responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
     Forbidden:
       description: Forbidden - insufficient permissions to perform this action.
       content:
@@ -305,16 +267,6 @@ components:
             error:
               type: invalid-input
               message: 'Invalid input: The request body contains invalid data.'
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
     MethodNotAllowed:
       description: Method not allowed.
       content:
@@ -335,7 +287,64 @@ components:
             error:
               type: rate-limit-exceeded
               message: You have exceeded the rate limit. Please try again later.
+  parameters:
+    stream:
+      name: stream
+      in: query
+      description: 'If `true` or `1` then the logs will be streamed as long as the run or build is running.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    raw:
+      name: raw
+      in: query
+      description: 'If `true` or `1`, the logs will be kept verbatim. By default, the API removes
+
+        ANSI escape codes from the logs, keeping only printable characters.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    download:
+      name: download
+      in: query
+      description: 'If `true` or `1` then the web browser will download the log file rather than open it in a tab.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    buildOrRunId:
+      name: buildOrRunId
+      in: path
+      description: ID of the Actor build or run.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: HG7ML7M8z78YcAPE
   schemas:
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
     ErrorType:
       title: ErrorType
       type: string
@@ -736,15 +745,6 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
     ErrorResponse:
       title: ErrorResponse
       required:

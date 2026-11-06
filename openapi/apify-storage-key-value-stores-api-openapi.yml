@@ -887,43 +887,297 @@ paths:
       x-py-name: delete_record
       x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/KeyValueStoreClientAsync#delete_record
 components:
-  schemas:
-    ListOfKeyValueStores:
-      title: ListOfKeyValueStores
-      allOf:
-      - $ref: '#/components/schemas/PaginationResponse'
-      - type: object
-        required:
-        - items
-        properties:
-          unnamed:
-            type: boolean
-            description: Whether the listing was filtered to only unnamed key-value stores.
-            examples:
-            - false
-          items:
-            type: array
-            items:
-              $ref: '#/components/schemas/KeyValueStoreResource'
-    PutRecordRequest:
-      title: PutRecordRequest
-      description: 'The request body contains the value to store in the record. The content type
-
-        should be specified in the Content-Type header.
+  parameters:
+    prefixRecords:
+      name: prefix
+      in: query
+      description: 'If specified, only records whose key starts with the given prefix are included in the archive.
 
         '
+      schema:
+        type: string
+        example: my-prefix/
+    exclusiveStartKey:
+      name: exclusiveStartKey
+      in: query
+      description: All keys up to this one (including) are skipped from the result.
+      schema:
+        type: string
+        example: Ihnsp8YrvJ8102Kj
+    collectionRecords:
+      name: collection
+      in: query
+      description: 'If specified, only records belonging to a specific collection from the key-value store schema. The key-value store need to have a schema defined for this parameter to work.
+
+        '
+      schema:
+        type: string
+        example: my-collection
+    prefixKeys:
+      name: prefix
+      in: query
+      description: Limit the results to keys that start with a specific prefix.
+      schema:
+        type: string
+        example: post-images-
+    Content-Encoding:
+      name: Content-Encoding
+      in: header
+      description: Compression encoding of the request body.
+      required: false
+      style: simple
+      schema:
+        enum:
+        - br
+        - gzip
+        - deflate
+        - identity
+        type: string
+    descCreatedAt:
+      name: desc
+      in: query
+      description: 'If `true` or `1` then the objects are sorted by the `createdAt` field in
+
+        descending order. By default, they are sorted in ascending order.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    collectionKeys:
+      name: collection
+      in: query
+      description: Limit the results to keys that belong to a specific collection from the key-value store schema. The key-value store need to have a schema defined for this parameter to work.
+      schema:
+        type: string
+        example: postImages
+    limit-3:
+      name: limit
+      in: query
+      description: Number of keys to be returned.
+      schema:
+        type: number
+        format: int32
+        minimum: 1
+        maximum: 1000
+        default: 1000
+        example: 100
+    unnamed:
+      name: unnamed
+      in: query
+      description: 'If `true` or `1` then all the storages are returned. By default, only
+
+        named storages are returned.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: true
+    recordKey:
+      name: recordKey
+      in: path
+      description: Key of the record.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: someKey
+    signature:
+      name: signature
+      in: query
+      description: Signature used for the access.
+      required: false
+      style: form
+      schema:
+        type: string
+        example: 2wTI46Bg8qWQrV7tavlPI
+    storeId:
+      name: storeId
+      in: path
+      description: Key-value store ID or `username~store-name`.
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: WkzbQMuFYuamGv3YF
+    limit:
+      name: limit
+      in: query
+      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 1000
+    offset:
+      name: offset
+      in: query
+      description: 'Number of items that should be skipped at the start. The default value is `0`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 0
+    attachment-2:
+      name: attachment
+      in: query
+      description: 'If `true` or `1`, the response will be served with `Content-Disposition: attachment` header,
+
+        causing web browsers to offer downloading HTML records instead of displaying them.
+
+        '
+      required: false
+      schema:
+        type: boolean
+        example: true
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    NoContent:
+      description: No content
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    PaymentRequired:
+      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: x402-payment-required
+              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
+  schemas:
+    ListOfKeysResponse:
+      title: ListOfKeysResponse
+      required:
+      - data
       type: object
-      additionalProperties: true
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfKeys'
       example:
-        message: Hello, world!
-        count: 42
-    StorageOwnership:
-      type: string
-      enum:
-      - ownedByMe
-      - sharedWithMe
-      examples:
-      - ownedByMe
+        data:
+          items:
+          - key: second-key
+            size: 36
+            recordPublicUrl: https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/records/second-key?signature=abc123
+          - key: third-key
+            size: 128
+            recordPublicUrl: https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/records/third-key?signature=abc123
+          count: 2
+          limit: 2
+          exclusiveStartKey: some-key
+          isTruncated: true
+          nextExclusiveStartKey: third-key
+    KeyValueStoreKey:
+      title: KeyValueStoreKey
+      type: object
+      required:
+      - key
+      - size
+      - recordPublicUrl
+      properties:
+        key:
+          type: string
+          examples:
+          - second-key
+        size:
+          type: integer
+          examples:
+          - 36
+        recordPublicUrl:
+          type: string
+          format: uri
+          description: A public link to access this record directly.
+          examples:
+          - https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/records/some-key?signature=abc123
     PaginationResponse:
       title: PaginationResponse
       description: Common pagination fields for list responses.
@@ -964,28 +1218,220 @@ components:
           minimum: 0
           examples:
           - 1
-    KeyValueStoreKey:
-      title: KeyValueStoreKey
-      type: object
+    ErrorResponse:
+      title: ErrorResponse
       required:
-      - key
-      - size
-      - recordPublicUrl
+      - error
+      type: object
       properties:
-        key:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    KeyValueStoreResource:
+      title: KeyValueStoreResource
+      required:
+      - id
+      - createdAt
+      - modifiedAt
+      - accessedAt
+      type: object
+      properties:
+        id:
           type: string
           examples:
-          - second-key
-        size:
-          type: integer
+          - WkzbQMuFYuamGv3YF
+        name:
+          type:
+          - string
+          - 'null'
           examples:
-          - 36
-        recordPublicUrl:
+          - d7b9MDYsbtX5L7XAj
+        userId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - BPWDBd7Z9c746JAnF
+        username:
+          type:
+          - string
+          - 'null'
+          examples:
+          - janedoe
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-12T07:34:14.202Z'
+        modifiedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-13T08:36:13.202Z'
+        accessedAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-14T08:36:13.202Z'
+        actId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - null
+        actRunId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - null
+        consoleUrl:
           type: string
           format: uri
-          description: A public link to access this record directly.
           examples:
-          - https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/records/some-key?signature=abc123
+          - https://console.apify.com/storage/key-value-stores/27TmTznX9YPeAYhkC
+        keysPublicUrl:
+          type: string
+          format: uri
+          description: A public link to access keys of the key-value store directly.
+          examples:
+          - https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/keys?signature=abc123
+        recordsPublicUrl:
+          type: string
+          format: uri
+          description: A public link to access records of the key-value store directly.
+          examples:
+          - https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/records
+        schema:
+          type:
+          - object
+          - 'null'
+          description: Optional JSON schema describing the keys stored in the key-value store.
+        urlSigningSecretKey:
+          type:
+          - string
+          - 'null'
+          description: A secret key for generating signed public URLs. It is only provided to clients with WRITE permission for the key-value store.
+        generalAccess:
+          anyOf:
+          - $ref: '#/components/schemas/GeneralAccess'
+          - type: 'null'
+        stats:
+          $ref: '#/components/schemas/KeyValueStoreStats'
+    RecordResponse:
+      title: RecordResponse
+      description: 'The response body contains the value of the record. The content type of the response
+
+        is determined by the Content-Type header stored with the record.
+
+        '
+      type: object
+      additionalProperties: true
+      example:
+        message: Hello, world!
+        count: 42
+    ListOfKeyValueStoresResponse:
+      title: ListOfKeyValueStoresResponse
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfKeyValueStores'
+    StorageOwnership:
+      type: string
+      enum:
+      - ownedByMe
+      - sharedWithMe
+      examples:
+      - ownedByMe
+    PutRecordRequest:
+      title: PutRecordRequest
+      description: 'The request body contains the value to store in the record. The content type
+
+        should be specified in the Content-Type header.
+
+        '
+      type: object
+      additionalProperties: true
+      example:
+        message: Hello, world!
+        count: 42
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
+    ListOfKeyValueStores:
+      title: ListOfKeyValueStores
+      allOf:
+      - $ref: '#/components/schemas/PaginationResponse'
+      - type: object
+        required:
+        - items
+        properties:
+          unnamed:
+            type: boolean
+            description: Whether the listing was filtered to only unnamed key-value stores.
+            examples:
+            - false
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/KeyValueStoreResource'
+    KeyValueStoreResponse:
+      title: KeyValueStoreResponse
+      description: Response containing key-value store data.
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/KeyValueStoreResource'
+    UpdateKeyValueStoreRequest:
+      title: UpdateKeyValueStoreRequest
+      type: object
+      properties:
+        name:
+          type:
+          - string
+          - 'null'
+        generalAccess:
+          $ref: '#/components/schemas/GeneralAccess'
+      example:
+        name: new-store-name
+        generalAccess: RESTRICTED
+    KeyValueStoreStats:
+      title: KeyValueStoreStats
+      type: object
+      properties:
+        readCount:
+          type: integer
+          examples:
+          - 9
+        writeCount:
+          type: integer
+          examples:
+          - 3
+        deleteCount:
+          type: integer
+          examples:
+          - 6
+        listCount:
+          type: integer
+          examples:
+          - 2
+        s3StorageBytes:
+          type: integer
+          examples:
+          - 18
+        storageBytes:
+          type: integer
+          examples:
+          - 457225
     GeneralAccess:
       title: GeneralAccess
       type: string
@@ -1035,51 +1481,6 @@ components:
           - 'null'
           examples:
           - third-key
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
-    KeyValueStoreStats:
-      title: KeyValueStoreStats
-      type: object
-      properties:
-        readCount:
-          type: integer
-          examples:
-          - 9
-        writeCount:
-          type: integer
-          examples:
-          - 3
-        deleteCount:
-          type: integer
-          examples:
-          - 6
-        listCount:
-          type: integer
-          examples:
-          - 2
-        s3StorageBytes:
-          type: integer
-          examples:
-          - 18
-        storageBytes:
-          type: integer
-          examples:
-          - 457225
     ErrorType:
       title: ErrorType
       type: string
@@ -1480,407 +1881,6 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    ListOfKeyValueStoresResponse:
-      title: ListOfKeyValueStoresResponse
-      type: object
-      required:
-      - data
-      properties:
-        data:
-          $ref: '#/components/schemas/ListOfKeyValueStores'
-    RecordResponse:
-      title: RecordResponse
-      description: 'The response body contains the value of the record. The content type of the response
-
-        is determined by the Content-Type header stored with the record.
-
-        '
-      type: object
-      additionalProperties: true
-      example:
-        message: Hello, world!
-        count: 42
-    KeyValueStoreResource:
-      title: KeyValueStoreResource
-      required:
-      - id
-      - createdAt
-      - modifiedAt
-      - accessedAt
-      type: object
-      properties:
-        id:
-          type: string
-          examples:
-          - WkzbQMuFYuamGv3YF
-        name:
-          type:
-          - string
-          - 'null'
-          examples:
-          - d7b9MDYsbtX5L7XAj
-        userId:
-          type:
-          - string
-          - 'null'
-          examples:
-          - BPWDBd7Z9c746JAnF
-        username:
-          type:
-          - string
-          - 'null'
-          examples:
-          - janedoe
-        createdAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-12T07:34:14.202Z'
-        modifiedAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-13T08:36:13.202Z'
-        accessedAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-14T08:36:13.202Z'
-        actId:
-          type:
-          - string
-          - 'null'
-          examples:
-          - null
-        actRunId:
-          type:
-          - string
-          - 'null'
-          examples:
-          - null
-        consoleUrl:
-          type: string
-          format: uri
-          examples:
-          - https://console.apify.com/storage/key-value-stores/27TmTznX9YPeAYhkC
-        keysPublicUrl:
-          type: string
-          format: uri
-          description: A public link to access keys of the key-value store directly.
-          examples:
-          - https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/keys?signature=abc123
-        recordsPublicUrl:
-          type: string
-          format: uri
-          description: A public link to access records of the key-value store directly.
-          examples:
-          - https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/records
-        schema:
-          type:
-          - object
-          - 'null'
-          description: Optional JSON schema describing the keys stored in the key-value store.
-        urlSigningSecretKey:
-          type:
-          - string
-          - 'null'
-          description: A secret key for generating signed public URLs. It is only provided to clients with WRITE permission for the key-value store.
-        generalAccess:
-          anyOf:
-          - $ref: '#/components/schemas/GeneralAccess'
-          - type: 'null'
-        stats:
-          $ref: '#/components/schemas/KeyValueStoreStats'
-    UpdateKeyValueStoreRequest:
-      title: UpdateKeyValueStoreRequest
-      type: object
-      properties:
-        name:
-          type:
-          - string
-          - 'null'
-        generalAccess:
-          $ref: '#/components/schemas/GeneralAccess'
-      example:
-        name: new-store-name
-        generalAccess: RESTRICTED
-    ListOfKeysResponse:
-      title: ListOfKeysResponse
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ListOfKeys'
-      example:
-        data:
-          items:
-          - key: second-key
-            size: 36
-            recordPublicUrl: https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/records/second-key?signature=abc123
-          - key: third-key
-            size: 128
-            recordPublicUrl: https://api.apify.com/v2/key-value-stores/WkzbQMuFYuamGv3YF/records/third-key?signature=abc123
-          count: 2
-          limit: 2
-          exclusiveStartKey: some-key
-          isTruncated: true
-          nextExclusiveStartKey: third-key
-    KeyValueStoreResponse:
-      title: KeyValueStoreResponse
-      description: Response containing key-value store data.
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/KeyValueStoreResource'
-  parameters:
-    limit-3:
-      name: limit
-      in: query
-      description: Number of keys to be returned.
-      schema:
-        type: number
-        format: int32
-        minimum: 1
-        maximum: 1000
-        default: 1000
-        example: 100
-    attachment-2:
-      name: attachment
-      in: query
-      description: 'If `true` or `1`, the response will be served with `Content-Disposition: attachment` header,
-
-        causing web browsers to offer downloading HTML records instead of displaying them.
-
-        '
-      required: false
-      schema:
-        type: boolean
-        example: true
-    unnamed:
-      name: unnamed
-      in: query
-      description: 'If `true` or `1` then all the storages are returned. By default, only
-
-        named storages are returned.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: true
-    collectionKeys:
-      name: collection
-      in: query
-      description: Limit the results to keys that belong to a specific collection from the key-value store schema. The key-value store need to have a schema defined for this parameter to work.
-      schema:
-        type: string
-        example: postImages
-    descCreatedAt:
-      name: desc
-      in: query
-      description: 'If `true` or `1` then the objects are sorted by the `createdAt` field in
-
-        descending order. By default, they are sorted in ascending order.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: true
-    collectionRecords:
-      name: collection
-      in: query
-      description: 'If specified, only records belonging to a specific collection from the key-value store schema. The key-value store need to have a schema defined for this parameter to work.
-
-        '
-      schema:
-        type: string
-        example: my-collection
-    prefixRecords:
-      name: prefix
-      in: query
-      description: 'If specified, only records whose key starts with the given prefix are included in the archive.
-
-        '
-      schema:
-        type: string
-        example: my-prefix/
-    offset:
-      name: offset
-      in: query
-      description: 'Number of items that should be skipped at the start. The default value is `0`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 0
-    recordKey:
-      name: recordKey
-      in: path
-      description: Key of the record.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: someKey
-    limit:
-      name: limit
-      in: query
-      description: 'Maximum number of items to return. The default value as well as the maximum is `1000`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 1000
-    prefixKeys:
-      name: prefix
-      in: query
-      description: Limit the results to keys that start with a specific prefix.
-      schema:
-        type: string
-        example: post-images-
-    signature:
-      name: signature
-      in: query
-      description: Signature used for the access.
-      required: false
-      style: form
-      schema:
-        type: string
-        example: 2wTI46Bg8qWQrV7tavlPI
-    exclusiveStartKey:
-      name: exclusiveStartKey
-      in: query
-      description: All keys up to this one (including) are skipped from the result.
-      schema:
-        type: string
-        example: Ihnsp8YrvJ8102Kj
-    storeId:
-      name: storeId
-      in: path
-      description: Key-value store ID or `username~store-name`.
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: WkzbQMuFYuamGv3YF
-    Content-Encoding:
-      name: Content-Encoding
-      in: header
-      description: Compression encoding of the request body.
-      required: false
-      style: simple
-      schema:
-        enum:
-        - br
-        - gzip
-        - deflate
-        - identity
-        type: string
-  responses:
-    NoContent:
-      description: No content
-    UnsupportedMediaType:
-      description: Unsupported media type - the Content-Encoding of the request is not supported.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: unsupported-content-encoding
-              message: Content-Encoding "bla" is not supported.
-    PayloadTooLarge:
-      description: Payload too large - the request body exceeds the size limit.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: request-too-large
-              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
-    PaymentRequired:
-      description: Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: x402-payment-required
-              message: Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org.
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
   securitySchemes:
     httpBearer:
       type: http

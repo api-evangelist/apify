@@ -292,15 +292,204 @@ paths:
       x-py-name: get
       x-py-doc-url: https://docs.apify.com/api/client/python/reference/class/WebhookDispatchClientAsync#get
 components:
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
   schemas:
-    ListOfWebhookDispatchesResponse:
-      title: ListOfWebhookDispatchesResponse
+    WebhookDispatchResponse:
+      title: WebhookDispatchResponse
       required:
       - data
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/ListOfWebhookDispatches'
+          $ref: '#/components/schemas/WebhookDispatch'
+    WebhookEventType:
+      title: WebhookEventType
+      type: string
+      enum:
+      - ACTOR.BUILD.ABORTED
+      - ACTOR.BUILD.CREATED
+      - ACTOR.BUILD.FAILED
+      - ACTOR.BUILD.SUCCEEDED
+      - ACTOR.BUILD.TIMED_OUT
+      - ACTOR.RUN.ABORTED
+      - ACTOR.RUN.CREATED
+      - ACTOR.RUN.FAILED
+      - ACTOR.RUN.RESURRECTED
+      - ACTOR.RUN.SUCCEEDED
+      - ACTOR.RUN.TIMED_OUT
+      - TEST
+      description: Type of event that triggers the webhook.
+    WebhookDispatch:
+      title: WebhookDispatch
+      required:
+      - id
+      - userId
+      - webhookId
+      - createdAt
+      - status
+      - eventType
+      type: object
+      properties:
+        id:
+          type: string
+          examples:
+          - asdLZtadYvn4mBZmm
+        userId:
+          type: string
+          examples:
+          - wRsJZtadYvn4mBZmm
+        webhookId:
+          type: string
+          examples:
+          - asdLZtadYvn4mBZmm
+        createdAt:
+          type: string
+          format: date-time
+          examples:
+          - '2019-12-12T07:34:14.202Z'
+        status:
+          $ref: '#/components/schemas/WebhookDispatchStatus'
+        eventType:
+          $ref: '#/components/schemas/WebhookEventType'
+        eventData:
+          title: eventData
+          type:
+          - object
+          - 'null'
+          required:
+          - actorId
+          properties:
+            actorId:
+              type: string
+              examples:
+              - vvE7iMKuMc5qTHHsR
+            actorRunId:
+              type: string
+              examples:
+              - JgwXN9BdwxGcu9MMF
+            actorBuildId:
+              type: string
+              examples:
+              - HG7ML7M8z78YcAPEB
+            actorTaskId:
+              type:
+              - string
+              - 'null'
+              examples:
+              - zRLp8SDOZz2NyLg7K
+        webhook:
+          anyOf:
+          - $ref: '#/components/schemas/WebhookDispatchWebhookSummary'
+          - type: 'null'
+        calls:
+          title: calls
+          type: array
+          items:
+            type: object
+            properties:
+              startedAt:
+                type:
+                - string
+                - 'null'
+                format: date-time
+                examples:
+                - '2019-12-12T07:34:14.202Z'
+              finishedAt:
+                type:
+                - string
+                - 'null'
+                format: date-time
+                examples:
+                - '2019-12-12T07:34:14.202Z'
+              errorMessage:
+                type:
+                - string
+                - 'null'
+                examples:
+                - Cannot send request
+              responseStatus:
+                type:
+                - integer
+                - 'null'
+                examples:
+                - 200
+              responseBody:
+                type:
+                - string
+                - 'null'
+                example: '{"foo": "bar"}'
+    ListOfWebhookDispatches:
+      title: ListOfWebhookDispatches
+      allOf:
+      - $ref: '#/components/schemas/PaginationResponse'
+      - type: object
+        required:
+        - items
+        properties:
+          items:
+            type: array
+            items:
+              $ref: '#/components/schemas/WebhookDispatch'
     PaginationResponse:
       title: PaginationResponse
       description: Common pagination fields for list responses.
@@ -341,6 +530,22 @@ components:
           minimum: 0
           examples:
           - 1
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    ListOfWebhookDispatchesResponse:
+      title: ListOfWebhookDispatchesResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ListOfWebhookDispatches'
     ErrorDetail:
       title: ErrorDetail
       type: object
@@ -350,37 +555,36 @@ components:
         message:
           type: string
           description: Human-readable error message describing what went wrong.
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
+    WebhookCondition:
+      title: WebhookCondition
       type: object
       properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
-    WebhookDispatchWebhookSummary:
-      title: WebhookDispatchWebhookSummary
-      description: A summary of the webhook that triggered this dispatch.
-      type: object
-      properties:
-        actionType:
-          type: string
-          examples:
-          - HTTP_REQUEST
-        condition:
-          $ref: '#/components/schemas/WebhookCondition'
-        requestUrl:
+        actorId:
           type:
           - string
           - 'null'
-          format: uri
-          description: URL of the HTTP request sent by the webhook. It is `null` for hook actions other than the conventional HTTP case (e.g. Slack or email notifications).
           examples:
-          - https://example.com/webhook
-        isAdHoc:
-          type: boolean
+          - hksJZtadYvn4mBuin
+        actorTaskId:
+          type:
+          - string
+          - 'null'
           examples:
-          - false
+          - asdLZtadYvn4mBZmm
+        actorRunId:
+          type:
+          - string
+          - 'null'
+          examples:
+          - hgdKZtadYvn4mBpoi
+    WebhookDispatchStatus:
+      title: WebhookDispatchStatus
+      type: string
+      enum:
+      - ACTIVE
+      - SUCCEEDED
+      - FAILED
+      description: Status of the webhook dispatch indicating whether the HTTP request was successful.
     ErrorType:
       title: ErrorType
       type: string
@@ -781,172 +985,29 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    WebhookDispatch:
-      title: WebhookDispatch
-      required:
-      - id
-      - userId
-      - webhookId
-      - createdAt
-      - status
-      - eventType
+    WebhookDispatchWebhookSummary:
+      title: WebhookDispatchWebhookSummary
+      description: A summary of the webhook that triggered this dispatch.
       type: object
       properties:
-        id:
+        actionType:
           type: string
           examples:
-          - asdLZtadYvn4mBZmm
-        userId:
-          type: string
-          examples:
-          - wRsJZtadYvn4mBZmm
-        webhookId:
-          type: string
-          examples:
-          - asdLZtadYvn4mBZmm
-        createdAt:
-          type: string
-          format: date-time
-          examples:
-          - '2019-12-12T07:34:14.202Z'
-        status:
-          $ref: '#/components/schemas/WebhookDispatchStatus'
-        eventType:
-          $ref: '#/components/schemas/WebhookEventType'
-        eventData:
-          title: eventData
-          type:
-          - object
-          - 'null'
-          required:
-          - actorId
-          properties:
-            actorId:
-              type: string
-              examples:
-              - vvE7iMKuMc5qTHHsR
-            actorRunId:
-              type: string
-              examples:
-              - JgwXN9BdwxGcu9MMF
-            actorBuildId:
-              type: string
-              examples:
-              - HG7ML7M8z78YcAPEB
-            actorTaskId:
-              type:
-              - string
-              - 'null'
-              examples:
-              - zRLp8SDOZz2NyLg7K
-        webhook:
-          anyOf:
-          - $ref: '#/components/schemas/WebhookDispatchWebhookSummary'
-          - type: 'null'
-        calls:
-          title: calls
-          type: array
-          items:
-            type: object
-            properties:
-              startedAt:
-                type:
-                - string
-                - 'null'
-                format: date-time
-                examples:
-                - '2019-12-12T07:34:14.202Z'
-              finishedAt:
-                type:
-                - string
-                - 'null'
-                format: date-time
-                examples:
-                - '2019-12-12T07:34:14.202Z'
-              errorMessage:
-                type:
-                - string
-                - 'null'
-                examples:
-                - Cannot send request
-              responseStatus:
-                type:
-                - integer
-                - 'null'
-                examples:
-                - 200
-              responseBody:
-                type:
-                - string
-                - 'null'
-                example: '{"foo": "bar"}'
-    ListOfWebhookDispatches:
-      title: ListOfWebhookDispatches
-      allOf:
-      - $ref: '#/components/schemas/PaginationResponse'
-      - type: object
-        required:
-        - items
-        properties:
-          items:
-            type: array
-            items:
-              $ref: '#/components/schemas/WebhookDispatch'
-    WebhookCondition:
-      title: WebhookCondition
-      type: object
-      properties:
-        actorId:
+          - HTTP_REQUEST
+        condition:
+          $ref: '#/components/schemas/WebhookCondition'
+        requestUrl:
           type:
           - string
           - 'null'
+          format: uri
+          description: URL of the HTTP request sent by the webhook. It is `null` for hook actions other than the conventional HTTP case (e.g. Slack or email notifications).
           examples:
-          - hksJZtadYvn4mBuin
-        actorTaskId:
-          type:
-          - string
-          - 'null'
+          - https://example.com/webhook
+        isAdHoc:
+          type: boolean
           examples:
-          - asdLZtadYvn4mBZmm
-        actorRunId:
-          type:
-          - string
-          - 'null'
-          examples:
-          - hgdKZtadYvn4mBpoi
-    WebhookEventType:
-      title: WebhookEventType
-      type: string
-      enum:
-      - ACTOR.BUILD.ABORTED
-      - ACTOR.BUILD.CREATED
-      - ACTOR.BUILD.FAILED
-      - ACTOR.BUILD.SUCCEEDED
-      - ACTOR.BUILD.TIMED_OUT
-      - ACTOR.RUN.ABORTED
-      - ACTOR.RUN.CREATED
-      - ACTOR.RUN.FAILED
-      - ACTOR.RUN.RESURRECTED
-      - ACTOR.RUN.SUCCEEDED
-      - ACTOR.RUN.TIMED_OUT
-      - TEST
-      description: Type of event that triggers the webhook.
-    WebhookDispatchResponse:
-      title: WebhookDispatchResponse
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/WebhookDispatch'
-    WebhookDispatchStatus:
-      title: WebhookDispatchStatus
-      type: string
-      enum:
-      - ACTIVE
-      - SUCCEEDED
-      - FAILED
-      description: Status of the webhook dispatch indicating whether the HTTP request was successful.
+          - false
   parameters:
     descCreatedAt:
       name: desc
@@ -961,18 +1022,6 @@ components:
       schema:
         type: boolean
         example: true
-    offset:
-      name: offset
-      in: query
-      description: 'Number of items that should be skipped at the start. The default value is `0`.
-
-        '
-      style: form
-      explode: true
-      schema:
-        type: number
-        format: double
-        example: 0
     limit:
       name: limit
       in: query
@@ -985,67 +1034,18 @@ components:
         type: number
         format: double
         example: 1000
-  responses:
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
+    offset:
+      name: offset
+      in: query
+      description: 'Number of items that should be skipped at the start. The default value is `0`.
+
+        '
+      style: form
+      explode: true
+      schema:
+        type: number
+        format: double
+        example: 0
   securitySchemes:
     httpBearer:
       type: http

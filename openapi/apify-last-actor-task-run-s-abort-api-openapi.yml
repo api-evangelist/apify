@@ -278,21 +278,88 @@ paths:
       - $ref: '#/components/parameters/gracefully'
 components:
   schemas:
-    RunOrigin:
-      title: RunOrigin
-      type: string
-      enum:
-      - DEVELOPMENT
-      - WEB
-      - API
-      - SCHEDULER
-      - TEST
-      - WEBHOOK
-      - ACTOR
-      - CLI
-      - CI
-      - STANDBY
-      - MCP
+    TieredPricingPerDatasetItem:
+      title: TieredPricingPerDatasetItem
+      description: 'Tiered price-per-dataset-item pricing, keyed by subscription tier (e.g. `FREE`, `BRONZE`, `SILVER`, `GOLD`,
+
+        `PLATINUM`, `DIAMOND`). The actual price applied to a run is resolved from the user''s tier.
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/TieredPricingPerDatasetItemEntry'
+    TieredPricingPerDatasetItemEntry:
+      title: TieredPricingPerDatasetItemEntry
+      description: A single tier's price-per-dataset-item entry.
+      type: object
+      required:
+      - tieredPricePerUnitUsd
+      properties:
+        tieredPricePerUnitUsd:
+          type: number
+          description: Price per unit in USD for this tier.
+    FlatPricePerMonthActorPricingInfo:
+      title: FlatPricePerMonthActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - pricePerUnitUsd
+        - trialMinutes
+        properties:
+          pricingModel:
+            type: string
+            const: FLAT_PRICE_PER_MONTH
+          trialMinutes:
+            type: integer
+            description: For how long this Actor can be used for free in trial period
+          pricePerUnitUsd:
+            type: number
+            description: Monthly flat price in USD
+    RunOptions:
+      title: RunOptions
+      required:
+      - build
+      - timeoutSecs
+      - memoryMbytes
+      - diskMbytes
+      type: object
+      properties:
+        build:
+          type: string
+          examples:
+          - latest
+        timeoutSecs:
+          type: integer
+          minimum: 0
+          examples:
+          - 300
+        memoryMbytes:
+          type: integer
+          minimum: 128
+          maximum: 32768
+          examples:
+          - 1024
+        diskMbytes:
+          type: integer
+          minimum: 0
+          examples:
+          - 2048
+        maxItems:
+          type:
+          - integer
+          - 'null'
+          minimum: 0
+          examples:
+          - 1000
+        maxTotalChargeUsd:
+          type:
+          - number
+          - 'null'
+          minimum: 0
+          examples:
+          - 5
     PricePerDatasetItemActorPricingInfo:
       title: PricePerDatasetItemActorPricingInfo
       allOf:
@@ -317,149 +384,74 @@ components:
               '
           tieredPricing:
             $ref: '#/components/schemas/TieredPricingPerDatasetItem'
-    TieredPricingPerEventEntry:
-      title: TieredPricingPerEventEntry
-      description: A single tier's price-per-event entry.
-      type: object
-      required:
-      - tieredEventPriceUsd
-      properties:
-        tieredEventPriceUsd:
-          type: number
-          description: Price per event in USD for this tier.
-    TieredPricingPerDatasetItemEntry:
-      title: TieredPricingPerDatasetItemEntry
-      description: A single tier's price-per-dataset-item entry.
-      type: object
-      required:
-      - tieredPricePerUnitUsd
-      properties:
-        tieredPricePerUnitUsd:
-          type: number
-          description: Price per unit in USD for this tier.
-    ActorJobStatus:
-      title: ActorJobStatus
+    ActorRunPricingInfo:
+      title: ActorRunPricingInfo
+      discriminator:
+        propertyName: pricingModel
+        mapping:
+          PAY_PER_EVENT: '#/components/schemas/PayPerEventActorPricingInfo'
+          PRICE_PER_DATASET_ITEM: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
+          FLAT_PRICE_PER_MONTH: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
+          FREE: '#/components/schemas/FreeActorPricingInfo'
+      oneOf:
+      - $ref: '#/components/schemas/PayPerEventActorPricingInfo'
+      - $ref: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
+      - $ref: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
+      - $ref: '#/components/schemas/FreeActorPricingInfo'
+    RunOrigin:
+      title: RunOrigin
       type: string
       enum:
-      - READY
-      - RUNNING
-      - SUCCEEDED
-      - FAILED
-      - TIMING-OUT
-      - TIMED-OUT
-      - ABORTING
-      - ABORTED
-      description: Status of an Actor job (run or build).
-    FreeActorPricingInfo:
-      title: FreeActorPricingInfo
-      allOf:
-      - $ref: '#/components/schemas/CommonActorPricingInfo'
-      - type: object
-        required:
-        - pricingModel
-        properties:
-          pricingModel:
-            type: string
-            const: FREE
-    PayPerEventActorPricingInfo:
-      title: PayPerEventActorPricingInfo
-      allOf:
-      - $ref: '#/components/schemas/CommonActorPricingInfo'
-      - type: object
-        required:
-        - pricingModel
-        - pricingPerEvent
-        properties:
-          pricingModel:
-            type: string
-            const: PAY_PER_EVENT
-          pricingPerEvent:
-            type: object
-            properties:
-              actorChargeEvents:
-                type: object
-                additionalProperties:
-                  $ref: '#/components/schemas/ActorChargeEvent'
-          minimalMaxTotalChargeUsd:
-            type:
-            - number
-            - 'null'
-    RunUsage:
-      title: RunUsage
+      - DEVELOPMENT
+      - WEB
+      - API
+      - SCHEDULER
+      - TEST
+      - WEBHOOK
+      - ACTOR
+      - CLI
+      - CI
+      - STANDBY
+      - MCP
+    ActorChargeEvent:
+      title: ActorChargeEvent
+      description: 'Definition of a single chargeable event for a pay-per-event Actor. Each event is either flat-priced
+
+        (`eventPriceUsd` is set) or tier-priced (`eventTieredPricingUsd` is set); the two are mutually exclusive.
+
+        '
+      type: object
+      required:
+      - eventTitle
+      - eventDescription
+      properties:
+        eventTitle:
+          type: string
+          description: Human-readable title shown to users in the billing UI.
+        eventDescription:
+          type: string
+          description: Human-readable description of what triggers this event.
+        eventPriceUsd:
+          type: number
+          description: 'Flat price per event in USD. Present only for non-tiered events. Mutually exclusive with `eventTieredPricingUsd`.
+
+            '
+        eventTieredPricingUsd:
+          $ref: '#/components/schemas/TieredPricingPerEvent'
+        isPrimaryEvent:
+          type: boolean
+          description: Whether this event is the Actor's primary chargeable event.
+        isOneTimeEvent:
+          type: boolean
+          description: Whether this event can only be charged once per Actor run.
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
       type: object
       properties:
-        ACTOR_COMPUTE_UNITS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 3
-        DATASET_READS:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 4
-        DATASET_WRITES:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 4
-        KEY_VALUE_STORE_READS:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 5
-        KEY_VALUE_STORE_WRITES:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 3
-        KEY_VALUE_STORE_LISTS:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 5
-        REQUEST_QUEUE_READS:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 2
-        REQUEST_QUEUE_WRITES:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 1
-        DATA_TRANSFER_INTERNAL_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 1
-        DATA_TRANSFER_EXTERNAL_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 3
-        PROXY_RESIDENTIAL_TRANSFER_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 34
-        PROXY_SERPS:
-          type:
-          - integer
-          - 'null'
-          examples:
-          - 3
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
     RunMeta:
       title: RunMeta
       required:
@@ -489,17 +481,15 @@ components:
           - 'null'
           format: date-time
           description: Time when the run was scheduled.
-    GeneralAccess:
-      title: GeneralAccess
-      type: string
-      enum:
-      - ANYONE_WITH_ID_CAN_READ
-      - ANYONE_WITH_NAME_CAN_READ
-      - FOLLOW_USER_SETTING
-      - RESTRICTED
-      examples:
-      - RESTRICTED
-      description: Defines the general access level for the resource.
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
     Run:
       title: Run
       description: Represents an Actor run and its associated data.
@@ -715,95 +705,272 @@ components:
           description: Indicates which party covers platform usage costs for this run.
           examples:
           - USER
-    RunResponse:
-      title: RunResponse
+    RunMetamorphEvent:
+      title: RunMetamorphEvent
+      description: Information about a metamorph event that occurred during the run.
+      type: object
       required:
-      - data
+      - createdAt
+      - actorId
+      - buildId
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          description: Time when the metamorph occurred.
+          examples:
+          - '2019-11-30T07:39:24.202Z'
+        actorId:
+          type: string
+          description: ID of the Actor that the run was metamorphed to.
+          examples:
+          - nspoEjklmnsF2oosD
+        buildId:
+          type: string
+          description: ID of the build used for the metamorphed Actor.
+          examples:
+          - ME6oKecqy5kXDS4KQ
+        inputKey:
+          type:
+          - string
+          - 'null'
+          description: Key of the input record in the key-value store.
+          examples:
+          - INPUT-METAMORPH-1
+    ActorJobStatus:
+      title: ActorJobStatus
+      type: string
+      enum:
+      - READY
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+      - TIMING-OUT
+      - TIMED-OUT
+      - ABORTING
+      - ABORTED
+      description: Status of an Actor job (run or build).
+    RunUsage:
+      title: RunUsage
       type: object
       properties:
-        data:
-          $ref: '#/components/schemas/Run'
-    FlatPricePerMonthActorPricingInfo:
-      title: FlatPricePerMonthActorPricingInfo
+        ACTOR_COMPUTE_UNITS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 3
+        DATASET_READS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 4
+        DATASET_WRITES:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 4
+        KEY_VALUE_STORE_READS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 5
+        KEY_VALUE_STORE_WRITES:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 3
+        KEY_VALUE_STORE_LISTS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 5
+        REQUEST_QUEUE_READS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 2
+        REQUEST_QUEUE_WRITES:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 1
+        DATA_TRANSFER_INTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 1
+        DATA_TRANSFER_EXTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 3
+        PROXY_RESIDENTIAL_TRANSFER_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 34
+        PROXY_SERPS:
+          type:
+          - integer
+          - 'null'
+          examples:
+          - 3
+    RunUsageUsd:
+      title: RunUsageUsd
+      description: Resource usage costs in USD. All values are monetary amounts in US dollars.
+      type: object
+      properties:
+        ACTOR_COMPUTE_UNITS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0003
+        DATASET_READS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        DATASET_WRITES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        KEY_VALUE_STORE_READS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        KEY_VALUE_STORE_WRITES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 5.0e-05
+        KEY_VALUE_STORE_LISTS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        REQUEST_QUEUE_READS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        REQUEST_QUEUE_WRITES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.0001
+        DATA_TRANSFER_INTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.001
+        DATA_TRANSFER_EXTERNAL_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.003
+        PROXY_RESIDENTIAL_TRANSFER_GBYTES:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.034
+        PROXY_SERPS:
+          type:
+          - number
+          - 'null'
+          examples:
+          - 0.003
+    FreeActorPricingInfo:
+      title: FreeActorPricingInfo
       allOf:
       - $ref: '#/components/schemas/CommonActorPricingInfo'
       - type: object
         required:
         - pricingModel
-        - pricePerUnitUsd
-        - trialMinutes
         properties:
           pricingModel:
             type: string
-            const: FLAT_PRICE_PER_MONTH
-          trialMinutes:
-            type: integer
-            description: For how long this Actor can be used for free in trial period
-          pricePerUnitUsd:
-            type: number
-            description: Monthly flat price in USD
-    ActorChargeEvent:
-      title: ActorChargeEvent
-      description: 'Definition of a single chargeable event for a pay-per-event Actor. Each event is either flat-priced
-
-        (`eventPriceUsd` is set) or tier-priced (`eventTieredPricingUsd` is set); the two are mutually exclusive.
-
-        '
+            const: FREE
+    GeneralAccess:
+      title: GeneralAccess
+      type: string
+      enum:
+      - ANYONE_WITH_ID_CAN_READ
+      - ANYONE_WITH_NAME_CAN_READ
+      - FOLLOW_USER_SETTING
+      - RESTRICTED
+      examples:
+      - RESTRICTED
+      description: Defines the general access level for the resource.
+    CommonActorPricingInfo:
+      title: CommonActorPricingInfo
       type: object
       required:
-      - eventTitle
-      - eventDescription
+      - apifyMarginPercentage
+      - createdAt
+      - startedAt
       properties:
-        eventTitle:
-          type: string
-          description: Human-readable title shown to users in the billing UI.
-        eventDescription:
-          type: string
-          description: Human-readable description of what triggers this event.
-        eventPriceUsd:
+        apifyMarginPercentage:
           type: number
-          description: 'Flat price per event in USD. Present only for non-tiered events. Mutually exclusive with `eventTieredPricingUsd`.
+          examples:
+          - 0.2
+          description: 'Apify''s share of the revenue generated under this pricing info record, as a fraction between 0 and 1. Set by the Apify platform.
 
             '
-        eventTieredPricingUsd:
-          $ref: '#/components/schemas/TieredPricingPerEvent'
-        isPrimaryEvent:
-          type: boolean
-          description: Whether this event is the Actor's primary chargeable event.
-        isOneTimeEvent:
-          type: boolean
-          description: Whether this event can only be charged once per Actor run.
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
+        createdAt:
           type: string
-          description: Human-readable error message describing what went wrong.
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
-    ActorRunPricingInfo:
-      title: ActorRunPricingInfo
-      discriminator:
-        propertyName: pricingModel
-        mapping:
-          PAY_PER_EVENT: '#/components/schemas/PayPerEventActorPricingInfo'
-          PRICE_PER_DATASET_ITEM: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
-          FLAT_PRICE_PER_MONTH: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
-          FREE: '#/components/schemas/FreeActorPricingInfo'
-      oneOf:
-      - $ref: '#/components/schemas/PayPerEventActorPricingInfo'
-      - $ref: '#/components/schemas/PricePerDatasetItemActorPricingInfo'
-      - $ref: '#/components/schemas/FlatPricePerMonthActorPricingInfo'
-      - $ref: '#/components/schemas/FreeActorPricingInfo'
+          format: date-time
+          description: When this pricing info record has been created
+        startedAt:
+          type: string
+          format: date-time
+          description: Since when is this pricing info record effective for a given Actor
+        notifiedAboutFutureChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-internal: true
+        notifiedAboutChangeAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          x-internal: true
+        reasonForChange:
+          type:
+          - string
+          - 'null'
+          x-internal: true
+        isPriceChangeNotificationSuppressed:
+          type: boolean
+          x-internal: true
+        forceContainsSignificantPriceChange:
+          type: boolean
+          x-internal: true
     ErrorType:
       title: ErrorType
       type: string
@@ -1204,6 +1371,57 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
+    PayPerEventActorPricingInfo:
+      title: PayPerEventActorPricingInfo
+      allOf:
+      - $ref: '#/components/schemas/CommonActorPricingInfo'
+      - type: object
+        required:
+        - pricingModel
+        - pricingPerEvent
+        properties:
+          pricingModel:
+            type: string
+            const: PAY_PER_EVENT
+          pricingPerEvent:
+            type: object
+            properties:
+              actorChargeEvents:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/ActorChargeEvent'
+          minimalMaxTotalChargeUsd:
+            type:
+            - number
+            - 'null'
+    RunResponse:
+      title: RunResponse
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Run'
+    TieredPricingPerEvent:
+      title: TieredPricingPerEvent
+      description: 'Tiered price-per-event pricing for a single charge event, keyed by subscription tier (e.g. `FREE`, `BRONZE`,
+
+        `SILVER`, `GOLD`, `PLATINUM`, `DIAMOND`). The actual price applied is resolved from the user''s tier.
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/TieredPricingPerEventEntry'
+    TieredPricingPerEventEntry:
+      title: TieredPricingPerEventEntry
+      description: A single tier's price-per-event entry.
+      type: object
+      required:
+      - tieredEventPriceUsd
+      properties:
+        tieredEventPriceUsd:
+          type: number
+          description: Price per event in USD for this tier.
     RunStats:
       title: RunStats
       type: object
@@ -1291,224 +1509,67 @@ components:
           minimum: 0
           examples:
           - 0.13804
-    RunOptions:
-      title: RunOptions
-      required:
-      - build
-      - timeoutSecs
-      - memoryMbytes
-      - diskMbytes
-      type: object
-      properties:
-        build:
-          type: string
-          examples:
-          - latest
-        timeoutSecs:
-          type: integer
-          minimum: 0
-          examples:
-          - 300
-        memoryMbytes:
-          type: integer
-          minimum: 128
-          maximum: 32768
-          examples:
-          - 1024
-        diskMbytes:
-          type: integer
-          minimum: 0
-          examples:
-          - 2048
-        maxItems:
-          type:
-          - integer
-          - 'null'
-          minimum: 0
-          examples:
-          - 1000
-        maxTotalChargeUsd:
-          type:
-          - number
-          - 'null'
-          minimum: 0
-          examples:
-          - 5
-    TieredPricingPerEvent:
-      title: TieredPricingPerEvent
-      description: 'Tiered price-per-event pricing for a single charge event, keyed by subscription tier (e.g. `FREE`, `BRONZE`,
-
-        `SILVER`, `GOLD`, `PLATINUM`, `DIAMOND`). The actual price applied is resolved from the user''s tier.
-
-        '
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/TieredPricingPerEventEntry'
-    CommonActorPricingInfo:
-      title: CommonActorPricingInfo
-      type: object
-      required:
-      - apifyMarginPercentage
-      - createdAt
-      - startedAt
-      properties:
-        apifyMarginPercentage:
-          type: number
-          examples:
-          - 0.2
-          description: 'Apify''s share of the revenue generated under this pricing info record, as a fraction between 0 and 1. Set by the Apify platform.
-
-            '
-        createdAt:
-          type: string
-          format: date-time
-          description: When this pricing info record has been created
-        startedAt:
-          type: string
-          format: date-time
-          description: Since when is this pricing info record effective for a given Actor
-        notifiedAboutFutureChangeAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          x-internal: true
-        notifiedAboutChangeAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          x-internal: true
-        reasonForChange:
-          type:
-          - string
-          - 'null'
-          x-internal: true
-        isPriceChangeNotificationSuppressed:
-          type: boolean
-          x-internal: true
-        forceContainsSignificantPriceChange:
-          type: boolean
-          x-internal: true
-    RunUsageUsd:
-      title: RunUsageUsd
-      description: Resource usage costs in USD. All values are monetary amounts in US dollars.
-      type: object
-      properties:
-        ACTOR_COMPUTE_UNITS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0003
-        DATASET_READS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        DATASET_WRITES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        KEY_VALUE_STORE_READS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        KEY_VALUE_STORE_WRITES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 5.0e-05
-        KEY_VALUE_STORE_LISTS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        REQUEST_QUEUE_READS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        REQUEST_QUEUE_WRITES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.0001
-        DATA_TRANSFER_INTERNAL_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.001
-        DATA_TRANSFER_EXTERNAL_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.003
-        PROXY_RESIDENTIAL_TRANSFER_GBYTES:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.034
-        PROXY_SERPS:
-          type:
-          - number
-          - 'null'
-          examples:
-          - 0.003
-    TieredPricingPerDatasetItem:
-      title: TieredPricingPerDatasetItem
-      description: 'Tiered price-per-dataset-item pricing, keyed by subscription tier (e.g. `FREE`, `BRONZE`, `SILVER`, `GOLD`,
-
-        `PLATINUM`, `DIAMOND`). The actual price applied to a run is resolved from the user''s tier.
-
-        '
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/TieredPricingPerDatasetItemEntry'
-    RunMetamorphEvent:
-      title: RunMetamorphEvent
-      description: Information about a metamorph event that occurred during the run.
-      type: object
-      required:
-      - createdAt
-      - actorId
-      - buildId
-      properties:
-        createdAt:
-          type: string
-          format: date-time
-          description: Time when the metamorph occurred.
-          examples:
-          - '2019-11-30T07:39:24.202Z'
-        actorId:
-          type: string
-          description: ID of the Actor that the run was metamorphed to.
-          examples:
-          - nspoEjklmnsF2oosD
-        buildId:
-          type: string
-          description: ID of the build used for the metamorphed Actor.
-          examples:
-          - ME6oKecqy5kXDS4KQ
-        inputKey:
-          type:
-          - string
-          - 'null'
-          description: Key of the input record in the key-value store.
-          examples:
-          - INPUT-METAMORPH-1
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
   parameters:
     gracefully:
       name: gracefully
@@ -1525,15 +1586,14 @@ components:
       schema:
         type: boolean
         example: true
-    actorTaskId:
-      name: actorTaskId
-      in: path
-      description: Task ID or a tilde-separated owner's username and task's name.
-      required: true
-      style: simple
+    origin:
+      name: origin
+      in: query
+      description: Filter for the run origin, i.e. the means by which the run was started.
+      style: form
+      explode: true
       schema:
-        type: string
-        example: janedoe~my-task
+        $ref: '#/components/schemas/RunOrigin'
     status-2:
       name: status
       in: query
@@ -1543,75 +1603,15 @@ components:
       schema:
         type: string
         example: SUCCEEDED
-    origin:
-      name: origin
-      in: query
-      description: Filter for the run origin, i.e. the means by which the run was started.
-      style: form
-      explode: true
+    actorTaskId:
+      name: actorTaskId
+      in: path
+      description: Task ID or a tilde-separated owner's username and task's name.
+      required: true
+      style: simple
       schema:
-        $ref: '#/components/schemas/RunOrigin'
-  responses:
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
+        type: string
+        example: janedoe~my-task
   securitySchemes:
     httpBearer:
       type: http

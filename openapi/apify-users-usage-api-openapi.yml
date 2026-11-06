@@ -282,15 +282,78 @@ paths:
       - https://docs.apify.com/api/v2#/reference/users/update-limits
       - https://docs.apify.com/api/v2#tag/UsersAccount-and-usage-limits/operation/users_me_limits_put
 components:
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    PayloadTooLarge:
+      description: Payload too large - the request body exceeds the size limit.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: request-too-large
+              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    UnsupportedMediaType:
+      description: Unsupported media type - the Content-Encoding of the request is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: unsupported-content-encoding
+              message: Content-Encoding "bla" is not supported.
   schemas:
-    MonthlyUsageResponse:
-      title: MonthlyUsageResponse
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/MonthlyUsage'
     UsageItem:
       title: UsageItem
       required:
@@ -319,6 +382,33 @@ components:
           items:
             $ref: '#/components/schemas/PriceTier'
           description: ''
+    ServiceUsage:
+      title: ServiceUsage
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/UsageItem'
+      description: A map of service usage item names to their usage details.
+      example:
+        ACTOR_COMPUTE_UNITS:
+          quantity: 60
+          baseAmountUsd: 0.00030000000000000003
+          baseUnitPriceUsd: 5.0e-06
+          amountAfterVolumeDiscountUsd: 0.00030000000000000003
+          priceTiers: []
+    AccountLimits:
+      title: AccountLimits
+      required:
+      - monthlyUsageCycle
+      - limits
+      - current
+      type: object
+      properties:
+        monthlyUsageCycle:
+          $ref: '#/components/schemas/UsageCycle'
+        limits:
+          $ref: '#/components/schemas/Limits'
+        current:
+          $ref: '#/components/schemas/CurrentUsage'
     DailyServiceUsage:
       title: DailyServiceUsage
       required:
@@ -338,65 +428,90 @@ components:
           type: number
           examples:
           - 0.0474385791970591
-    AccountLimits:
-      title: AccountLimits
+    CurrentUsage:
+      title: CurrentUsage
       required:
-      - monthlyUsageCycle
-      - limits
-      - current
+      - monthlyUsageUsd
+      - monthlyActorComputeUnits
+      - monthlyExternalDataTransferGbytes
+      - monthlyProxySerps
+      - monthlyResidentialProxyGbytes
+      - actorMemoryGbytes
+      - actorCount
+      - actorTaskCount
+      - activeActorJobCount
+      - teamAccountSeatCount
       type: object
       properties:
-        monthlyUsageCycle:
-          $ref: '#/components/schemas/UsageCycle'
-        limits:
-          $ref: '#/components/schemas/Limits'
-        current:
-          $ref: '#/components/schemas/CurrentUsage'
-    UpdateLimitsRequest:
-      title: UpdateLimitsRequest
-      type: object
-      properties:
-        maxMonthlyUsageUsd:
+        monthlyUsageUsd:
           type: number
           examples:
-          - 300
-          description: 'If your platform usage in the billing period exceeds the prepaid usage, you will be charged extra. Setting this property you can update your hard limit on monthly platform usage to prevent accidental overage or to limit the extra charges.
-
-            '
-        dataRetentionDays:
+          - 43
+        monthlyActorComputeUnits:
+          type: number
+          examples:
+          - 500.784475
+        monthlyExternalDataTransferGbytes:
+          type: number
+          examples:
+          - 3.00861903931946
+        monthlyProxySerps:
           type: integer
           examples:
-          - 90
-          description: 'Apify securely stores your ten most recent Actor runs indefinitely, ensuring they are always accessible. Unnamed storages and other Actor runs are automatically deleted after the retention period. If you''re subscribed, you can change it to keep data for longer or to limit your usage. [Lear more](https://docs.apify.com/storage#data-retention).
-
-            '
-    MonthlyUsage:
-      title: MonthlyUsage
+          - 34
+        monthlyResidentialProxyGbytes:
+          type: number
+          examples:
+          - 0.4
+        actorMemoryGbytes:
+          type: number
+          examples:
+          - 8
+        actorCount:
+          type: integer
+          examples:
+          - 31
+        actorTaskCount:
+          type: integer
+          examples:
+          - 130
+        activeActorJobCount:
+          type: integer
+          examples:
+          - 0
+        teamAccountSeatCount:
+          type: integer
+          examples:
+          - 5
+        scheduleCount:
+          type: integer
+          examples:
+          - 77
+    MonthlyUsageResponse:
+      title: MonthlyUsageResponse
       required:
-      - usageCycle
-      - monthlyServiceUsage
-      - dailyServiceUsages
-      - totalUsageCreditsUsdBeforeVolumeDiscount
-      - totalUsageCreditsUsdAfterVolumeDiscount
+      - data
       type: object
       properties:
-        usageCycle:
-          $ref: '#/components/schemas/UsageCycle'
-        monthlyServiceUsage:
-          $ref: '#/components/schemas/MonthlyServiceUsage'
-        dailyServiceUsages:
-          type: array
-          items:
-            $ref: '#/components/schemas/DailyServiceUsage'
-          description: ''
-        totalUsageCreditsUsdBeforeVolumeDiscount:
-          type: number
-          examples:
-          - 0.786143673840067
-        totalUsageCreditsUsdAfterVolumeDiscount:
-          type: number
-          examples:
-          - 0.786143673840067
+        data:
+          $ref: '#/components/schemas/MonthlyUsage'
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - error
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
     Limits:
       title: Limits
       required:
@@ -461,90 +576,74 @@ components:
           type: integer
           examples:
           - 100
-    ErrorDetail:
-      title: ErrorDetail
+    MonthlyServiceUsage:
+      title: MonthlyServiceUsage
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/UsageItem'
+      description: A map of usage item names (e.g., ACTOR_COMPUTE_UNITS) to their usage details.
+    MonthlyUsage:
+      title: MonthlyUsage
+      required:
+      - usageCycle
+      - monthlyServiceUsage
+      - dailyServiceUsages
+      - totalUsageCreditsUsdBeforeVolumeDiscount
+      - totalUsageCreditsUsdAfterVolumeDiscount
       type: object
       properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
+        usageCycle:
+          $ref: '#/components/schemas/UsageCycle'
+        monthlyServiceUsage:
+          $ref: '#/components/schemas/MonthlyServiceUsage'
+        dailyServiceUsages:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyServiceUsage'
+          description: ''
+        totalUsageCreditsUsdBeforeVolumeDiscount:
+          type: number
+          examples:
+          - 0.786143673840067
+        totalUsageCreditsUsdAfterVolumeDiscount:
+          type: number
+          examples:
+          - 0.786143673840067
+    UpdateLimitsRequest:
+      title: UpdateLimitsRequest
+      type: object
+      properties:
+        maxMonthlyUsageUsd:
+          type: number
+          examples:
+          - 300
+          description: 'If your platform usage in the billing period exceeds the prepaid usage, you will be charged extra. Setting this property you can update your hard limit on monthly platform usage to prevent accidental overage or to limit the extra charges.
+
+            '
+        dataRetentionDays:
+          type: integer
+          examples:
+          - 90
+          description: 'Apify securely stores your ten most recent Actor runs indefinitely, ensuring they are always accessible. Unnamed storages and other Actor runs are automatically deleted after the retention period. If you''re subscribed, you can change it to keep data for longer or to limit your usage. [Lear more](https://docs.apify.com/storage#data-retention).
+
+            '
+    UsageCycle:
+      title: UsageCycle
+      required:
+      - startAt
+      - endAt
+      type: object
+      properties:
+        startAt:
           type: string
-          description: Human-readable error message describing what went wrong.
-    AccountLimitsResponse:
-      title: AccountLimitsResponse
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/AccountLimits'
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - error
-      type: object
-      properties:
-        error:
-          $ref: '#/components/schemas/ErrorDetail'
-    CurrentUsage:
-      title: CurrentUsage
-      required:
-      - monthlyUsageUsd
-      - monthlyActorComputeUnits
-      - monthlyExternalDataTransferGbytes
-      - monthlyProxySerps
-      - monthlyResidentialProxyGbytes
-      - actorMemoryGbytes
-      - actorCount
-      - actorTaskCount
-      - activeActorJobCount
-      - teamAccountSeatCount
-      type: object
-      properties:
-        monthlyUsageUsd:
-          type: number
+          format: date-time
           examples:
-          - 43
-        monthlyActorComputeUnits:
-          type: number
+          - '2022-10-02T00:00:00.000Z'
+        endAt:
+          type: string
+          format: date-time
           examples:
-          - 500.784475
-        monthlyExternalDataTransferGbytes:
-          type: number
-          examples:
-          - 3.00861903931946
-        monthlyProxySerps:
-          type: integer
-          examples:
-          - 34
-        monthlyResidentialProxyGbytes:
-          type: number
-          examples:
-          - 0.4
-        actorMemoryGbytes:
-          type: number
-          examples:
-          - 8
-        actorCount:
-          type: integer
-          examples:
-          - 31
-        actorTaskCount:
-          type: integer
-          examples:
-          - 130
-        activeActorJobCount:
-          type: integer
-          examples:
-          - 0
-        teamAccountSeatCount:
-          type: integer
-          examples:
-          - 5
-        scheduleCount:
-          type: integer
-          examples:
-          - 77
+          - '2022-11-01T23:59:59.999Z'
     ErrorType:
       title: ErrorType
       type: string
@@ -975,113 +1074,14 @@ components:
           type: number
           examples:
           - 0
-    MonthlyServiceUsage:
-      title: MonthlyServiceUsage
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/UsageItem'
-      description: A map of usage item names (e.g., ACTOR_COMPUTE_UNITS) to their usage details.
-    ServiceUsage:
-      title: ServiceUsage
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/UsageItem'
-      description: A map of service usage item names to their usage details.
-      example:
-        ACTOR_COMPUTE_UNITS:
-          quantity: 60
-          baseAmountUsd: 0.00030000000000000003
-          baseUnitPriceUsd: 5.0e-06
-          amountAfterVolumeDiscountUsd: 0.00030000000000000003
-          priceTiers: []
-    UsageCycle:
-      title: UsageCycle
+    AccountLimitsResponse:
+      title: AccountLimitsResponse
       required:
-      - startAt
-      - endAt
+      - data
       type: object
       properties:
-        startAt:
-          type: string
-          format: date-time
-          examples:
-          - '2022-10-02T00:00:00.000Z'
-        endAt:
-          type: string
-          format: date-time
-          examples:
-          - '2022-11-01T23:59:59.999Z'
-  responses:
-    UnsupportedMediaType:
-      description: Unsupported media type - the Content-Encoding of the request is not supported.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: unsupported-content-encoding
-              message: Content-Encoding "bla" is not supported.
-    PayloadTooLarge:
-      description: Payload too large - the request body exceeds the size limit.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: request-too-large
-              message: 'The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes).'
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
+        data:
+          $ref: '#/components/schemas/AccountLimits'
   securitySchemes:
     httpBearer:
       type: http

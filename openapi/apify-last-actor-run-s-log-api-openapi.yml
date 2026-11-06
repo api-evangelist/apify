@@ -199,7 +199,142 @@ paths:
       - $ref: '#/components/parameters/download'
       - $ref: '#/components/parameters/raw'
 components:
+  responses:
+    Unauthorized:
+      description: Unauthorized - authentication required or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-token
+              message: Authentication token is not valid.
+    Forbidden:
+      description: Forbidden - insufficient permissions to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: insufficient-permissions
+              message: You do not have permission to perform this action.
+    NotFound:
+      description: Not found - the requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: record-not-found
+              message: The requested resource was not found.
+    BadRequest:
+      description: Bad request - invalid input parameters or request body.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: invalid-input
+              message: 'Invalid input: The request body contains invalid data.'
+    MethodNotAllowed:
+      description: Method not allowed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: method-not-allowed
+              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              type: rate-limit-exceeded
+              message: You have exceeded the rate limit. Please try again later.
+  parameters:
+    stream:
+      name: stream
+      in: query
+      description: 'If `true` or `1` then the logs will be streamed as long as the run or build is running.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    actorId:
+      name: actorId
+      in: path
+      description: Actor ID or the username of the Actor owner and the Actor name, separated by a tilde (`~`).
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: compass~google-maps-extractor
+    raw:
+      name: raw
+      in: query
+      description: 'If `true` or `1`, the logs will be kept verbatim. By default, the API removes
+
+        ANSI escape codes from the logs, keeping only printable characters.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    origin:
+      name: origin
+      in: query
+      description: Filter for the run origin, i.e. the means by which the run was started.
+      style: form
+      explode: true
+      schema:
+        $ref: '#/components/schemas/RunOrigin'
+    download:
+      name: download
+      in: query
+      description: 'If `true` or `1` then the web browser will download the log file rather than open it in a tab.
+
+        '
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: boolean
+        example: false
+    status-2:
+      name: status
+      in: query
+      description: Filter for the run status.
+      style: form
+      explode: true
+      schema:
+        type: string
+        example: SUCCEEDED
   schemas:
+    ErrorDetail:
+      title: ErrorDetail
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorType'
+        message:
+          type: string
+          description: Human-readable error message describing what went wrong.
     RunOrigin:
       title: RunOrigin
       type: string
@@ -615,15 +750,6 @@ components:
       - x402-agentic-payment-unauthorized
       - x402-payment-required
       - zero-invoice
-    ErrorDetail:
-      title: ErrorDetail
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/ErrorType'
-        message:
-          type: string
-          description: Human-readable error message describing what went wrong.
     ErrorResponse:
       title: ErrorResponse
       required:
@@ -632,132 +758,6 @@ components:
       properties:
         error:
           $ref: '#/components/schemas/ErrorDetail'
-  parameters:
-    origin:
-      name: origin
-      in: query
-      description: Filter for the run origin, i.e. the means by which the run was started.
-      style: form
-      explode: true
-      schema:
-        $ref: '#/components/schemas/RunOrigin'
-    raw:
-      name: raw
-      in: query
-      description: 'If `true` or `1`, the logs will be kept verbatim. By default, the API removes
-
-        ANSI escape codes from the logs, keeping only printable characters.
-
-        '
-      required: false
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    download:
-      name: download
-      in: query
-      description: 'If `true` or `1` then the web browser will download the log file rather than open it in a tab.
-
-        '
-      required: false
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    stream:
-      name: stream
-      in: query
-      description: 'If `true` or `1` then the logs will be streamed as long as the run or build is running.
-
-        '
-      required: false
-      style: form
-      explode: true
-      schema:
-        type: boolean
-        example: false
-    status-2:
-      name: status
-      in: query
-      description: Filter for the run status.
-      style: form
-      explode: true
-      schema:
-        type: string
-        example: SUCCEEDED
-    actorId:
-      name: actorId
-      in: path
-      description: Actor ID or the username of the Actor owner and the Actor name, separated by a tilde (`~`).
-      required: true
-      style: simple
-      schema:
-        type: string
-        example: compass~google-maps-extractor
-  responses:
-    Forbidden:
-      description: Forbidden - insufficient permissions to perform this action.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: insufficient-permissions
-              message: You do not have permission to perform this action.
-    NotFound:
-      description: Not found - the requested resource does not exist.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: record-not-found
-              message: The requested resource was not found.
-    BadRequest:
-      description: Bad request - invalid input parameters or request body.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-input
-              message: 'Invalid input: The request body contains invalid data.'
-    Unauthorized:
-      description: Unauthorized - authentication required or invalid token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: invalid-token
-              message: Authentication token is not valid.
-    MethodNotAllowed:
-      description: Method not allowed.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: method-not-allowed
-              message: 'This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET'
-    TooManyRequests:
-      description: Too many requests - rate limit exceeded.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example:
-            error:
-              type: rate-limit-exceeded
-              message: You have exceeded the rate limit. Please try again later.
   securitySchemes:
     httpBearer:
       type: http
